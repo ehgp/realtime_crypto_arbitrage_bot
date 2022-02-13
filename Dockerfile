@@ -1,10 +1,12 @@
-FROM python:3
+FROM python:3.8
 
-WORKDIR /usr/src/app
-
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
 COPY . .
 
-CMD [ "python", "./your-daemon-or-script.py" ]
+RUN pip install pipenv==2021.11.23
+RUN pipenv install --verbose
+# EXPOSE 3080
+# ENV PORT 3080
+# CMD [ "pipenv run python", "./your-daemon-or-script.py" ]
+CMD ["echo", "no testing"]
