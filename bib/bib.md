@@ -23,3 +23,14 @@ https://techxplore.com/news/2021-10-nlp-stock.html
 https://towardsdatascience.com/nlp-in-the-stock-market-8760d062eb92
 
 https://data.nasdaq.com/publishers/QDL
+
+https://github.com/JinJis/arbitrage-bot
+
+https://github.com/yiaktan/NLP-Stock-Prediction
+
+https://towardsdatascience.com/using-reinforcement-learning-to-trade-bitcoin-for-massive-profit-b69d0e8f583b
+
+https://github.com/fendouai/ArbitrageBot
+
+https://github.com/wilsonfreitas/awesome-quant
+
