@@ -10,3 +10,6 @@ README.md
 .npmrc
 .github
 **/*.log
+creds copy.yaml
+LICENSE
+docker-compose.yml
