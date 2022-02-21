@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
- web:
+ kucoin-feed:
   build:
    context: .
   ports:
@@ -11,7 +11,7 @@ services:
   # environment:
   # - PATH=/app/bin:$PATH
   # - PYTHONPATH=/app
-  command: "python main.py"
+  # command: "python main.py"
 
 #  mysqldb:
 #   image: mysql
