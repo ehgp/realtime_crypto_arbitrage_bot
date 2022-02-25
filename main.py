@@ -1,9 +1,11 @@
 import asyncio
+from codecs import lookup
 import sqlite3
 import os
 import yaml
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
+import datetime as dt
 
 # def _load_config():
 #     """Load the configuration yaml and return dictionary of setttings.
@@ -30,14 +32,18 @@ from kucoin.ws_client import KucoinWsClient
 
 
 async def main():
+    """Execute Main."""
+
     async def deal_msg(msg):
-        if msg["topic"] == "/market/ticker:ETH-USDT":
-            print(f'got ETH-USDT tick:{msg["data"]}')
-            con = sqlite3.connect("kucoin.db")
+        """Message Handler."""
+        if msg["topic"] == "/market/ticker:all":
+            print(f'got {msg["subject"]} tick:{msg["data"]}')
+            con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "tickers"
             placeholders = list(msg["data"].values())
-            placeholders.insert(0, "ETH-USDT")
+            placeholders.insert(0, msg["subject"])
+            placeholders[8] = dt.datetime.fromtimestamp(placeholders[8] / 1e3)
             placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
             columns = ", ".join(msg["data"].keys())
             create_table = """CREATE TABLE IF NOT EXISTS tickers
@@ -64,12 +70,17 @@ async def main():
     # is sandbox
     # client = WsToken(is_sandbox=True)
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=False)
-    await ws_client.subscribe("/market/ticker:ETH-USDT")
+    # await ws_client.subscribe("/market/ticker:ETH-USDT")
+    await ws_client.subscribe("/market/ticker:all")
     while True:
         print("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
+    except KeyboardInterrupt as e:
+        print("Closing Loop")
+        pass

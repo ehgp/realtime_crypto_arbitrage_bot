@@ -8,6 +8,8 @@ services:
   - 3080:3080
   volumes:
   - ./:/app
+  - ./db/:/app/db
+  command: "python main.py"
   # environment:
   # - PATH=/app/bin:$PATH
   # - PYTHONPATH=/app

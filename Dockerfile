@@ -1,4 +1,4 @@
-FROM python:3.7-alpine as base
+FROM python:3.7-slim as base
 
 # Setup env
 ENV LANG C.UTF-8
@@ -24,7 +24,7 @@ COPY . .
 # ENTRYPOINT ["python", "-m", "http.server"]
 # CMD ["--directory", "directory", "3080"]
 # CMD python main.py runserver 0.0.0.0:3080
-# EXPOSE 3080
+EXPOSE 3080
 # ENV PORT 3080
 # CMD [ "pipenv", "run", "python", "/app/bin/main.py" ]
 # CMD ["echo", "no testing"]
