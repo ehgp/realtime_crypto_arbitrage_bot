@@ -15,4 +15,4 @@ bs4 = {version = "==0.0.1", index="pypi"}
 black = {version = "==21.12b0", index="pypi"}
 SQLAlchemy= {version = "==1.4.3", index="pypi"}
 aiosqlite= {version = "==0.17.0", index="pypi"}
-kucoin-python==1.0.11
+kucoin-python = "==1.0.11"
