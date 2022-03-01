@@ -1,12 +1,18 @@
 # Data 606 Capstone: Real Time Arbitrage Bot
 
-This software currently relies on two elements.
+This software currently relies on four elements.
 
 kucoin-feed:
 Websockets real time feed of price data.
 
-mysql:
-MySQL server that will store this real time data for processing and training.
+sqlite:
+SQLite DB that will store this real time data for processing and training.
+
+history:
+Gather historical data from HTTPS for training
+
+analysis:
+actual implementation of ML model.
 
 ## Requirements
 
@@ -18,7 +24,6 @@ MySQL server that will store this real time data for processing and training.
 Fill out credentials in creds.yaml
 
 To use docker you must have docker desktop available with docker compose:
-
 
 You can use pipenv or your base python installation:
 Pipenv:

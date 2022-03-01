@@ -6,29 +6,33 @@ import yaml
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 import datetime as dt
-
-# def _load_config():
-#     """Load the configuration yaml and return dictionary of setttings.
-
-#     Returns:
-#         yaml as a dictionary.
-#     """
-#     config_path = os.path.dirname(os.path.realpath(__file__))
-#     config_path = os.path.join(config_path, "creds.yaml")
-#     with open(config_path, "r") as config_file:
-#         config_defs = yaml.safe_load(config_file.read())
-
-#     if config_defs.values() is None:
-#         raise ValueError("creds yaml file incomplete")
-
-#     return config_defs
+import re
 
 
-# cf = _load_config()
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
 
-# api_key = cf["KUCOIN_YOUR_API_KEY"]
-# api_secret = cf["KUCOIN_YOUR_SECRET"]
-# api_passphrase = cf["KUCOIN_YOUR_PASS"]
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(config_path, "creds.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("creds yaml file incomplete")
+
+    return config_defs
+
+
+cf = _load_config()
+
+api_key = cf["KUCOIN_YOUR_API_KEY"]
+api_secret = cf["KUCOIN_YOUR_SECRET"]
+api_passphrase = cf["KUCOIN_YOUR_PASS"]
+
+# GET /api/v1/trade-fees?symbols=BTC-USDT,KCS-USDT
 
 
 async def main():
@@ -42,19 +46,21 @@ async def main():
             cur = con.cursor()
             table = "tickers"
             placeholders = list(msg["data"].values())
-            placeholders.insert(0, msg["subject"])
-            placeholders[8] = dt.datetime.fromtimestamp(placeholders[8] / 1e3)
+            placeholders.insert(0, msg["subject"].replace("-", " ").split(" ")[0])
+            placeholders.insert(0, msg["subject"].replace("-", " ").split(" ")[1])
+            placeholders[9] = dt.datetime.fromtimestamp(placeholders[9] / 1e3)
             placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
             columns = ", ".join(msg["data"].keys())
             create_table = """CREATE TABLE IF NOT EXISTS tickers
-                         (ticker text,  bestAsk text, bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, size text, time text
+                         (baseTick text, quoteTick text,  bestAsk text, bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, size text, time text
                          )"""
             print("Creating Table")
             cur.execute(create_table)
             con.commit()
-            insert_table = "INSERT INTO %s ( %s, %s ) VALUES ( %s )" % (
+            insert_table = "INSERT INTO %s ( %s, %s, %s ) VALUES ( %s )" % (
                 table,
-                "ticker",
+                "quoteTick",
+                "baseTick",
                 columns,
                 placeholders,
             )
