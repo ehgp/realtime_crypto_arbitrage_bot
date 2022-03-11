@@ -7,6 +7,7 @@ from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 import datetime as dt
 import re
+from analysis import execute_triangle_arbitrage
 
 
 def _load_config():
@@ -68,6 +69,7 @@ async def main():
             cur.execute(insert_table)
             con.commit()
             con.close()
+            execute_triangle_arbitrage()
 
     # is public
     client = WsToken()
