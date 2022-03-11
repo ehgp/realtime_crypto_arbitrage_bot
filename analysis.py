@@ -11,6 +11,7 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
 
+
 def execute_triangle_arbitrage():
     """Execute Triangle Arbitrage."""
     cnx = sqlite3.connect("db/kucoin.db")
@@ -46,7 +47,6 @@ def execute_triangle_arbitrage():
 
     arb_op.reset_index(drop=True, inplace=True)
 
-
     arb_op.rename(columns={"b": "baseTick", "a": "quoteTick"}, inplace=True)
 
     arb_op["ba_bstb"] = arb_op.merge(
@@ -55,13 +55,11 @@ def execute_triangle_arbitrage():
         how="left",
     )["bestBid"]
 
-
     arb_op["ba_bsta"] = arb_op.merge(
         df,
         on=["baseTick", "quoteTick"],
         how="left",
     )["bestAsk"]
-
 
     arb_op.rename(columns={"baseTick": "b", "quoteTick": "a"}, inplace=True)
     arb_op.rename(columns={"b": "baseTick", "c": "quoteTick"}, inplace=True)
@@ -70,7 +68,6 @@ def execute_triangle_arbitrage():
         on=["baseTick", "quoteTick"],
         how="left",
     )["bestBid"]
-
 
     arb_op["bc_bsta"] = arb_op.merge(
         df,
@@ -87,13 +84,11 @@ def execute_triangle_arbitrage():
         how="left",
     )["bestBid"]
 
-
     arb_op["ca_bsta"] = arb_op.merge(
         df,
         on=["baseTick", "quoteTick"],
         how="left",
     )["bestAsk"]
-
 
     arb_op.rename(columns={"baseTick": "c", "quoteTick": "a"}, inplace=True)
 
