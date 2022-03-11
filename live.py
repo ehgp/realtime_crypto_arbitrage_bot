@@ -1,3 +1,4 @@
+"""Real Time Crypto Bot."""
 import asyncio
 from codecs import lookup
 import sqlite3

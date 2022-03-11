@@ -1,4 +1,4 @@
-#  MarketData
+"""Historical Market Data."""
 from kucoin.client import Market
 import sqlite3
 import datetime as dt
