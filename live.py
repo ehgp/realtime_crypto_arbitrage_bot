@@ -56,7 +56,7 @@ async def main():
             create_table = """CREATE TABLE IF NOT EXISTS tickers
                          (baseTick text, quoteTick text,  bestAsk text, bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, size text, time text
                          )"""
-            print("Creating Table")
+            print("Creating Table tickers")
             cur.execute(create_table)
             con.commit()
             insert_table = "INSERT INTO %s ( %s, %s, %s ) VALUES ( %s )" % (
@@ -77,10 +77,13 @@ async def main():
     # is private
     # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False, url='')
     # is sandbox
-    # client = WsToken(is_sandbox=True)
+    # client = WsToken(
+    #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
+    # )
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=False)
     # await ws_client.subscribe("/market/ticker:ETH-USDT")
     await ws_client.subscribe("/market/ticker:all")
+    # await ws_client.subscribe("/account/balance")
     while True:
         print("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)

@@ -14,9 +14,9 @@ pd.set_option("display.max_colwidth", None)
 
 def execute_triangle_arbitrage():
     """Execute Triangle Arbitrage."""
-    cnx = sqlite3.connect("db/kucoin.db")
-
-    df = pd.read_sql_query("SELECT * FROM tickers", cnx)
+    con = sqlite3.connect("db/kucoin.db")
+    cur = con.cursor()
+    df = pd.read_sql_query("SELECT * FROM tickers", con)
     df = df.astype(
         {
             "baseTick": "str",
@@ -109,21 +109,28 @@ def execute_triangle_arbitrage():
         - 1
     ) * 100
 
-    arb_op.loc[~(arb_op["fwd_arb"] > 0), "fwd_arb"] = np.nan
-    arb_op.loc[~(arb_op["rev_arb"] > 0), "rev_arb"] = np.nan
-    arb_op_fwd = (
-        arb_op.sort_values("fwd_arb", ascending=False)
-        .groupby("fwd_arb")
-        .head(2)
-        .reset_index(drop=True)
-    )
-    arb_op_rev = (
-        arb_op.sort_values("rev_arb", ascending=False)
-        .groupby("rev_arb")
-        .head(2)
-        .reset_index(drop=True)
-    )
-    arb_op = arb_op_fwd.append(arb_op_rev)
+    arb_op.loc[~(arb_op["fwd_arb"] > 0.1), "fwd_arb"] = np.nan
+    arb_op.loc[~(arb_op["rev_arb"] > 0.1), "rev_arb"] = np.nan
+    arb_op = arb_op.loc[arb_op[["fwd_arb", "rev_arb"]].idxmax()]
     arb_op.dropna(subset=["fwd_arb", "rev_arb"], how="all", inplace=True)
     arb_op.drop_duplicates(inplace=True)
+    table = "arb_ops"
+    create_table = """CREATE TABLE IF NOT EXISTS arb_ops
+                    (a text, b text,  c text, ba_bstb text, ba_bsta text, bc_bstb text, bc_bsta text, ca_bstb text, ca_bsta text, fwd_arb text, rev_arb text, UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE
+                    )"""
+    print("Creating Table arb_ops")
+    cur.execute(create_table)
+    con.commit()
+    for i, row in arb_op.iterrows():
+        placeholders = ",".join('"' + str(e) + '"' for e in row)
+        columns = ", ".join(arb_op.columns)
+        insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
+            table,
+            columns,
+            placeholders,
+        )
+        print("Inserting a row of data")
+        cur.execute(insert_table)
+        con.commit()
+    con.close()
     arb_op.to_csv("arbitrage_ops.csv", index=False)
