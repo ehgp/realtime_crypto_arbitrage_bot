@@ -1,7 +1,26 @@
 """Trade."""
+import os
+import yaml
 import pandas as pd
 from kucoin import client
 import sqlite3
+
+
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
+
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(config_path, "creds.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("creds yaml file incomplete")
+
+    return config_defs
 
 
 def execute_fwd_tri_arbitrage():
@@ -25,8 +44,8 @@ def execute_rev_tri_arbitrage():
     size = str(cost / row["bc_bstb"])  # ca_bstb,ba_bsta
     return None
 
-
-cost = 50.00
+cf = _load_config()
+cost = cf["fiat_cost_per_trade"]
 table = "arb_ops"
 con = sqlite3.connect("db/kucoin.db")
 cur = con.cursor()

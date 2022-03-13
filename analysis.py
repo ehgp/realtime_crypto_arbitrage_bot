@@ -94,20 +94,53 @@ def find_tri_arb_ops():
 
     arb_op.dropna(inplace=True)
 
+    """
+    ::: NOTES :::
+    =============
+    EX: left_x_right
+    Want left = 1/Ask
+    Want right = Bid
+    FORWARD ARBITRAGE (EX: ETHBTC) -> a = USDT, b = ETH, c = BTC
+    ========================================================================
+    # 1. buy BTCUSDT   - ask  <- pay for lowest asking price (faster)
+    # 2. buy ETHBTC    - ask  <- pay for lowest asking price (faster)
+    # 3. sell ETHUSDT  - bid  <- sell to top bid price (faster)
+    REVERSE ARBITRAGE (EX: ETHBTC) -> a = USDT, b = ETH, c = BTC
+    ========================================================================
+    # 1. buy ETHUSDT   - ask  <- pay for lowest asking price (faster)
+    # 2. sell ETHBTC   - bid  <- sell to top bid price (faster)
+    # 3. sell BTCUSDT  - bid  <- sell to top bid price (faster)
+    """
+
     arb_op["fwd_arb"] = (
-        (arb_op["ba_bstb"] * 1.001)
+        (1 / arb_op["ca_bsta"] * 1.001)
         * (1 / (arb_op["bc_bsta"] * 1.001))
-        * (1 / (arb_op["ca_bsta"] * 1.001))
+        * (arb_op["ba_bstb"] * 1.001)
         - 1
     ) * 100
     arb_op["rev_arb"] = (
-        arb_op["bc_bstb"]
+        (1 / (arb_op["ba_bsta"] * 1.001))
+        * arb_op["bc_bstb"]
         * 1.001
         * arb_op["ca_bstb"]
         * 1.001
-        * (1 / (arb_op["ba_bsta"] * 1.001))
         - 1
     ) * 100
+
+    # arb_op["fwd_arb"] = (
+    #     (arb_op["ba_bstb"] * 1.001)
+    #     * (1 / (arb_op["bc_bsta"] * 1.001))
+    #     * (1 / (arb_op["ca_bsta"] * 1.001))
+    #     - 1
+    # ) * 100
+    # arb_op["rev_arb"] = (
+    #     arb_op["bc_bstb"]
+    #     * 1.001
+    #     * arb_op["ca_bstb"]
+    #     * 1.001
+    #     * (1 / (arb_op["ba_bsta"] * 1.001))
+    #     - 1
+    # ) * 100
 
     arb_op.loc[~(arb_op["fwd_arb"] > 0.1), "fwd_arb"] = np.nan
     arb_op.loc[~(arb_op["rev_arb"] > 0.1), "rev_arb"] = np.nan
