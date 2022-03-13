@@ -12,8 +12,8 @@ pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
 
 
-def execute_triangle_arbitrage():
-    """Execute Triangle Arbitrage."""
+def find_tri_arb_ops():
+    """Find Triangle Arbitrage Opportunities."""
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
     df = pd.read_sql_query("SELECT * FROM tickers", con)
@@ -115,8 +115,10 @@ def execute_triangle_arbitrage():
     arb_op.dropna(subset=["fwd_arb", "rev_arb"], how="all", inplace=True)
     arb_op.drop_duplicates(inplace=True)
     table = "arb_ops"
-    create_table = """CREATE TABLE IF NOT EXISTS arb_ops
-                    (a text, b text,  c text, ba_bstb text, ba_bsta text, bc_bstb text, bc_bsta text, ca_bstb text, ca_bsta text, fwd_arb text, rev_arb text, UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE
+    create_table = """CREATE TABLE IF NOT EXISTS arb_ops \
+(a text, b text,  c text, ba_bstb text, ba_bsta text, bc_bstb text, \
+bc_bsta text, ca_bstb text, ca_bsta text, fwd_arb text, rev_arb text, attempted text, \
+UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE
                     )"""
     print("Creating Table arb_ops")
     cur.execute(create_table)
@@ -124,13 +126,19 @@ def execute_triangle_arbitrage():
     for i, row in arb_op.iterrows():
         placeholders = ",".join('"' + str(e) + '"' for e in row)
         columns = ", ".join(arb_op.columns)
-        insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
+        insert_table = "INSERT INTO %s ( %s, %s ) VALUES ( %s, %s )" % (
             table,
             columns,
+            "attempted",
             placeholders,
+            '"N"',
         )
         print("Inserting a row of data")
         cur.execute(insert_table)
         con.commit()
     con.close()
     arb_op.to_csv("arbitrage_ops.csv", index=False)
+
+
+if __name__ == "__main__":
+    find_tri_arb_ops()

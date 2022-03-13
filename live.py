@@ -8,7 +8,7 @@ from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 import datetime as dt
 import re
-from analysis import execute_triangle_arbitrage
+from analysis import find_tri_arb_ops
 
 
 def _load_config():
@@ -34,8 +34,6 @@ api_key = cf["KUCOIN_YOUR_API_KEY"]
 api_secret = cf["KUCOIN_YOUR_SECRET"]
 api_passphrase = cf["KUCOIN_YOUR_PASS"]
 
-# GET /api/v1/trade-fees?symbols=BTC-USDT,KCS-USDT
-
 
 async def main():
     """Execute Main."""
@@ -53,8 +51,10 @@ async def main():
             placeholders[9] = dt.datetime.fromtimestamp(placeholders[9] / 1e3)
             placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
             columns = ", ".join(msg["data"].keys())
-            create_table = """CREATE TABLE IF NOT EXISTS tickers
-                         (baseTick text, quoteTick text,  bestAsk text, bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, size text, time text
+            create_table = """CREATE TABLE IF NOT EXISTS tickers \
+(baseTick text, quoteTick text,  bestAsk text, \
+bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, \
+size text, time text
                          )"""
             print("Creating Table tickers")
             cur.execute(create_table)
@@ -70,7 +70,7 @@ async def main():
             cur.execute(insert_table)
             con.commit()
             con.close()
-            execute_triangle_arbitrage()
+            find_tri_arb_ops()
 
     # is public
     client = WsToken()
@@ -84,6 +84,7 @@ async def main():
     # await ws_client.subscribe("/market/ticker:ETH-USDT")
     await ws_client.subscribe("/market/ticker:all")
     # await ws_client.subscribe("/account/balance")
+    # await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
         print("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)

@@ -1,0 +1,2 @@
+-- SQLite
+drop table tickers;

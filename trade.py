@@ -1,32 +1,86 @@
 """Trade."""
-from kucoin import client
 import pandas as pd
+from kucoin import client
+import sqlite3
 
-# pandas controls on how much data to see
-pd.set_option("display.max_rows", None)
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", None)
-pd.set_option("display.max_colwidth", None)
 
-df = pd.read_csv("arbitrage_ops.csv")
+def execute_fwd_tri_arbitrage():
+    """Execute Forward Triangle Arbitrage."""
+    size = str(cost / row["ba_bstb"])  # bc_bsta,ca_bsta
+    # order_ba = client.create_limit_order(
+    #     symbol=f"{row['b']}-{row['a']}",
+    #     side="buy",
+    #     price=str(row["ba_bstb"]),
+    #     size=size,
+    #     remark="test",
+    #     stp="CN",
+    #     trade_type="TRADE",
+    #     time_in_force="FOK",
+    # )
+    return None
+
+
+def execute_rev_tri_arbitrage():
+    """Execute Reverse Triangle Arbitrage."""
+    size = str(cost / row["bc_bstb"])  # ca_bstb,ba_bsta
+    return None
+
+
+cost = 50.00
+table = "arb_ops"
+con = sqlite3.connect("db/kucoin.db")
+cur = con.cursor()
+df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+df = df.astype(
+    {
+        "a": "str",
+        "b": "str",
+        "c": "str",
+        "ba_bstb": "float",
+        "ba_bsta": "float",
+        "bc_bstb": "float",
+        "bc_bsta": "float",
+        "ca_bstb": "float",
+        "ca_bsta": "float",
+        "fwd_arb": "float",
+        "rev_arb": "float",
+        "attempted": "str",
+    }
+)
+df = df[df["attempted"] == "N"]
+
 for i, row in df.iterrows():
+    if row["fwd_arb"] > row["rev_arb"]:
+        execute_fwd_tri_arbitrage()
+        update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
+            table,
+            "attempted",
+            "Y",
+            "fwd_arb",
+            row["fwd_arb"],
+        )
+        print("Updating a row of data")
+        cur.execute(update_table)
+        con.commit()
+        con.close()
+    elif row["rev_arb"] > row["fwd_arb"]:
+        execute_rev_tri_arbitrage()
+        update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
+            table,
+            "attempted",
+            "Y",
+            "rev_arb",
+            row["rev_arb"],
+        )
+        print("Updating a row of data")
+        cur.execute(update_table)
+        con.commit()
+        con.close()
+    else:
+        print("Opportunities yield same profit percentage, attempting fwd instead")
+        execute_fwd_tri_arbitrage()
 
-    cost = 50.00
-    size = str(cost / df["ba_bstb"])
-
-    order_ba = client.create_limit_order(
-        symbol=f"{df['b']}-{df['a']}",
-        side="buy",
-        price=str(df["ba_bstb"]),
-        size=size,
-        remark="test",
-        stp="CN",
-        trade_type="TRADE",
-        time_in_force="FOK",
-    )
-
-
-# stop=,stop_price=,cancel_after=,)
+    # stop=,stop_price=,cancel_after=,)
 
 # :param symbol: Name of symbol e.g. KCS-BTC
 # :type symbol: string
