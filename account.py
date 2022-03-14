@@ -104,10 +104,7 @@ async def main():
     # client = WsToken()
     # is private
     client = WsToken(
-        key=api_key,
-        secret=api_secret,
-        passphrase=api_passphrase,
-        is_sandbox=True
+        key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     )
 
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=True)
