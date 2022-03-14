@@ -1,11 +1,10 @@
 """Account Info."""
-from socket import MSG_CMSG_CLOEXEC
 import pandas as pd
-import asyncio
 from codecs import lookup
 import sqlite3
 import os
 import yaml
+import asyncio
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 import datetime as dt
@@ -104,12 +103,14 @@ async def main():
     # is public
     # client = WsToken()
     # is private
-    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False, url='')
-    # is sandbox
     client = WsToken(
-        key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
+        key=api_key,
+        secret=api_secret,
+        passphrase=api_passphrase,
+        is_sandbox=True
     )
-    ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=False)
+
+    ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=True)
     # await ws_client.subscribe("/market/ticker:ETH-USDT")
     # await ws_client.subscribe("/market/ticker:all")
     await ws_client.subscribe("/account/balance")

@@ -2,7 +2,7 @@
 import os
 import yaml
 import pandas as pd
-from kucoin import client
+from kucoin.client import Trade
 import sqlite3
 
 
@@ -23,115 +23,275 @@ def _load_config():
     return config_defs
 
 
-def execute_fwd_tri_arbitrage():
-    """Execute Forward Triangle Arbitrage."""
-    size = str(cost / row["ba_bstb"])  # bc_bsta,ca_bsta
-    # order_ba = client.create_limit_order(
-    #     symbol=f"{row['b']}-{row['a']}",
-    #     side="buy",
-    #     price=str(row["ba_bstb"]),
-    #     size=size,
-    #     remark="test",
-    #     stp="CN",
-    #     trade_type="TRADE",
-    #     time_in_force="FOK",
-    # )
-    return None
-
-
-def execute_rev_tri_arbitrage():
-    """Execute Reverse Triangle Arbitrage."""
-    size = str(cost / row["bc_bstb"])  # ca_bstb,ba_bsta
-    return None
-
-cf = _load_config()
-cost = cf["fiat_cost_per_trade"]
-table = "arb_ops"
-con = sqlite3.connect("db/kucoin.db")
-cur = con.cursor()
-df = pd.read_sql_query(f"SELECT * FROM {table}", con)
-df = df.astype(
-    {
-        "a": "str",
-        "b": "str",
-        "c": "str",
-        "ba_bstb": "float",
-        "ba_bsta": "float",
-        "bc_bstb": "float",
-        "bc_bsta": "float",
-        "ca_bstb": "float",
-        "ca_bsta": "float",
-        "fwd_arb": "float",
-        "rev_arb": "float",
-        "attempted": "str",
-    }
-)
-df = df[df["attempted"] == "N"]
-
-for i, row in df.iterrows():
-    if row["fwd_arb"] > row["rev_arb"]:
-        execute_fwd_tri_arbitrage()
-        update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
-            table,
-            "attempted",
-            "Y",
-            "fwd_arb",
-            row["fwd_arb"],
-        )
-        print("Updating a row of data")
-        cur.execute(update_table)
-        con.commit()
-        con.close()
-    elif row["rev_arb"] > row["fwd_arb"]:
-        execute_rev_tri_arbitrage()
-        update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
-            table,
-            "attempted",
-            "Y",
-            "rev_arb",
-            row["rev_arb"],
-        )
-        print("Updating a row of data")
-        cur.execute(update_table)
-        con.commit()
-        con.close()
+def order_handling(order):
+    """Check if order went through."""
+    table = "trade_info"
+    con = sqlite3.connect("db/kucoin.db")
+    df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+    status_order = df[df["orderId"] == order["orderId"]]["type"]
+    if status_order is None:
+        order_handling(order)
+    elif status_order == "filled":
+        return True
+    elif status_order == "cancelled":
+        return False
     else:
-        print("Opportunities yield same profit percentage, attempting fwd instead")
-        execute_fwd_tri_arbitrage()
+        order_handling(order)
 
-    # stop=,stop_price=,cancel_after=,)
 
-# :param symbol: Name of symbol e.g. KCS-BTC
-# :type symbol: string
-# :param side: buy or sell
-# :type side: string
-# :param price: Name of coin
-# :type price: string
-# :param size: Amount of base currency to buy or sell
-# :type size: string
-# :param client_oid: (optional) Unique order_id  default flat_uuid()
-# :type client_oid: string
-# :param remark: (optional) remark for the order, max 100 utf8 characters
-# :type remark: string
-# :param stp: (optional) self trade protection CN, CO, CB or DC (default is None)
-# :type stp: string
-# :param trade_type: (optional) The type of trading : TRADE（Spot Trade）, MARGIN_TRADE (Margin Trade). Default is TRADE
-# :type trade_type: string
-# :param time_in_force: (optional) GTC, GTT, IOC, or FOK (default is GTC)
-# :type time_in_force: string
-# :param stop: (optional) stop type loss or entry - requires stop_price
-# :type stop: string
-# :param stop_price: (optional) trigger price for stop order
-# :type stop_price: string
-# :param cancel_after: (optional) number of seconds to cancel the order if not filled
-#     required time_in_force to be GTT
-# :type cancel_after: string
-# :param post_only: (optional) indicates that the order should only make liquidity. If any part of
-#     the order results in taking liquidity, the order will be rejected and no part of it will execute.
-# :type post_only: bool
-# :param hidden: (optional) Orders not displayed in order book
-# :type hidden: bool
-# :param iceberg:  (optional) Only visible portion of the order is displayed in the order book
-# :type iceberg: bool
-# :param visible_size: (optional) The maximum visible size of an iceberg order
-# :type visible_size: bool
+def execute_fwd_tri_arbitrage(client, row, cost):
+    """Execute Forward Triangle Arbitrage."""
+    size = cost / row["ca_bsta"]  # bc_bsta,ba_bstb
+    if size < row["ca_bstasize"]:
+        order_ca = client.create_limit_order(
+            symbol=f"{row['c']}-{row['a']}",
+            side="buy",
+            price=str(row["ca_bsta"]),
+            size=str(size),
+            remark="test",
+            stp="CN",
+            trade_type="TRADE",
+            time_in_force="FOK",
+        )
+    else:
+        size = row["ca_bstasize"]
+        order_ca = client.create_limit_order(
+            symbol=f"{row['c']}-{row['a']}",
+            side="buy",
+            price=str(row["ca_bsta"]),
+            size=str(size),
+            remark="test",
+            stp="CN",
+            trade_type="TRADE",
+            time_in_force="FOK",
+        )
+    if order_handling(order_ca) is True:
+        size = (row["ca_bsta"] * size) / row["bc_bsta"]  # bc_bsta,ba_bstb
+        if size < row["bc_bstasize"]:
+            order_bc = client.create_limit_order(
+                symbol=f"{row['b']}-{row['c']}",
+                side="buy",
+                price=str(row["bc_bsta"]),
+                size=str(size),
+                remark="test",
+                stp="CN",
+                trade_type="TRADE",
+                time_in_force="FOK",
+            )
+        else:
+            size = row["bc_bstasize"]
+            order_bc = client.create_limit_order(
+                symbol=f"{row['b']}-{row['c']}",
+                side="buy",
+                price=str(row["bc_bsta"]),
+                size=str(size),
+                remark="test",
+                stp="CN",
+                trade_type="TRADE",
+                time_in_force="FOK",
+            )
+        if order_handling(order_bc) is True:
+            size = (row["bc_bsta"] * size) / row["ba_bstb"]  # bc_bsta,ba_bstb
+            if size < row["ba_bstbsize"]:
+                order_bc = client.create_limit_order(
+                    symbol=f"{row['b']}-{row['a']}",
+                    side="sell",
+                    price=str(row["ba_bstb"]),
+                    size=size,
+                    remark="test",
+                    stp="CN",
+                    trade_type="TRADE",
+                    time_in_force="FOK",
+                )
+            else:
+                size = row["ba_bstbsize"]
+                order_bc = client.create_limit_order(
+                    symbol=f"{row['b']}-{row['a']}",
+                    side="sell",
+                    price=str(row["ba_bstb"]),
+                    size=size,
+                    remark="test",
+                    stp="CN",
+                    trade_type="TRADE",
+                    time_in_force="FOK",
+                )
+            if order_handling(order_bc) is True:
+                print("Forward Triangle Arbitrage successful")
+                return True
+            else:
+                print("Order 3 not filled successfully, cancelling arbitrage op")
+                return False
+        else:
+            print("Order 2 not filled successfully, cancelling arbitrage op")
+            return False
+    else:
+        print("Order 1 not filled successfully, cancelling arbitrage op")
+        return False
+
+
+def execute_rev_tri_arbitrage(client, row, cost):
+    """Execute Reverse Triangle Arbitrage."""
+    size = cost / row["ba_bsta"]  # bc_bstb,ca_bstb
+    if size < row["ba_bstasize"]:
+        order_ca = client.create_limit_order(
+            symbol=f"{row['b']}-{row['a']}",
+            side="buy",
+            price=str(row["ba_bsta"]),
+            size=str(size),
+            remark="test",
+            stp="CN",
+            trade_type="TRADE",
+            time_in_force="FOK",
+        )
+    else:
+        size = row["ba_bstasize"]
+        order_ca = client.create_limit_order(
+            symbol=f"{row['b']}-{row['a']}",
+            side="buy",
+            price=str(row["ba_bsta"]),
+            size=str(size),
+            remark="test",
+            stp="CN",
+            trade_type="TRADE",
+            time_in_force="FOK",
+        )
+    if order_handling(order_ca) is True:
+        size = (row["ba_bsta"] * size) / row["bc_bstb"]  # bc_bstb,ca_bstb
+        if size < row["bc_bstbsize"]:
+            order_bc = client.create_limit_order(
+                symbol=f"{row['b']}-{row['c']}",
+                side="sell",
+                price=str(row["bc_bstb"]),
+                size=str(size),
+                remark="test",
+                stp="CN",
+                trade_type="TRADE",
+                time_in_force="FOK",
+            )
+        else:
+            size = row["bc_bstbsize"]
+            order_bc = client.create_limit_order(
+                symbol=f"{row['b']}-{row['c']}",
+                side="sell",
+                price=str(row["bc_bstb"]),
+                size=str(size),
+                remark="test",
+                stp="CN",
+                trade_type="TRADE",
+                time_in_force="FOK",
+            )
+        if order_handling(order_bc) is True:
+            size = (row["bc_bstb"] * size) / row["ca_bstb"]  # bc_bstb,ca_bstb
+            if size < row["ca_bstbsize"]:
+                order_bc = client.create_limit_order(
+                    symbol=f"{row['c']}-{row['a']}",
+                    side="sell",
+                    price=str(row["ca_bstb"]),
+                    size=size,
+                    remark="test",
+                    stp="CN",
+                    trade_type="TRADE",
+                    time_in_force="FOK",
+                )
+            else:
+                size = row["ca_bstbsize"]
+                order_bc = client.create_limit_order(
+                    symbol=f"{row['c']}-{row['a']}",
+                    side="sell",
+                    price=str(row["ca_bstb"]),
+                    size=size,
+                    remark="test",
+                    stp="CN",
+                    trade_type="TRADE",
+                    time_in_force="FOK",
+                )
+            if order_handling(order_bc) is True:
+                print("Reverse Triangle Arbitrage successful")
+                return True
+            else:
+                print("Order 3 not filled successfully, cancelling arbitrage op")
+                return False
+        else:
+            print("Order 2 not filled successfully, cancelling arbitrage op")
+            return False
+    else:
+        print("Order 1 not filled successfully, cancelling arbitrage op")
+        return False
+
+
+def execute_triangular_arbitrage():
+    """Execute Triangular Arbitrage."""
+    cf = _load_config()
+    cost = cf["fiat_cost_per_trade"]
+    api_key = cf["KUCOIN_YOUR_API_KEY"]
+    api_secret = cf["KUCOIN_YOUR_SECRET"]
+    api_passphrase = cf["KUCOIN_YOUR_PASS"]
+    client = Trade(
+        key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
+    )
+    table = "arb_ops"
+    con = sqlite3.connect("db/kucoin.db")
+    cur = con.cursor()
+    df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+    df = df.astype(
+        {
+            "a": "str",
+            "b": "str",
+            "c": "str",
+            "ba_bstb": "float",
+            "ba_bsta": "float",
+            "ba_bstbsize": "float",
+            "ba_bstasize": "float",
+            "bc_bstb": "float",
+            "bc_bsta": "float",
+            "bc_bstbsize": "float",
+            "bc_bstasize": "float",
+            "ca_bstb": "float",
+            "ca_bsta": "float",
+            "ca_bstbsize": "float",
+            "ca_bstasize": "float",
+            "fwd_arb": "float",
+            "rev_arb": "float",
+            "attempted": "str",
+        }
+    )
+    df = df[df["attempted"] == "N"]
+    df.fillna(0, inplace=True)
+    for i, row in df.iterrows():
+        print(
+            "Execute triangular arbitrage for trio: %s,%s,%s"
+            % (row["a"], row["b"], row["c"])
+        )
+        if row["fwd_arb"] > row["rev_arb"]:
+            execute_fwd_tri_arbitrage(client, row, cost)
+            update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
+                table,
+                "attempted",
+                "Y",
+                "fwd_arb",
+                row["fwd_arb"],
+            )
+            print("Updating a row of data")
+            cur.execute(update_table)
+            con.commit()
+            con.close()
+        elif row["rev_arb"] > row["fwd_arb"]:
+            execute_rev_tri_arbitrage(client, row, cost)
+            update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
+                table,
+                "attempted",
+                "Y",
+                "rev_arb",
+                row["rev_arb"],
+            )
+            print("Updating a row of data")
+            cur.execute(update_table)
+            con.commit()
+            con.close()
+        else:
+            print("Opportunities yield same profit percentage, attempting fwd instead")
+            execute_fwd_tri_arbitrage(client, row, cost)
+
+
+if __name__ == "__main__":
+    execute_triangular_arbitrage()

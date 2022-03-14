@@ -61,8 +61,21 @@ def find_tri_arb_ops():
         how="left",
     )["bestAsk"]
 
+    arb_op["ba_bstbsize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestBidSize"]
+
+    arb_op["ba_bstasize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestAskSize"]
+
     arb_op.rename(columns={"baseTick": "b", "quoteTick": "a"}, inplace=True)
     arb_op.rename(columns={"b": "baseTick", "c": "quoteTick"}, inplace=True)
+
     arb_op["bc_bstb"] = arb_op.merge(
         df,
         on=["baseTick", "quoteTick"],
@@ -75,9 +88,21 @@ def find_tri_arb_ops():
         how="left",
     )["bestAsk"]
 
-    arb_op.rename(columns={"baseTick": "b", "quoteTick": "c"}, inplace=True)
+    arb_op["bc_bstbsize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestBidSize"]
 
+    arb_op["bc_bstasize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestAskSize"]
+
+    arb_op.rename(columns={"baseTick": "b", "quoteTick": "c"}, inplace=True)
     arb_op.rename(columns={"c": "baseTick", "a": "quoteTick"}, inplace=True)
+
     arb_op["ca_bstb"] = arb_op.merge(
         df,
         on=["baseTick", "quoteTick"],
@@ -89,6 +114,18 @@ def find_tri_arb_ops():
         on=["baseTick", "quoteTick"],
         how="left",
     )["bestAsk"]
+
+    arb_op["ca_bstbsize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestBidSize"]
+
+    arb_op["ca_bstasize"] = arb_op.merge(
+        df,
+        on=["baseTick", "quoteTick"],
+        how="left",
+    )["bestAskSize"]
 
     arb_op.rename(columns={"baseTick": "c", "quoteTick": "a"}, inplace=True)
 
@@ -127,6 +164,7 @@ def find_tri_arb_ops():
         - 1
     ) * 100
 
+    # Traditional arbitrage
     # arb_op["fwd_arb"] = (
     #     (arb_op["ba_bstb"] * 1.001)
     #     * (1 / (arb_op["bc_bsta"] * 1.001))
@@ -149,10 +187,10 @@ def find_tri_arb_ops():
     arb_op.drop_duplicates(inplace=True)
     table = "arb_ops"
     create_table = """CREATE TABLE IF NOT EXISTS arb_ops \
-(a text, b text,  c text, ba_bstb text, ba_bsta text, bc_bstb text, \
-bc_bsta text, ca_bstb text, ca_bsta text, fwd_arb text, rev_arb text, attempted text, \
-UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE
-                    )"""
+(a text, b text,  c text, ba_bstb text, ba_bsta text, ba_bstbsize text, ba_bstasize text, bc_bstb text, \
+bc_bsta text, bc_bstbsize text, bc_bstasize text, ca_bstb text, ca_bsta text, ca_bstbsize text, ca_bstasize text, \
+fwd_arb text, rev_arb text, attempted text, \
+UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     print("Creating Table arb_ops")
     cur.execute(create_table)
     con.commit()

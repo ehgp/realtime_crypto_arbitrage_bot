@@ -1,14 +1,19 @@
 """Real Time Crypto Bot."""
 import asyncio
+from kucoin.client import WsToken
+from kucoin.ws_client import KucoinWsClient
 from codecs import lookup
 import sqlite3
 import os
 import yaml
-from kucoin.client import WsToken
-from kucoin.ws_client import KucoinWsClient
 import datetime as dt
 import re
 from analysis import find_tri_arb_ops
+from trade import execute_triangular_arbitrage
+
+"""Please note that the system will frozen the
+fees from the orders that entered the order book in advance. Read List Fills
+to learn more. Well that sucks."""
 
 
 def _load_config():
@@ -71,6 +76,7 @@ size text, time text
             con.commit()
             con.close()
             find_tri_arb_ops()
+            # execute_triangular_arbitrage()
 
     # is public
     client = WsToken()
