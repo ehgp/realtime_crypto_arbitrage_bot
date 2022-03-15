@@ -150,17 +150,15 @@ def find_tri_arb_ops():
     """
 
     arb_op["fwd_arb"] = (
-        (1 / arb_op["ca_bsta"] * 1.001)
+        (1 / (arb_op["ca_bsta"] * 1.001))
         * (1 / (arb_op["bc_bsta"] * 1.001))
         * (arb_op["ba_bstb"] * 1.001)
         - 1
     ) * 100
     arb_op["rev_arb"] = (
         (1 / (arb_op["ba_bsta"] * 1.001))
-        * arb_op["bc_bstb"]
-        * 1.001
-        * arb_op["ca_bstb"]
-        * 1.001
+        * (arb_op["bc_bstb"] * 1.001)
+        * (arb_op["ca_bstb"] * 1.001)
         - 1
     ) * 100
 
@@ -201,8 +199,10 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
             table,
             columns,
             "attempted",
+            "time",
             placeholders,
             '"N"',
+            f'"{dt.datetime()}"',
         )
         print("Inserting a row of data")
         cur.execute(insert_table)
