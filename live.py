@@ -10,10 +10,7 @@ import datetime as dt
 import re
 from analysis import find_tri_arb_ops
 from trade import execute_triangular_arbitrage
-
-"""Please note that the system will frozen the
-fees from the orders that entered the order book in advance. Read List Fills
-to learn more. Well that sucks."""
+from history import gimme_hist
 
 
 def _load_config():
@@ -23,12 +20,12 @@ def _load_config():
         yaml as a dictionary.
     """
     config_path = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(config_path, "creds.yaml")
+    config_path = os.path.join(config_path, "parameters.yaml")
     with open(config_path, "r") as config_file:
         config_defs = yaml.safe_load(config_file.read())
 
     if config_defs.values() is None:
-        raise ValueError("creds yaml file incomplete")
+        raise ValueError("parameters yaml file incomplete")
 
     return config_defs
 
@@ -77,6 +74,7 @@ size text, time text
             con.close()
             find_tri_arb_ops()
             # execute_triangular_arbitrage()
+            # gimme_hist()
 
     # is public
     client = WsToken()

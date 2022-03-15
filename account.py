@@ -18,12 +18,12 @@ def _load_config():
         yaml as a dictionary.
     """
     config_path = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(config_path, "creds.yaml")
+    config_path = os.path.join(config_path, "parameters.yaml")
     with open(config_path, "r") as config_file:
         config_defs = yaml.safe_load(config_file.read())
 
     if config_defs.values() is None:
-        raise ValueError("creds yaml file incomplete")
+        raise ValueError("parameters yaml file incomplete")
 
     return config_defs
 

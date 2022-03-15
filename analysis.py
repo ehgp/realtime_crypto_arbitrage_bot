@@ -187,7 +187,7 @@ def find_tri_arb_ops():
     create_table = """CREATE TABLE IF NOT EXISTS arb_ops \
 (a text, b text,  c text, ba_bstb text, ba_bsta text, ba_bstbsize text, ba_bstasize text, bc_bstb text, \
 bc_bsta text, bc_bstbsize text, bc_bstasize text, ca_bstb text, ca_bsta text, ca_bstbsize text, ca_bstasize text, \
-fwd_arb text, rev_arb text, attempted text, \
+fwd_arb text, rev_arb text, attempted text, time text, \
 UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     print("Creating Table arb_ops")
     cur.execute(create_table)
@@ -195,14 +195,14 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     for i, row in arb_op.iterrows():
         placeholders = ",".join('"' + str(e) + '"' for e in row)
         columns = ", ".join(arb_op.columns)
-        insert_table = "INSERT INTO %s ( %s, %s ) VALUES ( %s, %s )" % (
+        insert_table = "INSERT INTO %s ( %s, %s, %s ) VALUES ( %s, %s, %s )" % (
             table,
             columns,
             "attempted",
             "time",
             placeholders,
             '"N"',
-            f'"{dt.datetime()}"',
+            f'"{dt.datetime.now()}"',
         )
         print("Inserting a row of data")
         cur.execute(insert_table)

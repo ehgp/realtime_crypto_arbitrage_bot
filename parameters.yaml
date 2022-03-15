@@ -1,0 +1,8 @@
+KUCOIN_YOUR_API_KEY: ${KUCOIN_YOUR_API_KEY}
+KUCOIN_YOUR_SECRET: ${KUCOIN_YOUR_SECRET}
+KUCOIN_YOUR_PASS: ${KUCOIN_YOUR_PASS}
+fiat_cost_per_trade: 50
+url: "https://api.kucoin.com"
+start_date: "2022-03-10 10:00:00"
+end_date: "2022-03-10 10:05:00"
+kline_type: "1min"
