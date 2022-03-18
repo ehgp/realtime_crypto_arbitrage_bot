@@ -213,7 +213,6 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
 
 def find_bellman_ford_ops():
     """Find Bellman Ford Opportunities."""
-
     return None
 
 
