@@ -15,20 +15,20 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.8]
-
     steps:
-      - uses: actions/checkout@v2
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
           # Optional - x64 or x86 architecture, defaults to x64
           architecture: 'x64'
+
       # You can test your matrix by printing the current Python version
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
 
       - name: Install dependencies
+        uses: actions/checkout@v2
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8==3.9.0
@@ -55,19 +55,20 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.8]
-
     steps:
-      - uses: actions/checkout@v2
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
           # Optional - x64 or x86 architecture, defaults to x64
           architecture: 'x64'
+
       # You can test your matrix by printing the current Python version
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
+
       - name: unit test
+        uses: actions/checkout@v2
         run: |
           echo 'No Unit Test Found'
 
@@ -77,30 +78,33 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [3.8]
-
     steps:
-    - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
         # Optional - x64 or x86 architecture, defaults to x64
         architecture: 'x64'
+
       # You can test your matrix by printing the current Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
+
     - name: Sphinx Pages
+      uses: actions/checkout@v2
       run: |
         pip install -U sphinx --quiet
         pip install sphinx_rtd_theme --quiet
         pip install recommonmark --quiet
         pip install pyyaml --quiet
         sphinx-build -b html docs/source docs/build/html
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
         name: html-docs
         path: docs/build/html/
+
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/main'
