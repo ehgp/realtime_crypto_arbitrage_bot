@@ -211,5 +211,11 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     arb_op.to_csv("arbitrage_ops.csv", index=False)
 
 
+def find_bellman_ford_ops():
+    """Find Bellman Ford Opportunities."""
+
+    return None
+
+
 if __name__ == "__main__":
     find_tri_arb_ops()
