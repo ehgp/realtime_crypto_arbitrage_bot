@@ -19,6 +19,9 @@ actual implementation of ML model.
 account:
 Websockets real time account and trade implementation.
 
+## Documentation
+
+Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 ## Requirements
 
 * Python 3.7
