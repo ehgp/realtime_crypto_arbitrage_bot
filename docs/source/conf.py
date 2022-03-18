@@ -7,14 +7,13 @@
 # to make it absolute, like shown here.
 import os
 import sys
+import datetime as dt
 
 sys.path.insert(0, os.path.abspath("../.."))
 # # -- Project information -----------------------------------------------------
 project = "Data 606 Capstone"
 authors = "Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu"
-copyright = (
-    "2022 Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."
-)
+copyright = f"{dt.date.today().year} Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
 # -- General configuration ---------------------------------------------------
