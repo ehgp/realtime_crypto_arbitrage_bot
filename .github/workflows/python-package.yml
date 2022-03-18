@@ -16,6 +16,7 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -28,7 +29,6 @@ jobs:
         run: python -c "import sys; print(sys.version)"
 
       - name: Install dependencies
-        uses: actions/checkout@v2
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8==3.9.0
@@ -56,6 +56,7 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -68,7 +69,6 @@ jobs:
         run: python -c "import sys; print(sys.version)"
 
       - name: unit test
-        uses: actions/checkout@v2
         run: |
           echo 'No Unit Test Found'
 
@@ -79,6 +79,7 @@ jobs:
       matrix:
         python-version: [3.8]
     steps:
+    - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
@@ -91,7 +92,6 @@ jobs:
       run: python -c "import sys; print(sys.version)"
 
     - name: Sphinx Pages
-      uses: actions/checkout@v2
       run: |
         pip install -U sphinx --quiet
         pip install sphinx_rtd_theme --quiet
