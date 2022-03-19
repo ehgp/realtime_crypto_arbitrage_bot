@@ -7,10 +7,12 @@ import sqlite3
 import os
 import yaml
 import datetime as dt
-import re
 from analysis import find_tri_arb_ops
 from trade import execute_triangular_arbitrage
 from history import gimme_hist
+import logging
+import logging.config
+from pathlib import Path
 
 
 def _load_config():
@@ -30,6 +32,23 @@ def _load_config():
     return config_defs
 
 
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+
+
 cf = _load_config()
 
 api_key = cf["KUCOIN_YOUR_API_KEY"]
@@ -43,7 +62,7 @@ async def main():
     async def deal_msg(msg):
         """Message Handler."""
         if msg["topic"] == "/market/ticker:all":
-            print(f'got {msg["subject"]} tick:{msg["data"]}')
+            logger.info(f'got {msg["subject"]} tick:{msg["data"]}')
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "tickers"
@@ -58,7 +77,7 @@ async def main():
 bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, \
 size text, time text
                          )"""
-            print("Creating Table tickers")
+            logger.info("Creating Table tickers")
             cur.execute(create_table)
             con.commit()
             insert_table = "INSERT INTO %s ( %s, %s, %s ) VALUES ( %s )" % (
@@ -68,7 +87,7 @@ size text, time text
                 columns,
                 placeholders,
             )
-            print("Inserting a row of data")
+            logger.info("Inserting a row of data")
             cur.execute(insert_table)
             con.commit()
             con.close()
@@ -90,7 +109,7 @@ size text, time text
     # await ws_client.subscribe("/account/balance")
     # await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
-        print("sleeping to keep loop open")
+        logger.info("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)
 
 
@@ -99,5 +118,5 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
     except KeyboardInterrupt as e:
-        print(f"Closing Loop {e}")
+        logger.info(f"Closing Loop {e}")
         pass

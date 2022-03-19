@@ -8,6 +8,9 @@ import time
 import json
 import os
 import yaml
+import logging
+import logging.config
+from pathlib import Path
 
 
 def _load_config():
@@ -26,6 +29,22 @@ def _load_config():
 
     return config_defs
 
+
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
 
 cf = _load_config()
 
@@ -105,7 +124,7 @@ def gimme_hist():
                     ]
                 )
                 create_table = """CREATE TABLE IF NOT EXISTS historical (quoteTick text, baseTick text, start_time text, opening_price text, closing_price text, highest_price text, lowest_price text, transaction_amount text, transaction_volume text)"""
-                print("Creating Table historical")
+                logger.info("Creating Table historical")
                 cur.execute(create_table)
                 con.commit()
                 insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
@@ -113,12 +132,12 @@ def gimme_hist():
                     columns,
                     placeholders,
                 )
-                print("Inserting a row of data")
+                logger.info("Inserting a row of data")
                 cur.execute(insert_table)
                 con.commit()
                 con.close()
         except Exception as e:
-            print(f"Exception Error {e}")
+            logger.info(f"Exception Error {e}")
             pass
 
 

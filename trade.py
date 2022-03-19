@@ -4,6 +4,26 @@ import yaml
 import pandas as pd
 from kucoin.client import Trade
 import sqlite3
+import logging
+import logging.config
+from pathlib import Path
+import datetime as dt
+
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
 
 
 def _load_config():
@@ -116,16 +136,16 @@ def execute_fwd_tri_arbitrage(client, row, cost):
                     time_in_force="FOK",
                 )
             if order_handling(order_bc) is True:
-                print("Forward Triangle Arbitrage successful")
+                logger.info("Forward Triangle Arbitrage successful")
                 return True
             else:
-                print("Order 3 not filled successfully, cancelling arbitrage op")
+                logger.info("Order 3 not filled successfully, cancelling arbitrage op")
                 return False
         else:
-            print("Order 2 not filled successfully, cancelling arbitrage op")
+            logger.info("Order 2 not filled successfully, cancelling arbitrage op")
             return False
     else:
-        print("Order 1 not filled successfully, cancelling arbitrage op")
+        logger.info("Order 1 not filled successfully, cancelling arbitrage op")
         return False
 
 
@@ -206,16 +226,16 @@ def execute_rev_tri_arbitrage(client, row, cost):
                     time_in_force="FOK",
                 )
             if order_handling(order_bc) is True:
-                print("Reverse Triangle Arbitrage successful")
+                logger.info("Reverse Triangle Arbitrage successful")
                 return True
             else:
-                print("Order 3 not filled successfully, cancelling arbitrage op")
+                logger.info("Order 3 not filled successfully, cancelling arbitrage op")
                 return False
         else:
-            print("Order 2 not filled successfully, cancelling arbitrage op")
+            logger.info("Order 2 not filled successfully, cancelling arbitrage op")
             return False
     else:
-        print("Order 1 not filled successfully, cancelling arbitrage op")
+        logger.info("Order 1 not filled successfully, cancelling arbitrage op")
         return False
 
 
@@ -258,7 +278,7 @@ def execute_triangular_arbitrage():
     df = df[df["attempted"] == "N"]
     df.fillna(0, inplace=True)
     for i, row in df.iterrows():
-        print(
+        logger.info(
             "Execute triangular arbitrage for trio: %s,%s,%s"
             % (row["a"], row["b"], row["c"])
         )
@@ -271,7 +291,7 @@ def execute_triangular_arbitrage():
                 "fwd_arb",
                 row["fwd_arb"],
             )
-            print("Updating a row of data")
+            logger.info("Updating a row of data")
             cur.execute(update_table)
             con.commit()
             con.close()
@@ -284,12 +304,14 @@ def execute_triangular_arbitrage():
                 "rev_arb",
                 row["rev_arb"],
             )
-            print("Updating a row of data")
+            logger.info("Updating a row of data")
             cur.execute(update_table)
             con.commit()
             con.close()
         else:
-            print("Opportunities yield same profit percentage, attempting fwd instead")
+            logger.info(
+                "Opportunities yield same profit percentage, attempting fwd instead"
+            )
             execute_fwd_tri_arbitrage(client, row, cost)
 
 

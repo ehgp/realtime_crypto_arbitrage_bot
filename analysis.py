@@ -4,6 +4,28 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import datetime as dt
+import logging
+import logging.config
+from pathlib import Path
+import yaml
+import os
+
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+
 
 # pandas controls on how much data to see
 pd.set_option("display.max_rows", None)
@@ -189,7 +211,7 @@ def find_tri_arb_ops():
 bc_bsta text, bc_bstbsize text, bc_bstasize text, ca_bstb text, ca_bsta text, ca_bstbsize text, ca_bstasize text, \
 fwd_arb text, rev_arb text, attempted text, time text, \
 UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
-    print("Creating Table arb_ops")
+    logger.info("Creating Table arb_ops")
     cur.execute(create_table)
     con.commit()
     for i, row in arb_op.iterrows():
@@ -204,7 +226,7 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
             '"N"',
             f'"{dt.datetime.now()}"',
         )
-        print("Inserting a row of data")
+        logger.info("Inserting a row of data")
         cur.execute(insert_table)
         con.commit()
     con.close()
