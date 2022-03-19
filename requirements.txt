@@ -12,4 +12,4 @@ kucoin-python==1.0.11
 Sphinx==4.4.0
 sphinx-rtd-theme==1.0.0
 recommonmark==0.7.1
-networkx==2.7.1
+networkx==2.6.3
