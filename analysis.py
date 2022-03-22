@@ -1,4 +1,4 @@
-"""Do your Data Science here."""
+"""Could you do your Data Science Analysis here please."""
 
 import sqlite3
 import pandas as pd
@@ -233,9 +233,58 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     arb_op.to_csv("arbitrage_ops.csv", index=False)
 
 
-def find_bellman_ford_ops():
-    """Find Bellman Ford Opportunities."""
-    return None
+class TestSingleExchange(TestCase):
+    def test_load_exchange_graph(self):
+        currencies = ["BTC", "ETH", "USD", "LTC"]
+        tickers = {
+            "BTC/USD": {"bid": 5995, "ask": 6000, "bidVolume": 0.5, "askVolume": 0.9},
+            "ETH/BTC": {"bid": 0.069, "ask": 0.07, "bidVolume": 0.5, "askVolume": 21},
+            "ETH/USD": {"bid": 495, "ask": 500, "bidVolume": 30, "askVolume": 0.9},
+            "LTC/USD": {"bid": 81, "ask": 82, "bidVolume": 0.5, "askVolume": 0.9},
+            "LTC/BTC": {"bid": 0.121, "ask": 0.122, "bidVolume": 0.5, "askVolume": 0.9},
+            "LTC/ETH": {"bid": 90, "ask": 100, "bidVolume": 0.5, "askVolume": 0.9},
+        }
+        symbols = [symbol for symbol in tickers.keys()]
+        markets = {symbol: {"taker": 0.001} for symbol in symbols}
+        exchange = TestExchange(
+            name="a",
+            currencies=currencies,
+            tickers=tickers,
+            symbols=symbols,
+            markets=markets,
+        )
+
+        graph = asyncio.get_event_loop().run_until_complete(
+            load_exchange_graph(
+                exchange,
+                name=False,
+                fees=True,
+                suppress=[""],
+                depth=True,
+                tickers=tickers,
+            )
+        )
+
+        for symbol, quote_data in tickers.items():
+            base, quote = symbol.split("/")
+            self.assertEqual(
+                graph[base][quote]["weight"],
+                -math.log(quote_data["bid"] * (1 - markets[symbol]["taker"])),
+            )
+            self.assertEqual(
+                graph[base][quote]["depth"], -math.log(quote_data["bidVolume"])
+            )
+
+            self.assertEqual(
+                graph[quote][base]["weight"],
+                -math.log((1 - markets[symbol]["taker"]) / quote_data["ask"]),
+            )
+            self.assertEqual(
+                graph[quote][base]["depth"],
+                -math.log(quote_data["askVolume"] * quote_data["ask"]),
+            )
+
+            self.assertEqual(symbol, graph[base][quote]["market_name"])
 
 
 if __name__ == "__main__":
