@@ -9,6 +9,11 @@ import logging.config
 from pathlib import Path
 import yaml
 import os
+from bellmanford import (
+    load_exchange_graph,
+    bellman_ford_exec,
+)
+from utils import print_profit_opportunity_for_path
 
 # Logging
 path = Path(os.getcwd())
@@ -32,6 +37,26 @@ pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
+
+
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
+
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(config_path, "parameters.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("parameters yaml file incomplete")
+
+    return config_defs
+
+
+cf = _load_config()
 
 
 def find_tri_arb_ops():
@@ -233,59 +258,18 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
     arb_op.to_csv("arbitrage_ops.csv", index=False)
 
 
-class TestSingleExchange(TestCase):
-    def test_load_exchange_graph(self):
-        currencies = ["BTC", "ETH", "USD", "LTC"]
-        tickers = {
-            "BTC/USD": {"bid": 5995, "ask": 6000, "bidVolume": 0.5, "askVolume": 0.9},
-            "ETH/BTC": {"bid": 0.069, "ask": 0.07, "bidVolume": 0.5, "askVolume": 21},
-            "ETH/USD": {"bid": 495, "ask": 500, "bidVolume": 30, "askVolume": 0.9},
-            "LTC/USD": {"bid": 81, "ask": 82, "bidVolume": 0.5, "askVolume": 0.9},
-            "LTC/BTC": {"bid": 0.121, "ask": 0.122, "bidVolume": 0.5, "askVolume": 0.9},
-            "LTC/ETH": {"bid": 90, "ask": 100, "bidVolume": 0.5, "askVolume": 0.9},
-        }
-        symbols = [symbol for symbol in tickers.keys()]
-        markets = {symbol: {"taker": 0.001} for symbol in symbols}
-        exchange = TestExchange(
-            name="a",
-            currencies=currencies,
-            tickers=tickers,
-            symbols=symbols,
-            markets=markets,
+def bellman_ford_graph():
+    """Execute Bellman Ford Graph."""
+    graph = load_exchange_graph(cf["exchange"], fees=True)
+
+    paths = bellman_ford_exec(graph, depth=True)
+    for path, starting_amount in paths:
+        # Note that depth=True and starting_amount are set in this example
+        print_profit_opportunity_for_path(
+            graph, path, depth=True, starting_amount=starting_amount
         )
-
-        graph = asyncio.get_event_loop().run_until_complete(
-            load_exchange_graph(
-                exchange,
-                name=False,
-                fees=True,
-                suppress=[""],
-                depth=True,
-                tickers=tickers,
-            )
-        )
-
-        for symbol, quote_data in tickers.items():
-            base, quote = symbol.split("/")
-            self.assertEqual(
-                graph[base][quote]["weight"],
-                -math.log(quote_data["bid"] * (1 - markets[symbol]["taker"])),
-            )
-            self.assertEqual(
-                graph[base][quote]["depth"], -math.log(quote_data["bidVolume"])
-            )
-
-            self.assertEqual(
-                graph[quote][base]["weight"],
-                -math.log((1 - markets[symbol]["taker"]) / quote_data["ask"]),
-            )
-            self.assertEqual(
-                graph[quote][base]["depth"],
-                -math.log(quote_data["askVolume"] * quote_data["ask"]),
-            )
-
-            self.assertEqual(symbol, graph[base][quote]["market_name"])
 
 
 if __name__ == "__main__":
     find_tri_arb_ops()
+    bellman_ford_graph()

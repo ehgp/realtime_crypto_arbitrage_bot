@@ -1,6 +1,9 @@
+"""Misc handling of graph nodes."""
+
+
 def next_to_each_other(li: list, *args):
-    """
-    Tests if the elements in args are present in the list in the order that they are given
+    """Test if the elements in args are present in the list in the order that they are given.
+
     todo: is there an error if len(args) > len(li)?
     Examples
     --------
@@ -23,7 +26,5 @@ def next_to_each_other(li: list, *args):
 
 
 def last_index_in_list(li: list, element):
-    """
-    Thanks to https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list
-    """
+    """Thanks to https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list."""
     return len(li) - next(i for i, v in enumerate(reversed(li), 1) if v == element)

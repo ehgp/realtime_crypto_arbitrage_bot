@@ -9,6 +9,15 @@ import yaml
 import os
 import datetime as dt
 
+__all__ = [
+    "NegativeWeightFinder",
+    "NegativeWeightDepthFinder",
+    "bellman_ford_exec",
+    "calculate_profit_ratio_for_path",
+    "get_starting_volume",
+]
+
+
 # Logging
 path = Path(os.getcwd())
 Path("log").mkdir(parents=True, exist_ok=True)
@@ -197,7 +206,7 @@ class NegativeWeightDepthFinder(NegativeWeightFinder):
             arbitrage_loop.insert(0, prior_node)
 
 
-def bellman_ford(graph, source="BTC", unique_paths=True, depth=False):
+def bellman_ford_exec(graph, source="BTC", unique_paths=True, depth=False):
     """Look at the docstring of the bellman_ford method in the NegativeWeightFinder class.
 
     (This is a static wrapper function.)
@@ -209,14 +218,6 @@ def bellman_ford(graph, source="BTC", unique_paths=True, depth=False):
         return NegativeWeightDepthFinder(graph).bellman_ford(source, unique_paths)
     else:
         return NegativeWeightFinder(graph).bellman_ford(source, unique_paths)
-
-
-async def find_opportunities_on_exchange(
-    exchange_name, source="BTC", unique_paths=True, depth=False
-):
-    """Find Opportunities on Exchange."""
-    graph = await load_exchange_graph(exchange_name, source, unique_paths, depth)
-    return bellman_ford(graph, source, unique_paths, depth)
 
 
 def get_starting_volume(graph, path):

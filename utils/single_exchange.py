@@ -1,8 +1,6 @@
-import asyncio
+"""Single Exchange Graph."""
 import math
 import networkx as nx
-
-# import ccxt.async_support as ccxt
 import datetime
 import logging.config
 import logging
@@ -27,124 +25,11 @@ with open(log_config, "r") as log_file:
     logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
 
-__all__ = [
-    "FeesNotAvailable",
-    "create_exchange_graph",
-    "load_exchange_graph",
-]
+__all__ = ["load_exchange_graph"]
 
 
-class FeesNotAvailable(Exception):
-    pass
-
-
-def create_exchange_graph(exchange: ccxt.Exchange):
-    """
-    Returns a simple graph representing exchange. Each edge represents a market.
-
-    exchange.load_markets() must have been called. Will throw a ccxt error if it has not.
-    """
-    graph = nx.Graph()
-    for market_name in exchange.symbols:
-        try:
-            base_currency, quote_currency = market_name.split("/")
-        # if ccxt returns a market in incorrect format (e.g FX_BTC_JPY on BitFlyer)
-        except ValueError:
-            continue
-
-        graph.add_edge(base_currency, quote_currency, market_name=market_name)
-
-    return graph
-
-
-async def load_exchange_graph(
-    exchange, name=True, fees=True, suppress=None, depth=False, tickers=None
-) -> nx.DiGraph:
-    """
-    Returns a networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
-    edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
-    available at the price represented by the 'weight' attribute of each edge.
-    """
-    if suppress is None:
-        suppress = ["markets"]
-
-    if name:
-        exchange = getattr(ccxt, exchange)()
-
-    if tickers is None:
-        logger.info("Fetching tickers")
-        tickers = await exchange.fetch_tickers()
-        logger.info("Fetched tickers")
-
-    market_count = len(tickers)
-    logger.info("Loading exchange graph", marketCount=market_count)
-
-    logger.debug("Initializing empty graph with exchange_name and timestamp attributes")
-    graph = nx.DiGraph()
-
-    # todo: get exchange's server time?
-    graph.graph["exchange_name"] = exchange.id
-    graph.graph["datetime"] = datetime.datetime.now(tz=datetime.timezone.utc)
-    logger.debug("Initialized empty graph with exchange_name and timestamp attributes")
-
-    async def add_edges():
-        tasks = [
-            _add_weighted_edge_to_graph(
-                exchange,
-                market_name,
-                graph,
-                log=True,
-                fees=fees,
-                suppress=suppress,
-                ticker=ticker,
-                depth=depth,
-            )
-            for market_name, ticker in tickers.items()
-        ]
-        await asyncio.wait(tasks)
-
-    # if fees:
-    #     for i in range(20):
-    #         try:
-    #             logger.info('Loading fees', iteration=i)
-    #             # must load markets to get fees
-    #             await exchange.load_markets()
-    #         except (ccxt.DDoSProtection, ccxt.RequestTimeout) as e:
-    #             if i == 19:
-    #                 logger.warning('Rate limited on final iteration, raising error', iteration=i)
-    #                 raise e
-    #             logger.warning('Rate limited when loading markets', iteration=i)
-    #             await asyncio.sleep(0.1)
-    #         except ccxt.ExchangeNotAvailable as e:
-    #             if i == 19:
-    #                 logger.warning('Cannot load markets due to ExchangeNotAvailable error, '
-    #                                 'graph will not be loaded.', iteration=i)
-    #                 raise e
-    #             logger.warning('Received ExchangeNotAvailable error when loading markets', iteration=i)
-    #         else:
-    #             break
-
-    #     logger.info('Loaded fees', iteration=i, marketCount=market_count)
-
-    #     currency_count = len(exchange.currencies)
-    #     logger.info('Adding data to graph', marketCount=market_count, currencyCount=currency_count)
-    #     await add_edges()
-    #     logger.info('Added data to graph', marketCount=market_count, currencyCount=currency_count)
-    # else:
-    logger.info("Adding data to graph", marketCount=market_count)
-    await add_edges()
-    logger.info("Added data to graph", marketCount=market_count)
-
-    logger.debug("Closing connection")
-    await exchange.close()
-    logger.debug("Closed connection")
-
-    logger.info("Loaded exchange graph")
-    return graph
-
-
-async def _add_weighted_edge_to_graph(
-    exchange: ccxt.Exchange,
+def _add_weighted_edge_to_graph(
+    exchange: str,
     market_name: str,
     graph: nx.DiGraph,
     log=True,
@@ -153,8 +38,8 @@ async def _add_weighted_edge_to_graph(
     ticker=None,
     depth=False,
 ):
-    """
-    todo: add global variable to bid_volume/ ask_volume to see if all tickers (for a given exchange) have value == None
+    """todo: add global variable to bid_volume/ ask_volume to see if all tickers (for a given exchange) have value == None.
+
     Returns a Networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
     edges).
     :param exchange: A ccxt Exchange object
@@ -170,40 +55,9 @@ async def _add_weighted_edge_to_graph(
     available at the price represented by the 'weight' attribute of each edge.
     """
     logger.debug("Adding edge to graph", market=market_name)
-    if ticker is None:
-        try:
-            logger.info("Fetching ticker", market=market_name)
-            ticker = await exchange.fetch_ticker(market_name)
-            logger.info("Fetched ticker", market=market_name)
-        # any error is solely because of fetch_ticker
-        except:
-            if "markets" not in suppress:
-                logger.warning(
-                    "Market is unavailable at this time. It will not be included in the graph.",
-                    market=market_name,
-                )
-            return
 
     if fees:
-        if "taker" in exchange.markets[market_name]:
-            # we always take the taker side because arbitrage depends on filling orders
-            # sell_fee_dict = exchange.calculate_fee(market_name, 'limit', 'sell', 0, 0, 'taker')
-            # buy_fee_dict = exchange.calculate_fee(market_name, 'limit', 'buy', 0, 0, 'taker')
-            fee = exchange.markets[market_name]["taker"]
-        else:
-            if "fees" not in suppress:
-                logger.warning(
-                    "The fees for {} have not yet been implemented into ccxt's uniform API.".format(
-                        exchange
-                    )
-                )
-                raise FeesNotAvailable(
-                    "Fees are not available for {} on {}".format(
-                        market_name, exchange.id
-                    )
-                )
-            else:
-                fee = 0.002
+        fee = cf["fee"]
     else:
         fee = 0
 
@@ -346,3 +200,107 @@ async def _add_weighted_edge_to_graph(
             )
 
     logger.debug("Added edge to graph", market=market_name)
+
+
+async def load_exchange_graph(
+    exchange, name=True, fees=True, suppress=None, depth=False, tickers=None
+) -> nx.DiGraph:
+    """
+    Returns a networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
+    edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    available at the price represented by the 'weight' attribute of each edge.
+    """
+    if suppress is None:
+        suppress = ["markets"]
+
+    if name:
+        exchange = getattr(ccxt, exchange)()
+
+    if tickers is None:
+        adapter.info("Fetching tickers")
+        tickers = await exchange.fetch_tickers()
+        adapter.info("Fetched tickers")
+
+    market_count = len(tickers)
+    adapter.info("Loading exchange graph", marketCount=market_count)
+
+    adapter.debug(
+        "Initializing empty graph with exchange_name and timestamp attributes"
+    )
+    graph = nx.DiGraph()
+
+    # todo: get exchange's server time?
+    graph.graph["exchange_name"] = exchange.id
+    graph.graph["datetime"] = datetime.datetime.now(tz=datetime.timezone.utc)
+    adapter.debug("Initialized empty graph with exchange_name and timestamp attributes")
+
+    async def add_edges():
+        tasks = [
+            _add_weighted_edge_to_graph(
+                exchange,
+                market_name,
+                graph,
+                log=True,
+                fees=fees,
+                suppress=suppress,
+                ticker=ticker,
+                depth=depth,
+            )
+            for market_name, ticker in tickers.items()
+        ]
+        await asyncio.wait(tasks)
+
+    if fees:
+        for i in range(20):
+            try:
+                adapter.info("Loading fees", iteration=i)
+                # must load markets to get fees
+                await exchange.load_markets()
+            except (ccxt.DDoSProtection, ccxt.RequestTimeout) as e:
+                if i == 19:
+                    adapter.warning(
+                        "Rate limited on final iteration, raising error", iteration=i
+                    )
+                    raise e
+                adapter.warning("Rate limited when loading markets", iteration=i)
+                await asyncio.sleep(0.1)
+            except ccxt.ExchangeNotAvailable as e:
+                if i == 19:
+                    adapter.warning(
+                        "Cannot load markets due to ExchangeNotAvailable error, "
+                        "graph will not be loaded.",
+                        iteration=i,
+                    )
+                    raise e
+                adapter.warning(
+                    "Received ExchangeNotAvailable error when loading markets",
+                    iteration=i,
+                )
+            else:
+                break
+
+        adapter.info("Loaded fees", iteration=i, marketCount=market_count)
+
+        currency_count = len(exchange.currencies)
+        adapter.info(
+            "Adding data to graph",
+            marketCount=market_count,
+            currencyCount=currency_count,
+        )
+        await add_edges()
+        adapter.info(
+            "Added data to graph",
+            marketCount=market_count,
+            currencyCount=currency_count,
+        )
+    else:
+        adapter.info("Adding data to graph", marketCount=market_count)
+        await add_edges()
+        adapter.info("Added data to graph", marketCount=market_count)
+
+    adapter.debug("Closing connection")
+    await exchange.close()
+    adapter.debug("Closed connection")
+
+    adapter.info("Loaded exchange graph")
+    return graph

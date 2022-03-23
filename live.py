@@ -7,7 +7,7 @@ import sqlite3
 import os
 import yaml
 import datetime as dt
-from analysis import find_tri_arb_ops
+from analysis import find_tri_arb_ops, bellman_ford_graph
 from trade import execute_triangular_arbitrage
 from history import gimme_hist
 import logging
@@ -92,6 +92,7 @@ size text, time text
             con.commit()
             con.close()
             find_tri_arb_ops()
+            bellman_ford_graph()
             # execute_triangular_arbitrage()
             # gimme_hist()
 
