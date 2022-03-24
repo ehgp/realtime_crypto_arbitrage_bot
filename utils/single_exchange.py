@@ -12,7 +12,7 @@ import datetime as dt
 # Logging
 path = Path(os.getcwd())
 Path("log").mkdir(parents=True, exist_ok=True)
-log_config = Path(path, "log_config.yaml")
+log_config = Path(os.path.abspath(path), "log_config.yaml")
 timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
 with open(log_config, "r") as log_file:
     config_dict = yaml.safe_load(log_file.read())
@@ -25,17 +25,40 @@ with open(log_config, "r") as log_file:
     logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
 
+
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
+
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(os.path.abspath(path), "parameters.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("parameters yaml file incomplete")
+
+    return config_defs
+
+
+cf = _load_config()
+
 __all__ = ["load_exchange_graph"]
 
 
 def _add_weighted_edge_to_graph(
-    exchange: str,
-    market_name: str,
     graph: nx.DiGraph,
-    log=True,
+    base: str,
+    quote: str,
+    bid: float,
+    ask: float,
+    bidsize: float,
+    asksize: float,
+    time_tick: datetime,
+    log=False,
     fees=False,
-    suppress=None,
-    ticker=None,
     depth=False,
 ):
     """todo: add global variable to bid_volume/ ask_volume to see if all tickers (for a given exchange) have value == None.
@@ -54,7 +77,8 @@ def _add_weighted_edge_to_graph(
     :param depth: If True, also adds an attribute 'depth' to each edge which represents the current volume of orders
     available at the price represented by the 'weight' attribute of each edge.
     """
-    logger.debug("Adding edge to graph", market=market_name)
+
+    logger.info("Adding edge to graph")
 
     if fees:
         fee = cf["fee"]
@@ -63,54 +87,15 @@ def _add_weighted_edge_to_graph(
 
     fee_scalar = 1 - fee
 
-    try:
-        bid_rate = ticker["bid"]
-        ask_rate = ticker["ask"]
-        if depth:
-            bid_volume = ticker["bidVolume"]
-            ask_volume = ticker["askVolume"]
-            if bid_volume is None:
-                logger.warning(
-                    "Market is unavailable because its bid volume was given as None. "
-                    "It will not be included in the graph.",
-                    market=market_name,
-                )
-                return
-            if ask_volume is None:
-                logger.warning(
-                    "Market is unavailable because its ask volume was given as None. "
-                    "It will not be included in the graph.",
-                    market=market_name,
-                )
-                return
-    # ask and bid == None if this market is non existent.
-    except TypeError:
-        logger.warning(
-            "Market is unavailable at this time. It will not be included in the graph.",
-            market=market_name,
-        )
-        return
+    bid_rate = bid
+    ask_rate = ask
+    if depth:
+        bid_volume = bidsize
+        ask_volume = asksize
 
-    # Exchanges give asks and bids as either 0 or None when they do not exist.
-    # todo: should we account for exchanges upon which an ask exists but a bid does not (and vice versa)? Would this
-    # cause bugs?
-    if ask_rate == 0 or bid_rate == 0 or ask_rate is None or bid_rate is None:
-        logger.warning(
-            "Market is unavailable at this time. It will not be included in the graph.",
-            market=market_name,
-        )
-        return
-    try:
-        base_currency, quote_currency = market_name.split("/")
-    # if ccxt returns a market in incorrect format (e.g FX_BTC_JPY on BitFlyer)
-    except ValueError:
-        if "markets" not in suppress:
-            logger.warning(
-                "Market is unavailable at this time due to incorrect formatting. "
-                "It will not be included in the graph.",
-                market=market_name,
-            )
-        return
+    base_currency = base
+    quote_currency = quote
+    market_name = f"{base}/{quote}"
 
     if log:
         if depth:
@@ -123,6 +108,7 @@ def _add_weighted_edge_to_graph(
                 trade_type="SELL",
                 fee=fee,
                 volume=bid_volume,
+                time_tick=time_tick,
                 no_fee_rate=bid_rate,
             )
             graph.add_edge(
@@ -134,6 +120,7 @@ def _add_weighted_edge_to_graph(
                 trade_type="BUY",
                 fee=fee,
                 volume=ask_volume,
+                time_tick=time_tick,
                 no_fee_rate=ask_rate,
             )
         else:
@@ -144,6 +131,7 @@ def _add_weighted_edge_to_graph(
                 market_name=market_name,
                 trade_type="SELL",
                 fee=fee,
+                time_tick=time_tick,
                 no_fee_rate=bid_rate,
             )
             graph.add_edge(
@@ -153,6 +141,7 @@ def _add_weighted_edge_to_graph(
                 market_name=market_name,
                 trade_type="BUY",
                 fee=fee,
+                time_tick=time_tick,
                 no_fee_rate=ask_rate,
             )
     else:
@@ -166,6 +155,7 @@ def _add_weighted_edge_to_graph(
                 trade_type="SELL",
                 fee=fee,
                 volume=bid_volume,
+                time_tick=time_tick,
                 no_fee_rate=bid_rate,
             )
             graph.add_edge(
@@ -177,6 +167,7 @@ def _add_weighted_edge_to_graph(
                 trade_type="BUY",
                 fee=fee,
                 volume=ask_volume,
+                time_tick=time_tick,
                 no_fee_rate=ask_rate,
             )
         else:
@@ -187,6 +178,7 @@ def _add_weighted_edge_to_graph(
                 market_name=market_name,
                 trade_type="SELL",
                 fee=fee,
+                time_tick=time_tick,
                 no_fee_rate=bid_rate,
             )
             graph.add_edge(
@@ -196,111 +188,42 @@ def _add_weighted_edge_to_graph(
                 market_name=market_name,
                 trade_type="BUY",
                 fee=fee,
+                time_tick=time_tick,
                 no_fee_rate=ask_rate,
             )
 
-    logger.debug("Added edge to graph", market=market_name)
+    logger.info("Added edge to graph", market=market_name)
 
 
-async def load_exchange_graph(
-    exchange, name=True, fees=True, suppress=None, depth=False, tickers=None
+def load_exchange_graph(
+    exchange, dataframe=None, fees=False, depth=False, log=False
 ) -> nx.DiGraph:
-    """
-    Returns a networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
-    edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    """Return a networkx DiGraph populated with the current ask and bid prices for each market in graph.
+
+    (represented by edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
     available at the price represented by the 'weight' attribute of each edge.
     """
-    if suppress is None:
-        suppress = ["markets"]
-
-    if name:
-        exchange = getattr(ccxt, exchange)()
-
-    if tickers is None:
-        adapter.info("Fetching tickers")
-        tickers = await exchange.fetch_tickers()
-        adapter.info("Fetched tickers")
-
-    market_count = len(tickers)
-    adapter.info("Loading exchange graph", marketCount=market_count)
-
-    adapter.debug(
-        "Initializing empty graph with exchange_name and timestamp attributes"
-    )
+    logger.info("Initializing empty graph with exchange_name attribute")
     graph = nx.DiGraph()
 
-    # todo: get exchange's server time?
-    graph.graph["exchange_name"] = exchange.id
-    graph.graph["datetime"] = datetime.datetime.now(tz=datetime.timezone.utc)
-    adapter.debug("Initialized empty graph with exchange_name and timestamp attributes")
+    graph.graph["exchange_name"] = exchange
 
-    async def add_edges():
-        tasks = [
-            _add_weighted_edge_to_graph(
-                exchange,
-                market_name,
-                graph,
-                log=True,
-                fees=fees,
-                suppress=suppress,
-                ticker=ticker,
-                depth=depth,
-            )
-            for market_name, ticker in tickers.items()
-        ]
-        await asyncio.wait(tasks)
+    logger.info("Initialized empty graph with exchange_name attribute")
 
-    if fees:
-        for i in range(20):
-            try:
-                adapter.info("Loading fees", iteration=i)
-                # must load markets to get fees
-                await exchange.load_markets()
-            except (ccxt.DDoSProtection, ccxt.RequestTimeout) as e:
-                if i == 19:
-                    adapter.warning(
-                        "Rate limited on final iteration, raising error", iteration=i
-                    )
-                    raise e
-                adapter.warning("Rate limited when loading markets", iteration=i)
-                await asyncio.sleep(0.1)
-            except ccxt.ExchangeNotAvailable as e:
-                if i == 19:
-                    adapter.warning(
-                        "Cannot load markets due to ExchangeNotAvailable error, "
-                        "graph will not be loaded.",
-                        iteration=i,
-                    )
-                    raise e
-                adapter.warning(
-                    "Received ExchangeNotAvailable error when loading markets",
-                    iteration=i,
-                )
-            else:
-                break
-
-        adapter.info("Loaded fees", iteration=i, marketCount=market_count)
-
-        currency_count = len(exchange.currencies)
-        adapter.info(
-            "Adding data to graph",
-            marketCount=market_count,
-            currencyCount=currency_count,
+    for idx, row in dataframe.iterrows():
+        _add_weighted_edge_to_graph(
+            graph=graph,
+            base=row["baseTick"],
+            quote=row["quoteTick"],
+            bid=row["bestBid"],
+            ask=row["bestAsk"],
+            bidsize=row["bestBidSize"],
+            asksize=row["bestAskSize"],
+            time_tick=row["time"],
+            log=log,
+            fees=fees,
+            depth=depth,
         )
-        await add_edges()
-        adapter.info(
-            "Added data to graph",
-            marketCount=market_count,
-            currencyCount=currency_count,
-        )
-    else:
-        adapter.info("Adding data to graph", marketCount=market_count)
-        await add_edges()
-        adapter.info("Added data to graph", marketCount=market_count)
 
-    adapter.debug("Closing connection")
-    await exchange.close()
-    adapter.debug("Closed connection")
-
-    adapter.info("Loaded exchange graph")
+    logger.info("Loaded exchange graph")
     return graph

@@ -13,7 +13,7 @@ from bellmanford import (
     load_exchange_graph,
     bellman_ford_exec,
 )
-from utils import print_profit_opportunity_for_path
+from utils import print_profit_opportunity_for_path, draw_graph_to_png
 
 # Logging
 path = Path(os.getcwd())
@@ -260,9 +260,34 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
 
 def bellman_ford_graph():
     """Execute Bellman Ford Graph."""
-    graph = load_exchange_graph(cf["exchange"], fees=True)
-
-    paths = bellman_ford_exec(graph, depth=True)
+    con = sqlite3.connect("db/kucoin.db")
+    df = pd.read_sql_query("SELECT * FROM tickers", con)
+    df = df.astype(
+        {
+            "baseTick": "str",
+            "quoteTick": "str",
+            "bestAsk": "float",
+            "bestAskSize": "float",
+            "bestBid": "float",
+            "bestBidSize": "float",
+            "price": "float",
+            "sequence": "float",
+            "size": "float",
+            "time": "str",
+        }
+    )
+    df["time"] = pd.to_datetime(df["time"], infer_datetime_format=True)
+    df = df.sort_values("time").drop_duplicates(["baseTick", "quoteTick"], keep="last")
+    df.reset_index(drop=True, inplace=True)
+    df.sort_values("baseTick", inplace=True)
+    graph = load_exchange_graph(
+        exchange=cf["exchange"], dataframe=df, fees=True, depth=True, log=True
+    )
+    # to execute this drawing you will need to replace line 188
+    # import pydotplus as pydot in C:\ProgramData\Miniconda3\Lib\site-packages\networkx\drawing\nx_pydot.py
+    # and install graphviz executable if you are in windows.
+    # draw_graph_to_png(graph, to_file="graph.png")
+    paths = bellman_ford_exec(graph, unique_paths=True, depth=True)
     for path, starting_amount in paths:
         # Note that depth=True and starting_amount are set in this example
         print_profit_opportunity_for_path(
@@ -271,5 +296,5 @@ def bellman_ford_graph():
 
 
 if __name__ == "__main__":
-    find_tri_arb_ops()
+    # find_tri_arb_ops()
     bellman_ford_graph()

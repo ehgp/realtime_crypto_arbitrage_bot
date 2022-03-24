@@ -15,3 +15,4 @@ recommonmark==0.7.1
 networkx==2.6.3
 flake8==3.9.0
 pydocstyle==6.0.0
+pydotplus==2.0.2

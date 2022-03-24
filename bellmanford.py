@@ -1,7 +1,7 @@
 """Bellman Ford Graph Execution."""
 import math
 import networkx as nx
-from .utils import last_index_in_list, load_exchange_graph
+from utils import last_index_in_list, load_exchange_graph
 import logging
 import logging.config
 from pathlib import Path

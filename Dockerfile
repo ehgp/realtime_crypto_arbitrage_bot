@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
 # Install pipenv and compilation dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev graphviz
 
 # Install python dependencies
 COPY requirements.txt .
