@@ -118,12 +118,14 @@ class NegativeWeightFinder:
         """Retraces an arbitrage opportunity (negative cycle).
 
         which a currency can reach and returns it.
+
         Parameters
         ----------
         start
             A node (currency) from which it is known an arbitrage opportunity is reachable
         unique_paths : bool
             unique_paths: If True, no duplicate opportunities are returned
+
         Returns
         -------
         list
@@ -159,12 +161,14 @@ class NegativeWeightDepthFinder(NegativeWeightFinder):
 
         which a currency can reach and calculates the
         maximum amount of the first currency in the arbitrage opportunity that can be used to execute the opportunity.
+
         Parameters
         ----------
         start
             A node (currency) from which it is known an arbitrage opportunity is reachable
         unique_paths : bool`
             unique_paths: If True, no duplicate opportunities are returned
+
         Returns
         -------
         2-tuple
