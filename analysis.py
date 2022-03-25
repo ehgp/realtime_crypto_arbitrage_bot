@@ -249,7 +249,7 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
             "time",
             placeholders,
             '"N"',
-            f'"{dt.datetime.now()}"',
+            '"%s"' % (dt.datetime.now()),
         )
         logger.info("Inserting a row of data")
         cur.execute(insert_table)

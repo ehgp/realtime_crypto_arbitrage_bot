@@ -59,10 +59,17 @@ api_passphrase = cf["KUCOIN_YOUR_PASS"]
 async def main():
     """Execute Main."""
 
-    async def deal_msg(msg):
-        """Message Handler."""
+    async def deal_msg(msg: dict) -> None:
+        """Message Handler.
+
+        Args:
+            msg: dictionary containing subject and data of request.
+
+        Returns:
+            database storage and function actions.
+        """
         if msg["topic"] == "/market/ticker:all":
-            logger.info(f'got {msg["subject"]} tick:{msg["data"]}')
+            logger.info("got %s tick: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "tickers"
@@ -99,16 +106,13 @@ size text, time text
     # is public
     client = WsToken()
     # is private
-    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False, url='')
+    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False)
     # is sandbox
     # client = WsToken(
     #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     # )
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=False)
-    # await ws_client.subscribe("/market/ticker:ETH-USDT")
     await ws_client.subscribe("/market/ticker:all")
-    # await ws_client.subscribe("/account/balance")
-    # await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
         logger.info("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)
@@ -119,5 +123,5 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
     except KeyboardInterrupt as e:
-        logger.info(f"Closing Loop {e}")
+        logger.info("Closing Loop %r", e)
         pass

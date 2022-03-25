@@ -18,7 +18,7 @@ def print_profit_opportunity_for_path(
         return
 
     print("Starting with {} in {}".format(starting_amount, path[0]))
-    begin = starting_amount
+    begin_amount = starting_amount
     for i in range(len(path) - 1):
         start = path[i]
         end = path[i + 1]
@@ -39,4 +39,7 @@ def print_profit_opportunity_for_path(
             printed_line += " with {} of {} traded".format(volume, start)
 
         print(printed_line)
-    print(f"profit in {end}: {format(resulting_amount - begin, '.10f')}")
+    print(
+        "profit in %s: {format(%f - %f, '.10f')}"
+        % (end, resulting_amount, begin_amount)
+    )

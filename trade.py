@@ -26,7 +26,7 @@ with open(log_config, "r") as log_file:
 logger = logging.getLogger(__name__)
 
 
-def _load_config():
+def _load_config() -> dict:
     """Load the configuration yaml and return dictionary of setttings.
 
     Returns:
@@ -43,11 +43,18 @@ def _load_config():
     return config_defs
 
 
-def order_handling(order):
-    """Check if order went through."""
+def order_handling(order: dict) -> bool:
+    """Check if order went through.
+
+    Args:
+        order: order dictionary containing order ID.
+
+    Returns:
+        boolean: Shows if order is has been executed in exchange or not.
+    """
     table = "trade_info"
     con = sqlite3.connect("db/kucoin.db")
-    df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+    df = pd.read_sql_query("SELECT * FROM %s" % (table), con)
     status_order = df[df["orderId"] == order["orderId"]]["type"]
     if status_order is None:
         order_handling(order)
@@ -59,12 +66,21 @@ def order_handling(order):
         order_handling(order)
 
 
-def execute_fwd_tri_arbitrage(client, row, cost):
-    """Execute Forward Triangle Arbitrage."""
+def execute_fwd_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> bool:
+    """Execute Forward Triangle Arbitrage.
+
+    Args:
+        client: Trade module for kucoin.client.
+        row: Dataframe containing pricing and volume information for tickers.
+        cost: initial trade cost.
+
+    Returns:
+        boolean: Shows if trade successful or not.
+    """
     size = cost / row["ca_bsta"]  # bc_bsta,ba_bstb
     if size < row["ca_bstasize"]:
         order_ca = client.create_limit_order(
-            symbol=f"{row['c']}-{row['a']}",
+            symbol="%s-%s" % (row["c"], row["a"]),
             side="buy",
             price=str(row["ca_bsta"]),
             size=str(size),
@@ -76,7 +92,7 @@ def execute_fwd_tri_arbitrage(client, row, cost):
     else:
         size = row["ca_bstasize"]
         order_ca = client.create_limit_order(
-            symbol=f"{row['c']}-{row['a']}",
+            symbol="%s-%s" % (row["c"], row["a"]),
             side="buy",
             price=str(row["ca_bsta"]),
             size=str(size),
@@ -89,7 +105,7 @@ def execute_fwd_tri_arbitrage(client, row, cost):
         size = (row["ca_bsta"] * size) / row["bc_bsta"]  # bc_bsta,ba_bstb
         if size < row["bc_bstasize"]:
             order_bc = client.create_limit_order(
-                symbol=f"{row['b']}-{row['c']}",
+                symbol="%s-%s" % (row["b"], row["c"]),
                 side="buy",
                 price=str(row["bc_bsta"]),
                 size=str(size),
@@ -101,7 +117,7 @@ def execute_fwd_tri_arbitrage(client, row, cost):
         else:
             size = row["bc_bstasize"]
             order_bc = client.create_limit_order(
-                symbol=f"{row['b']}-{row['c']}",
+                symbol="%s-%s" % (row["b"], row["c"]),
                 side="buy",
                 price=str(row["bc_bsta"]),
                 size=str(size),
@@ -114,7 +130,7 @@ def execute_fwd_tri_arbitrage(client, row, cost):
             size = (row["bc_bsta"] * size) / row["ba_bstb"]  # bc_bsta,ba_bstb
             if size < row["ba_bstbsize"]:
                 order_bc = client.create_limit_order(
-                    symbol=f"{row['b']}-{row['a']}",
+                    symbol="%s-%s" % (row["b"], row["a"]),
                     side="sell",
                     price=str(row["ba_bstb"]),
                     size=size,
@@ -126,7 +142,7 @@ def execute_fwd_tri_arbitrage(client, row, cost):
             else:
                 size = row["ba_bstbsize"]
                 order_bc = client.create_limit_order(
-                    symbol=f"{row['b']}-{row['a']}",
+                    symbol="%s-%s" % (row["b"], row["a"]),
                     side="sell",
                     price=str(row["ba_bstb"]),
                     size=size,
@@ -149,12 +165,21 @@ def execute_fwd_tri_arbitrage(client, row, cost):
         return False
 
 
-def execute_rev_tri_arbitrage(client, row, cost):
-    """Execute Reverse Triangle Arbitrage."""
+def execute_rev_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> bool:
+    """Execute Reverse Triangle Arbitrage.
+
+    Args:
+        client: Trade module for kucoin.client.
+        row: Dataframe containing pricing and volume information for tickers.
+        cost: initial trade cost.
+
+    Returns:
+        boolean: Shows if trade successful or not.
+    """
     size = cost / row["ba_bsta"]  # bc_bstb,ca_bstb
     if size < row["ba_bstasize"]:
         order_ca = client.create_limit_order(
-            symbol=f"{row['b']}-{row['a']}",
+            symbol="%s-%s" % (row["b"], row["a"]),
             side="buy",
             price=str(row["ba_bsta"]),
             size=str(size),
@@ -166,7 +191,7 @@ def execute_rev_tri_arbitrage(client, row, cost):
     else:
         size = row["ba_bstasize"]
         order_ca = client.create_limit_order(
-            symbol=f"{row['b']}-{row['a']}",
+            symbol="%s-%s" % (row["b"], row["a"]),
             side="buy",
             price=str(row["ba_bsta"]),
             size=str(size),
@@ -179,7 +204,7 @@ def execute_rev_tri_arbitrage(client, row, cost):
         size = (row["ba_bsta"] * size) / row["bc_bstb"]  # bc_bstb,ca_bstb
         if size < row["bc_bstbsize"]:
             order_bc = client.create_limit_order(
-                symbol=f"{row['b']}-{row['c']}",
+                symbol="%s-%s" % (row["b"], row["c"]),
                 side="sell",
                 price=str(row["bc_bstb"]),
                 size=str(size),
@@ -191,7 +216,7 @@ def execute_rev_tri_arbitrage(client, row, cost):
         else:
             size = row["bc_bstbsize"]
             order_bc = client.create_limit_order(
-                symbol=f"{row['b']}-{row['c']}",
+                symbol="%s-%s" % (row["b"], row["c"]),
                 side="sell",
                 price=str(row["bc_bstb"]),
                 size=str(size),
@@ -204,7 +229,7 @@ def execute_rev_tri_arbitrage(client, row, cost):
             size = (row["bc_bstb"] * size) / row["ca_bstb"]  # bc_bstb,ca_bstb
             if size < row["ca_bstbsize"]:
                 order_bc = client.create_limit_order(
-                    symbol=f"{row['c']}-{row['a']}",
+                    symbol="%s-%s" % (row["c"], row["a"]),
                     side="sell",
                     price=str(row["ca_bstb"]),
                     size=size,
@@ -216,7 +241,7 @@ def execute_rev_tri_arbitrage(client, row, cost):
             else:
                 size = row["ca_bstbsize"]
                 order_bc = client.create_limit_order(
-                    symbol=f"{row['c']}-{row['a']}",
+                    symbol="%s-%s" % (row["c"], row["a"]),
                     side="sell",
                     price=str(row["ca_bstb"]),
                     size=size,
@@ -252,7 +277,7 @@ def execute_triangular_arbitrage():
     table = "arb_ops"
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
-    df = pd.read_sql_query(f"SELECT * FROM {table}", con)
+    df = pd.read_sql_query("SELECT * FROM %s" % (table), con)
     df = df.astype(
         {
             "a": "str",

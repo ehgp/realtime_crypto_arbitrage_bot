@@ -56,7 +56,11 @@ pd.set_option("display.max_colwidth", None)
 
 
 def gimme_hist():
-    """Give Me Historical Data from API."""
+    """Give Me Historical Data from API.
+
+    Grabs realtime ticker data and pulls historical data from it according to what is defined
+    from parameters.yaml then stores it in historical table in database.
+    """
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
     df = pd.read_sql_query("SELECT * FROM tickers", con)
@@ -92,11 +96,12 @@ def gimme_hist():
         dt.datetime.timestamp(dt.datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S"))
     )
     for i, row in df.iterrows():
-        symbol = f"{row['baseTick']}-{row['quoteTick']}"
+        symbol = "%s-%s" % (row["baseTick"], row["quoteTick"])
 
         res = requests.get(
             url
-            + f"/api/v1/market/candles?type={kline_type}&symbol={symbol}&startAt={start_at}&endAt={end_at}"
+            + "/api/v1/market/candles?type=%s&symbol=%s&startAt=%s&endAt=%s"
+            % (kline_type, symbol, start_at, end_at)
         )
 
         jsonRes = res.json()
@@ -137,7 +142,7 @@ def gimme_hist():
                 con.commit()
                 con.close()
         except Exception as e:
-            logger.info(f"Exception Error {e}")
+            logger.info("Exception Error %r", e)
             pass
 
 

@@ -13,7 +13,10 @@ sys.path.insert(0, os.path.abspath("../.."))
 # # -- Project information -----------------------------------------------------
 project = "Data 606 Capstone"
 authors = "Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu"
-copyright = f"{dt.date.today().year} Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."
+copyright = (
+    "%s Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."
+    % (dt.date.today().year)
+)
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
 # -- General configuration ---------------------------------------------------

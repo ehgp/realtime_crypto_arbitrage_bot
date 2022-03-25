@@ -1,9 +1,7 @@
-"""Historical Market Data all tickers."""
+"""Historical Market Data all tickers for forecasting."""
 import pandas as pd
 import datetime as dt
 import requests
-import time
-import json
 import sqlite3
 
 symbols = []
@@ -34,7 +32,8 @@ for i in range(len(symbols)):
     symbol = symbols[i]
     res = requests.get(
         url
-        + f"/api/v1/market/candles?type={kline_type}&symbol={symbol}&startAt={start_at}&endAt={end_at}"
+        + "/api/v1/market/candles?type=%s&symbol=%s&startAt=%s&endAt=%s"
+        % (kline_type, symbol, start_at, end_at)
     )
 
     jsonRes = res.json()

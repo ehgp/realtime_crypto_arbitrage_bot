@@ -94,7 +94,7 @@ def _add_weighted_edge_to_graph(
 
     base_currency = base
     quote_currency = quote
-    market_name = f"{base}/{quote}"
+    market_name = "%s/%s" % (base, quote)
 
     if log:
         if depth:

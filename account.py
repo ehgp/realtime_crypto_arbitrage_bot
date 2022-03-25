@@ -62,10 +62,17 @@ pd.set_option("display.max_colwidth", None)
 async def main():
     """Execute Main."""
 
-    async def deal_msg(msg):
-        """Message Handler."""
+    async def deal_msg(msg: dict) -> None:
+        """Message Handler.
+
+        Args:
+            msg: dictionary containing subject and data of request.
+
+        Returns:
+            database storage and function actions.
+        """
         if msg["topic"] == "/account/balance":
-            logger.info(f'got {msg["subject"]}:{msg["data"]}')
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "acc_bal"
@@ -91,7 +98,7 @@ async def main():
             con.commit()
             con.close()
         if msg["topic"] == "/spotMarket/tradeOrders":
-            logger.info(f'got {msg["subject"]}:{msg["data"]}')
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "trade_info"
@@ -116,16 +123,14 @@ async def main():
             con.commit()
             con.close()
 
-    # is public
-    # client = WsToken()
     # is private
+    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False)
+    # is sandbox
     client = WsToken(
         key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     )
 
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=True)
-    # await ws_client.subscribe("/market/ticker:ETH-USDT")
-    # await ws_client.subscribe("/market/ticker:all")
     await ws_client.subscribe("/account/balance")
     await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
@@ -138,5 +143,5 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
     except KeyboardInterrupt as e:
-        logger.info(f"Closing Loop {e}")
+        logger.info("Closing Loop %r", e)
         pass
