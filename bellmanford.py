@@ -1,7 +1,11 @@
-"""Bellman Ford Graph Execution."""
+"""Bellman Ford Graph Execution.
+
+With an initialized networkx DiGraph DAG using our real time ticker data, execute Bellman Ford Optimization
+to find most profitable trade path by finding the biggest negative weights in price and volume.
+"""
 import math
 import networkx as nx
-from utils import last_index_in_list, load_exchange_graph
+from utils import last_index_in_list
 import logging
 import logging.config
 from pathlib import Path
@@ -13,8 +17,7 @@ __all__ = [
     "NegativeWeightFinder",
     "NegativeWeightDepthFinder",
     "bellman_ford_exec",
-    "calculate_profit_ratio_for_path",
-    "get_starting_volume",
+    "print_profit_opportunity_for_path",
 ]
 
 
@@ -69,16 +72,16 @@ class NegativeWeightFinder:
     def bellman_ford(self, source="BTC", unique_paths=True):
         """Find arbitrage opportunities in self.graph and yields them.
 
-        Parameters
-        ----------
-        source
-            A node (currency) in self.graph. Opportunities will be yielded only if they are "reachable" from source.
-            Reachable means that a series of trades can be executed to buy one of the currencies in the opportunity.
-            For the most part, it does not matter what the value of source is, because typically any currency can be
-            reached from any other via only a few trades.
-        unique_paths : bool
-            unique_paths: If True, each opportunity is not yielded more than once
-        :return: a generator of profitable (negatively-weighted) arbitrage paths in self.graph
+        Args:
+            source
+                A node (currency) in self.graph. Opportunities will be yielded only if they are "reachable" from source.
+                Reachable means that a series of trades can be executed to buy one of the currencies in the opportunity.
+                For the most part, it does not matter what the value of source is, because typically any currency can be
+                reached from any other via only a few trades.
+            unique_paths : bool
+                unique_paths: If True, each opportunity is not yielded more than once
+        Return:
+            a generator of profitable (negatively-weighted) arbitrage paths in self.graph
         """
         logger.info("Running bellman_ford")
         self.initialize(source)
@@ -224,77 +227,35 @@ def bellman_ford_exec(graph, source="BTC", unique_paths=True, depth=False):
         return NegativeWeightFinder(graph).bellman_ford(source, unique_paths)
 
 
-def get_starting_volume(graph, path):
-    """Get Starting Volume."""
-    logger.info("Gathering path data", path=str(path))
-
-    volume_scalar = 1
-    start = path[0]
-    end = path[1]
-    initial_volume = math.exp(-graph[start][end]["depth"])
-    # the amount of start that can be traded for end at the best price as limited by the previous volumes of the markets
-    # in the opportunity
-    previous_volume = initial_volume * math.exp(-graph[start][end]["weight"])
-    for i in range(1, len(path) - 1):
-        start = path[i]
-        end = path[i + 1]
-        # the amount of start that can be traded for end at the best price
-        current_max_volume = math.exp(-graph[start][end]["depth"])
-        if previous_volume > current_max_volume:
-            volume_scalar *= current_max_volume / previous_volume
-            # volume_scalar = min(current_max_volume / previous_volume, volume_scalar)
-            previous_volume = current_max_volume
-        previous_volume *= math.exp(-graph[start][end]["weight"])
-    return initial_volume * volume_scalar
-
-
-def calculate_profit_ratio_for_path(
-    graph, path, depth=False, starting_amount=1, gather_path_data=False
+def print_profit_opportunity_for_path(
+    graph, path, round_to=8, depth=False, starting_amount=100
 ):
-    """If gather_path_data, returns a two-tuple where the first element is the profit.
+    """Print profit opportunity for graph path."""
+    if not path:
+        return
 
-    ratio for the given path and the
-    second element is a dict keyed by market symbol and valued
-    by a a dict with 'rate' and 'volume' keys, corresponding
-    to the rate and maximum volume for the trade.
-    The volume and rate are always in terms of base currency.
-    """
-    logger.info("Calculating profit ratio")
-    if gather_path_data:
-        path_data = []
-
-    ratio = starting_amount
+    print("Starting with {} in {}".format(starting_amount, path[0]))
+    begin_amount = starting_amount
     for i in range(len(path) - 1):
         start = path[i]
         end = path[i + 1]
+
         if depth:
-            # volume and rate_with_fee are in terms of start, may be base or quote currency.
-            rate_with_fee = math.exp(-graph[start][end]["weight"])
-            volume = min(ratio, math.exp(-graph[start][end]["depth"]))
-            ratio = volume * rate_with_fee
-
-            if gather_path_data:
-                sell = graph[start][end]["trade_type"] == "SELL"
-                # for buy orders, put volume in terms of base currency.
-                if not sell:
-                    volume /= graph[start][end]["no_fee_rate"]
-
-                path_data.append(
-                    {
-                        "market_name": graph[start][end]["market_name"],
-                        "rate": graph[start][end]["no_fee_rate"],
-                        "fee": graph[start][end]["fee"],
-                        "volume": volume,
-                        # todo: change order and its usages to type
-                        # if start comes before end in path, this is a sell order.
-                        "order": "SELL" if sell else "BUY",
-                    }
-                )
+            volume = min(starting_amount, math.exp(-graph[start][end]["depth"]))
+            starting_amount = math.exp(-graph[start][end]["weight"]) * volume
         else:
-            ratio *= math.exp(-graph[start][end]["weight"])
+            starting_amount *= math.exp(-graph[start][end]["weight"])
 
-    logger.info("Calculated profit ratio")
+        rate = round(math.exp(-graph[start][end]["weight"]), round_to)
+        resulting_amount = round(starting_amount, round_to)
 
-    if gather_path_data:
-        return (ratio / starting_amount), path_data
-    return ratio / starting_amount
+        printed_line = "{} to {} at {} = {}".format(start, end, rate, resulting_amount)
+
+        # todo: add a round_to option for depth
+        if depth:
+            printed_line += " with {} of {} traded".format(volume, start)
+
+        print(printed_line)
+    profit = format(resulting_amount - begin_amount, ".10f")
+    profit_perc = format(((begin_amount / resulting_amount) - 1) * -100, ".2f")
+    print("profit in %s: %s or %s %%" % (end, profit, profit_perc))

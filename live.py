@@ -1,18 +1,25 @@
-"""Real Time Crypto Bot."""
+"""Real Time Crypto Bot.
+
+This is the main execution of Real Time Websocket Client to gather ticker bid/ask price and size.
+Those tickers will be stored as rows in a SQLite database for analysis.py to output profitable trading opportunities
+for trade.py to execute.
+
+Currently two arbitrage models are being used:
+1.Triangular Arbitrage.
+2.Bellman Ford Optimization.
+"""
 import asyncio
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
-from codecs import lookup
 import sqlite3
 import os
 import yaml
 import datetime as dt
-from analysis import find_tri_arb_ops, bellman_ford_graph
-from trade import execute_triangular_arbitrage
-from history import gimme_hist
 import logging
 import logging.config
 from pathlib import Path
+from analysis import find_tri_arb_ops, bellman_ford_graph
+from trade import execute_triangular_arbitrage
 
 
 def _load_config():
@@ -101,7 +108,6 @@ size text, time text
             # find_tri_arb_ops()
             bellman_ford_graph()
             # execute_triangular_arbitrage()
-            # gimme_hist()
 
     # is public
     client = WsToken()

@@ -1,11 +1,15 @@
-"""Historical Market Data."""
-from kucoin.client import Market
+"""Historical Market Data.
+
+Grabs realtime ticker data and pulls historical data from it according to what is defined
+from parameters.yaml then stores it in historical table in database.
+
+Daniel wanted a way to grab all tickers for his forecasting and not real time tickers to analyze
+historical data from, therefore this is left as a deprecated script for others to use.
+"""
 import pandas as pd
 import sqlite3
 import datetime as dt
 import requests
-import time
-import json
 import os
 import yaml
 import logging
@@ -60,6 +64,9 @@ def gimme_hist():
 
     Grabs realtime ticker data and pulls historical data from it according to what is defined
     from parameters.yaml then stores it in historical table in database.
+
+    Returns:
+        Historical table in kucoin.db
     """
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
@@ -105,7 +112,7 @@ def gimme_hist():
         )
 
         jsonRes = res.json()
-        try:
+        if "data" in jsonRes.keys():
             for i in jsonRes["data"]:
                 con = sqlite3.connect("db/kucoin.db")
                 cur = con.cursor()
@@ -141,8 +148,7 @@ def gimme_hist():
                 cur.execute(insert_table)
                 con.commit()
                 con.close()
-        except Exception as e:
-            logger.info("Exception Error %r", e)
+        else:
             pass
 
 

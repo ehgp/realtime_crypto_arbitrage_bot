@@ -1,4 +1,10 @@
-"""Trade."""
+"""Trade.
+
+The module will execute the arbitrage opportunities for you as it finds them.
+Currently two arbitrage models are being used:
+1.Triangular Arbitrage.
+2.Bellman Ford Optimization.
+"""
 import os
 import yaml
 import pandas as pd
@@ -46,6 +52,8 @@ def _load_config() -> dict:
 def order_handling(order: dict) -> bool:
     """Check if order went through.
 
+    Requires analysis.py to be running in real time for trade info collection into DB.
+
     Args:
         order: order dictionary containing order ID.
 
@@ -68,6 +76,11 @@ def order_handling(order: dict) -> bool:
 
 def execute_fwd_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> bool:
     """Execute Forward Triangle Arbitrage.
+
+    Using the amount that you are willing to initially spend in fiat per triangular trade (3 trades),
+    execute all trades one after the other immediately and check for their success.
+    If the trade is not successful, discard trade completely.
+    Time in force set as 'Fill or Kill' to force trade to be filled, no partial filled trades allowed.
 
     Args:
         client: Trade module for kucoin.client.
@@ -167,6 +180,11 @@ def execute_fwd_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> 
 
 def execute_rev_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> bool:
     """Execute Reverse Triangle Arbitrage.
+
+    Using the amount that you are willing to initially spend in fiat per triangular trade (3 trades),
+    execute all trades one after the other immediately and check for their success.
+    If the trade is not successful, discard trade completely.
+    Time in force set as 'Fill or Kill' to force trade to be filled, no partial filled trades allowed.
 
     Args:
         client: Trade module for kucoin.client.

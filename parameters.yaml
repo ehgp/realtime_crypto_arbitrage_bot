@@ -1,11 +1,15 @@
 KUCOIN_YOUR_API_KEY: ${KUCOIN_YOUR_API_KEY}
 KUCOIN_YOUR_SECRET: ${KUCOIN_YOUR_SECRET}
 KUCOIN_YOUR_PASS: ${KUCOIN_YOUR_PASS}
+# trade.py parameters
 fiat_cost_per_trade: 50.00
+fiat_unit_per_trade: USD
+# historical.py and forecasting.py parameters
 url: "https://api.kucoin.com"
 start_date: "2022-03-10 10:00:00"
 end_date: "2022-03-10 10:05:00"
 kline_type: "1min"
+# bellman ford parameters
 exchange: 'Kucoin'
 # fee in decimal
 fee: 0.001
