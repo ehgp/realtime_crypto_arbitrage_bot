@@ -1,4 +1,8 @@
-"""Account Info."""
+"""Account Info.
+
+Websocket feed that will provide any account changes and trade information as it happens in real time.
+Returns it into two DB tables that can be used for order handling and account management.
+"""
 import pandas as pd
 from codecs import lookup
 import sqlite3

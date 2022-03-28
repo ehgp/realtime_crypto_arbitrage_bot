@@ -9,8 +9,12 @@ import logging.config
 from pathlib import Path
 import yaml
 import os
-from bellmanford import bellman_ford_exec, print_profit_opportunity_for_path
-from utils import load_exchange_graph, draw_graph_to_png
+from bellmanford import (
+    bellman_ford_exec,
+    print_profit_opportunity_for_path,
+    load_exchange_graph,
+    draw_graph_to_png,
+)
 
 # Logging
 path = Path(os.getcwd())

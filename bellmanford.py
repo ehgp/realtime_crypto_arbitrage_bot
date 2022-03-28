@@ -5,7 +5,6 @@ to find most profitable trade path by finding the biggest negative weights in pr
 """
 import math
 import networkx as nx
-from utils import last_index_in_list
 import logging
 import logging.config
 from pathlib import Path
@@ -18,6 +17,9 @@ __all__ = [
     "NegativeWeightDepthFinder",
     "bellman_ford_exec",
     "print_profit_opportunity_for_path",
+    "last_index_in_list",
+    "load_exchange_graph",
+    "draw_graph_to_png",
 ]
 
 
@@ -36,6 +38,31 @@ with open(log_config, "r") as log_file:
     config_dict["handlers"]["file"]["filename"] = log_filename
     logging.config.dictConfig(config_dict)
 logger = logging.getLogger(__name__)
+
+
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
+
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(os.path.abspath(path), "parameters.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("parameters yaml file incomplete")
+
+    return config_defs
+
+
+cf = _load_config()
+
+
+def last_index_in_list(li: list, element):
+    """Thanks to https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list."""
+    return len(li) - next(i for i, v in enumerate(reversed(li), 1) if v == element)
 
 
 class NegativeWeightFinder:
@@ -213,6 +240,186 @@ class NegativeWeightDepthFinder(NegativeWeightFinder):
             arbitrage_loop.insert(0, prior_node)
 
 
+def _add_weighted_edge_to_graph(
+    graph: nx.DiGraph,
+    base: str,
+    quote: str,
+    bid: float,
+    ask: float,
+    bidsize: float,
+    asksize: float,
+    time_tick: dt.datetime,
+    log=False,
+    fees=False,
+    depth=False,
+):
+    """todo: add global variable to bid_volume/ ask_volume to see if all tickers (for a given exchange) have value == None.
+
+    Returns a Networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
+    edges).
+    :param exchange: A ccxt Exchange object
+    :param market_name: A string representing a cryptocurrency market formatted like so:
+    '{base_currency}/{quote_currency}'
+    :param graph: A Networkx DiGraph upon
+    :param log: If the edge weights given to the graph should be the negative logarithm of the ask and bid prices. This
+    is necessary to calculate arbitrage opportunities.
+    :param fees: If fees should be taken into account for prices.
+    :param suppress: A list or set which tells which types of warnings to not throw. Accepted elements are 'markets'.
+    :param ticker: A dictionary representing a market as returned by ccxt's Exchange's fetch_ticker method
+    :param depth: If True, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    available at the price represented by the 'weight' attribute of each edge.
+    """
+    logger.info("Adding edge to graph")
+
+    if fees:
+        fee = cf["fee"]
+    else:
+        fee = 0
+
+    fee_scalar = 1 - fee
+
+    bid_rate = bid
+    ask_rate = ask
+    if depth:
+        bid_volume = bidsize
+        ask_volume = asksize
+
+    base_currency = base
+    quote_currency = quote
+    market_name = "%s/%s" % (base, quote)
+
+    if log:
+        if depth:
+            graph.add_edge(
+                base_currency,
+                quote_currency,
+                weight=-math.log(fee_scalar * bid_rate),
+                depth=-math.log(bid_volume),
+                market_name=market_name,
+                trade_type="SELL",
+                fee=fee,
+                volume=bid_volume,
+                time_tick=time_tick,
+                no_fee_rate=bid_rate,
+            )
+            graph.add_edge(
+                quote_currency,
+                base_currency,
+                weight=-math.log(fee_scalar * 1 / ask_rate),
+                depth=-math.log(ask_volume * ask_rate),
+                market_name=market_name,
+                trade_type="BUY",
+                fee=fee,
+                volume=ask_volume,
+                time_tick=time_tick,
+                no_fee_rate=ask_rate,
+            )
+        else:
+            graph.add_edge(
+                base_currency,
+                quote_currency,
+                weight=-math.log(fee_scalar * bid_rate),
+                market_name=market_name,
+                trade_type="SELL",
+                fee=fee,
+                time_tick=time_tick,
+                no_fee_rate=bid_rate,
+            )
+            graph.add_edge(
+                quote_currency,
+                base_currency,
+                weight=-math.log(fee_scalar * 1 / ask_rate),
+                market_name=market_name,
+                trade_type="BUY",
+                fee=fee,
+                time_tick=time_tick,
+                no_fee_rate=ask_rate,
+            )
+    else:
+        if depth:
+            graph.add_edge(
+                base_currency,
+                quote_currency,
+                weight=fee_scalar * bid_rate,
+                depth=bid_volume,
+                market_name=market_name,
+                trade_type="SELL",
+                fee=fee,
+                volume=bid_volume,
+                time_tick=time_tick,
+                no_fee_rate=bid_rate,
+            )
+            graph.add_edge(
+                quote_currency,
+                base_currency,
+                weight=fee_scalar * 1 / ask_rate,
+                depth=ask_volume,
+                market_name=market_name,
+                trade_type="BUY",
+                fee=fee,
+                volume=ask_volume,
+                time_tick=time_tick,
+                no_fee_rate=ask_rate,
+            )
+        else:
+            graph.add_edge(
+                base_currency,
+                quote_currency,
+                weight=fee_scalar * bid_rate,
+                market_name=market_name,
+                trade_type="SELL",
+                fee=fee,
+                time_tick=time_tick,
+                no_fee_rate=bid_rate,
+            )
+            graph.add_edge(
+                quote_currency,
+                base_currency,
+                weight=fee_scalar * 1 / ask_rate,
+                market_name=market_name,
+                trade_type="BUY",
+                fee=fee,
+                time_tick=time_tick,
+                no_fee_rate=ask_rate,
+            )
+
+    logger.info("Added edge to graph", market=market_name)
+
+
+def load_exchange_graph(
+    exchange, dataframe=None, fees=False, depth=False, log=False
+) -> nx.DiGraph:
+    """Return a networkx DiGraph populated with the current ask and bid prices for each market in graph.
+
+    (represented by edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    available at the price represented by the 'weight' attribute of each edge.
+    """
+    logger.info("Initializing empty graph with exchange_name attribute")
+    graph = nx.DiGraph()
+
+    graph.graph["exchange_name"] = exchange
+
+    logger.info("Initialized empty graph with exchange_name attribute")
+
+    for idx, row in dataframe.iterrows():
+        _add_weighted_edge_to_graph(
+            graph=graph,
+            base=row["baseTick"],
+            quote=row["quoteTick"],
+            bid=row["bestBid"],
+            ask=row["bestAsk"],
+            bidsize=row["bestBidSize"],
+            asksize=row["bestAskSize"],
+            time_tick=row["time"],
+            log=log,
+            fees=fees,
+            depth=depth,
+        )
+
+    logger.info("Loaded exchange graph")
+    return graph
+
+
 def bellman_ford_exec(graph, source="BTC", unique_paths=True, depth=False):
     """Look at the docstring of the bellman_ford method in the NegativeWeightFinder class.
 
@@ -225,6 +432,11 @@ def bellman_ford_exec(graph, source="BTC", unique_paths=True, depth=False):
         return NegativeWeightDepthFinder(graph).bellman_ford(source, unique_paths)
     else:
         return NegativeWeightFinder(graph).bellman_ford(source, unique_paths)
+
+
+def draw_graph_to_png(graph, to_file: str):
+    """Draw graph to png."""
+    nx.drawing.nx_pydot.to_pydot(graph).write_png(to_file)
 
 
 def print_profit_opportunity_for_path(
@@ -241,7 +453,9 @@ def print_profit_opportunity_for_path(
         end = path[i + 1]
 
         if depth:
-            volume = min(starting_amount, math.exp(-graph[start][end]["depth"]))
+            volume = round(
+                min(starting_amount, math.exp(-graph[start][end]["depth"])), round_to
+            )
             starting_amount = math.exp(-graph[start][end]["weight"]) * volume
         else:
             starting_amount *= math.exp(-graph[start][end]["weight"])
