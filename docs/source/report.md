@@ -1,4 +1,5 @@
 # Report
+
 ## Abstract
 
 The purpose of this study is to create an crypto arbitrage bot which allows users to execute automated trades. Triangular arbitrage is chosen as the arbitrage method, so the aim is to take advantage of the price differences between three different pairs. Kucoin, and Gemini are chosen exchanges for this project. The Bellman-Ford algorithm is used for decision making which computes the shortest path in a single source vortex. Other than triangular arbitrage, price prediction is done in this project for different coins' prices by using Sarimax, Autorima, and Nbeat models.
@@ -20,13 +21,6 @@ Triangular arbitrage is widely studied before from different aspects mostly in f
 
 In research from Gradojevic et al. (2020) it is found that high frequency traders' movements are supported by triangle arbitrage, which occurs in a milisecond trading environment. In their study, they found 80-100 arbitrage opportunities in a day. Expectedly, these aberrations are brief, lasting between 100 and 500 milliseconds. The average profit ranged between 0.5 and 0.75 basis points.
 
-
-
-
-
-
-
-
 ### What is Crypto Trading/Arbitrage Bot?
 
 Trading bots are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for arbitrage but for trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Most of the trading bots are for trading, but couple of them offers arbitrage options too. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price discrepencies. _For example Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy would not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles._
@@ -37,22 +31,25 @@ Triangular arbitrage works in the same logic as in foreign exchange market. It e
     :alt: Example 1.A
 
 ## Dataset
+
 Kucoin
 Historical Data - Exploratory data analysis
 Analysis.py - Live data
 
 ## Price Prediction with Time Series Analysis
+
 Sarima
 Arima
 NBeat
 
 ## Bellman-Ford Algorithm
+
 Analysis
 Results
 
 ## Conclusion
 
-## Referances
+## References
 
 Aloosh, A., & Bekaert, G. (2017). Currency Factors. SSRN Electronic Journal. https://doi.org/10.2139/ssrn.3022623
 
