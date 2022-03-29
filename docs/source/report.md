@@ -1,3 +1,4 @@
+# Report
 ## Abstract
 
 The purpose of this study is to create an crypto arbitrage bot which allows users to execute automated trades. Triangular arbitrage is chosen as the arbitrage method, so the aim is to take advantage of the price differences between three different pairs. Kucoin, and Gemini are chosen exchanges for this project. The Bellman-Ford algorithm is used for decision making which computes the shortest path in a single source vortex. Other than triangular arbitrage, price prediction is done in this project for different coins' prices by using Sarimax, Autorima, and Nbeat models.

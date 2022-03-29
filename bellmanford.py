@@ -100,13 +100,12 @@ class NegativeWeightFinder:
         """Find arbitrage opportunities in self graph and yields them.
 
         Args:
-            source
-                A node (currency) in self.graph. Opportunities will be yielded only if they are "reachable" from source.
+            source: A node (currency) in self.graph. Opportunities will be yielded only if they are "reachable" from source.
                 Reachable means that a series of trades can be executed to buy one of the currencies in the opportunity.
                 For the most part, it does not matter what the value of source is, because typically any currency can be
                 reached from any other via only a few trades.
-            unique_paths : bool
-                unique_paths: If True, each opportunity is not yielded more than once
+            unique_paths: If True, each opportunity is not yielded more than once
+
         Return:
             a generator of profitable (negatively-weighted) arbitrage paths in self.graph
         """

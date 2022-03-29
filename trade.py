@@ -292,7 +292,7 @@ def execute_triangular_arbitrage():
     client = Trade(
         key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     )
-    table = "arb_ops"
+    table = "tri_arb_ops"
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
     df = pd.read_sql_query("SELECT * FROM %s" % (table), con)
