@@ -231,7 +231,7 @@ def find_tri_arb_ops():
     arb_op = arb_op.loc[arb_op[["fwd_arb", "rev_arb"]].idxmax()]
     arb_op.dropna(subset=["fwd_arb", "rev_arb"], how="all", inplace=True)
     arb_op.drop_duplicates(inplace=True)
-    table = "arb_ops"
+    table = "tri_arb_ops"
     create_table = """CREATE TABLE IF NOT EXISTS arb_ops \
 (a text, b text,  c text, ba_bstb text, ba_bsta text, ba_bstbsize text, ba_bstasize text, bc_bstb text, \
 bc_bsta text, bc_bstbsize text, bc_bstasize text, ca_bstb text, ca_bsta text, ca_bstbsize text, ca_bstasize text, \

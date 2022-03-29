@@ -451,7 +451,7 @@ def print_profit_opportunity_for_path(
     for i in range(len(path) - 1):
         start = path[i]
         end = path[i + 1]
-
+        print(path)
         if depth:
             volume = round(
                 min(starting_amount, math.exp(-graph[start][end]["depth"])), round_to
