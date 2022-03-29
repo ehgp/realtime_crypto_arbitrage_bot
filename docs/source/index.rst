@@ -6,6 +6,7 @@ Real Time Crypto Bot
    :maxdepth: 2
 
    getting_started
+   report
    user_guide
 
 Authors
