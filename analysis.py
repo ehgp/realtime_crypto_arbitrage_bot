@@ -11,7 +11,7 @@ import yaml
 import os
 from bellmanford import (
     bellman_ford_exec,
-    print_profit_opportunity_for_path,
+    print_profit_opportunity_for_path_store_db,
     load_exchange_graph,
     draw_graph_to_png,
 )
@@ -295,7 +295,7 @@ def bellman_ford_graph():
     paths = bellman_ford_exec(graph, unique_paths=True, depth=True)
     for path, starting_amount in paths:
         # Note that depth=True and starting_amount are set in this example
-        print_profit_opportunity_for_path(
+        print_profit_opportunity_for_path_store_db(
             graph, path, depth=True, starting_amount=starting_amount
         )
 

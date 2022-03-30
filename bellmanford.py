@@ -18,7 +18,7 @@ __all__ = [
     "NegativeWeightFinder",
     "NegativeWeightDepthFinder",
     "bellman_ford_exec",
-    "print_profit_opportunity_for_path",
+    "print_profit_opportunity_for_path_store_db",
     "last_index_in_list",
     "load_exchange_graph",
     "draw_graph_to_png",
@@ -440,13 +440,13 @@ def draw_graph_to_png(graph, to_file: str):
     nx.drawing.nx_pydot.to_pydot(graph).write_png(to_file)
 
 
-def print_profit_opportunity_for_path(
+def print_profit_opportunity_for_path_store_db(
     graph, path, round_to=8, depth=False, starting_amount=100
 ):
     """Print profit opportunity for graph path."""
     market_name_list = []
     trade_type_list = []
-    volume_list = []
+    sizes_list = []
     time_tick_list = []
     no_fee_rate_list = []
     if not path:
@@ -459,7 +459,7 @@ def print_profit_opportunity_for_path(
         end = path[i + 1]
         market_name_list.append(graph[start][end]["market_name"])
         trade_type_list.append(graph[start][end]["trade_type"])
-        volume_list.append(graph[start][end]["volume"])
+        sizes_list.append(graph[start][end]["volume"])
         time_tick_list.append(graph[start][end]["time_tick"])
         no_fee_rate_list.append(graph[start][end]["no_fee_rate"])
         if depth:
@@ -485,19 +485,37 @@ def print_profit_opportunity_for_path(
     print("profit in %s: %s or %s %%" % (end, profit, profit_perc))
     df = [
         {
-            "path": str(market_name_list),
-            "trade_type": str(trade_type_list),
-            "volume": str(volume_list),
-            "rates": str(no_fee_rate_list),
+            "path": market_name_list,
+            "trade_type": trade_type_list,
+            "sizes": sizes_list,
+            "rates": no_fee_rate_list,
             "profit": profit + " " + end,
             "profit_perc": profit_perc,
-            "attempted": "N",
-            "time": dt.datetime.now(),
         }
     ]
     bf_profit_df = pd.DataFrame(df)
     con = sqlite3.connect("db/kucoin.db")
-    logger.info("Creating Table bf_arb_op")
-    bf_profit_df.to_sql(name="bf_arb_ops", con=con, index=False, if_exists="append")
-    logger.info("Inserting a row of data")
+    cur = con.cursor()
+    table = "bf_arb_ops"
+    create_table = """CREATE TABLE IF NOT EXISTS bf_arb_ops \
+(path text, trade_type text, sizes text, rates text, profit text, profit_perc text, \
+attempted text, time text, UNIQUE (path, trade_type, sizes, rates) ON CONFLICT IGNORE)"""
+    logger.info("Creating Table bf_arb_ops")
+    cur.execute(create_table)
+    con.commit()
+    for i, row in bf_profit_df.iterrows():
+        placeholders = ",".join('"' + str(e) + '"' for e in row)
+        columns = ", ".join(bf_profit_df.columns)
+        insert_table = "INSERT INTO %s ( %s, %s, %s ) VALUES ( %s, %s, %s )" % (
+            table,
+            columns,
+            "attempted",
+            "time",
+            placeholders,
+            '"N"',
+            '"%s"' % (dt.datetime.now()),
+        )
+        logger.info("Inserting a row of data")
+        cur.execute(insert_table)
+        con.commit()
     con.close()
