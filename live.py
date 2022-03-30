@@ -105,9 +105,10 @@ size text, time text
             cur.execute(insert_table)
             con.commit()
             con.close()
-            # find_tri_arb_ops()
+            find_tri_arb_ops()
             bellman_ford_graph()
             # execute_triangular_arbitrage()
+            # execute_bellman_ford()
 
     # is public
     client = WsToken()

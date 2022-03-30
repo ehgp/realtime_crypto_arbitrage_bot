@@ -226,18 +226,22 @@ def find_tri_arb_ops():
     #     - 1
     # ) * 100
 
-    arb_op.loc[~(arb_op["fwd_arb"] > 0.1), "fwd_arb"] = np.nan
-    arb_op.loc[~(arb_op["rev_arb"] > 0.1), "rev_arb"] = np.nan
+    arb_op.loc[
+        ~(arb_op["fwd_arb"] > cf["minimum_perc_tri_arb_profit"]), "fwd_arb"
+    ] = np.nan
+    arb_op.loc[
+        ~(arb_op["rev_arb"] > cf["minimum_perc_tri_arb_profit"]), "rev_arb"
+    ] = np.nan
     arb_op = arb_op.loc[arb_op[["fwd_arb", "rev_arb"]].idxmax()]
     arb_op.dropna(subset=["fwd_arb", "rev_arb"], how="all", inplace=True)
     arb_op.drop_duplicates(inplace=True)
     table = "tri_arb_ops"
-    create_table = """CREATE TABLE IF NOT EXISTS arb_ops \
+    create_table = """CREATE TABLE IF NOT EXISTS tri_arb_ops \
 (a text, b text,  c text, ba_bstb text, ba_bsta text, ba_bstbsize text, ba_bstasize text, bc_bstb text, \
 bc_bsta text, bc_bstbsize text, bc_bstasize text, ca_bstb text, ca_bsta text, ca_bstbsize text, ca_bstasize text, \
 fwd_arb text, rev_arb text, attempted text, time text, \
 UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
-    logger.info("Creating Table arb_ops")
+    logger.info("Creating Table tri_arb_ops")
     cur.execute(create_table)
     con.commit()
     for i, row in arb_op.iterrows():
@@ -297,5 +301,5 @@ def bellman_ford_graph():
 
 
 if __name__ == "__main__":
-    # find_tri_arb_ops()
+    find_tri_arb_ops()
     bellman_ford_graph()

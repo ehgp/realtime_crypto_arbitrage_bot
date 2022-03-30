@@ -11,5 +11,7 @@ end_date: "2022-03-10 10:05:00"
 kline_type: "1min"
 # bellman ford parameters
 exchange: 'Kucoin'
-# fee in decimal
-fee: 0.001
+# taker fee in decimal
+taker_fee: 0.001
+# analysis.py parameters
+minimum_perc_tri_arb_profit: 0.1

@@ -11,6 +11,8 @@ from pathlib import Path
 import yaml
 import os
 import datetime as dt
+import pandas as pd
+import sqlite3
 
 __all__ = [
     "NegativeWeightFinder",
@@ -271,7 +273,7 @@ def _add_weighted_edge_to_graph(
     logger.info("Adding edge to graph")
 
     if fees:
-        fee = cf["fee"]
+        fee = cf["taker_fee"]
     else:
         fee = 0
 
@@ -442,6 +444,11 @@ def print_profit_opportunity_for_path(
     graph, path, round_to=8, depth=False, starting_amount=100
 ):
     """Print profit opportunity for graph path."""
+    market_name_list = []
+    trade_type_list = []
+    volume_list = []
+    time_tick_list = []
+    no_fee_rate_list = []
     if not path:
         return
 
@@ -450,7 +457,11 @@ def print_profit_opportunity_for_path(
     for i in range(len(path) - 1):
         start = path[i]
         end = path[i + 1]
-
+        market_name_list.append(graph[start][end]["market_name"])
+        trade_type_list.append(graph[start][end]["trade_type"])
+        volume_list.append(graph[start][end]["volume"])
+        time_tick_list.append(graph[start][end]["time_tick"])
+        no_fee_rate_list.append(graph[start][end]["no_fee_rate"])
         if depth:
             volume = round(
                 min(starting_amount, math.exp(-graph[start][end]["depth"])), round_to
@@ -472,3 +483,21 @@ def print_profit_opportunity_for_path(
     profit = format(resulting_amount - begin_amount, ".10f")
     profit_perc = format(((begin_amount / resulting_amount) - 1) * -100, ".2f")
     print("profit in %s: %s or %s %%" % (end, profit, profit_perc))
+    df = [
+        {
+            "path": str(market_name_list),
+            "trade_type": str(trade_type_list),
+            "volume": str(volume_list),
+            "rates": str(no_fee_rate_list),
+            "profit": profit + " " + end,
+            "profit_perc": profit_perc,
+            "attempted": "N",
+            "time": dt.datetime.now(),
+        }
+    ]
+    bf_profit_df = pd.DataFrame(df)
+    con = sqlite3.connect("db/kucoin.db")
+    logger.info("Creating Table bf_arb_op")
+    bf_profit_df.to_sql(name="bf_arb_ops", con=con, index=False, if_exists="append")
+    logger.info("Inserting a row of data")
+    con.close()

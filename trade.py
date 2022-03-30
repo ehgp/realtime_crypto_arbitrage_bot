@@ -358,5 +358,20 @@ def execute_triangular_arbitrage():
             execute_fwd_tri_arbitrage(client, row, cost)
 
 
+def execute_bellman_ford():
+    """Execute Bellman Ford Trading Opportunity."""
+    con = sqlite3.connect("db/kucoin.db")
+    bf_profit_query = pd.read_sql_query("select * from bf_arb_ops", con=con)
+    bf_profit_query.drop_duplicates(
+        subset=["path", "trade_type", "volume", "rates", "profit", "profit_perc"],
+        inplace=True,
+    )
+    bf_profit_query = bf_profit_query[bf_profit_query["attempted"] == "N"]
+    con.close()
+    print(bf_profit_query)
+    return None
+
+
 if __name__ == "__main__":
-    execute_triangular_arbitrage()
+    # execute_triangular_arbitrage()
+    execute_bellman_ford()
