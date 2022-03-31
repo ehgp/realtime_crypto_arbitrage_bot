@@ -5,3 +5,5 @@ Analysis
 
 .. automodule:: analysis
     :members:
+    :inherited-members:
+    :undoc-members:

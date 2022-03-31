@@ -5,3 +5,5 @@ Trade
 
 .. automodule:: trade
     :members:
+    :inherited-members:
+    :undoc-members:

@@ -5,3 +5,5 @@ Live
 
 .. automodule:: live
     :members:
+    :inherited-members:
+    :undoc-members:
