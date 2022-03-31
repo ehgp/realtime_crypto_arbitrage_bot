@@ -9,9 +9,10 @@ import os
 import sys
 import datetime as dt
 
-sys.path.insert(0, os.path.abspath("../.."))
+# sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("."))
 # # -- Project information -----------------------------------------------------
-project = "Data 606 Capstone"
+project = "UMBC Data 606 Capstone: Real Time Arbitrage Bot"
 authors = "Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu"
 copyright = (
     "%s Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."

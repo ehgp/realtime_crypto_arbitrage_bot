@@ -4,25 +4,25 @@ Kucoin supported websockets implementation of real time arbitrage opportunity bo
 
 Relies on four scripts:
 
-live:
+* live:<br>
 Websockets real time feed of price data.
 
-trade:
+* trade:<br>
 Trading module for execution of arbitrage trades.
 
-analysis:
+* analysis:<br>
 actual implementation of ML models.
 
 1. Reverse and Forward Triangular Arbitrage in analysis.py
 2. Bellman Ford Optimization in bellmanford.py
 
-account:
+* account:<br>
 Websockets real time account and trade implementation.
 
-Features:
-Github CICD Pipeline
-SQLite implementation
-Docker containerization with docker compose
+Features:<br>
+Github CICD Pipeline<br>
+SQLite implementation<br>
+Docker containerization with docker compose<br>
 Github Pages Sphinx Documentation
 
 ## Documentation
@@ -41,13 +41,13 @@ Fill out credentials in parameters.yaml
 
 To use docker you must have docker desktop available with docker compose:
 
-You can use either pipenv or your base python installation (default is requirements):
-Pipenv:
-pipenv install
+You can use either pipenv or your base python installation (default is requirements):<br>
+Pipenv:<br>
+pipenv install<br>
 pipenv run pytnon main.py
 
-Requirements:
-pip install -r requirements.txt
+Requirements:<br>
+pip install -r requirements.txt<br>
 python main.py
 
 ## Authors

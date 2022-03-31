@@ -3,5 +3,5 @@ Trade
 .. toctree::
     :maxdepth: 2
 
-.. automodule:: trade.main
+.. automodule:: trade
     :members:
