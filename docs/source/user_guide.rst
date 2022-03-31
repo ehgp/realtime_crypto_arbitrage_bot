@@ -5,6 +5,5 @@ User Guide
 
     live
     analysis
-    history
     account
     trade
