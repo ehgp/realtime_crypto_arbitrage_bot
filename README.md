@@ -33,7 +33,7 @@ Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 
 * Python 3.7
 * Docker Desktop >= 4.5.1
-* Pipenv 2021.11.23
+* Pipenv 2022.1.8
 
 ## Installation
 
