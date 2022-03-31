@@ -369,5 +369,5 @@ def execute_bellman_ford():
 
 
 if __name__ == "__main__":
-    # execute_triangular_arbitrage()
+    execute_triangular_arbitrage()
     execute_bellman_ford()

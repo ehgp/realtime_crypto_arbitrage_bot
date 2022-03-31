@@ -1,4 +1,10 @@
-"""Could you do your Data Science Analysis here please."""
+"""Analysis.
+
+This script executes the models that find arbitrage opportunities.
+Currently two arbitrage models are being used:
+1.Triangular Arbitrage.
+2.Bellman Ford Optimization.
+"""
 
 import sqlite3
 import pandas as pd
@@ -83,7 +89,8 @@ def find_tri_arb_ops():
     df = df.sort_values("time").drop_duplicates(["baseTick", "quoteTick"], keep="last")
     df.reset_index(drop=True, inplace=True)
     df.sort_values("baseTick", inplace=True)
-    df.to_csv("market.csv", index=False)
+    # This csv is for data exploration of the Market after filtering the latest prices
+    df.to_csv("db/market.csv", index=False)
 
     combo = [
         [a, b, c]
@@ -260,7 +267,8 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
         cur.execute(insert_table)
         con.commit()
     con.close()
-    arb_op.to_csv("arbitrage_ops.csv", index=False)
+    # This csv is for data exploration of triangular arbitrage results
+    arb_op.to_csv("db/tri_arb_ops.csv", index=False)
 
 
 def bellman_ford_graph():

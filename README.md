@@ -2,16 +2,13 @@
 
 Kucoin supported websockets implementation of real time arbitrage opportunity bot.
 
-Relies on five scripts:
+Relies on four scripts:
 
 live:
 Websockets real time feed of price data.
 
 trade:
 Trading module for execution of arbitrage trades.
-
-history:
-Gather API historical data for time dependent trading.
 
 analysis:
 actual implementation of ML model.
@@ -27,6 +24,7 @@ Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 
 * Python 3.7
 * Docker Desktop >= 4.5.1
+* Pipenv 2021.11.23
 
 ## Installation
 

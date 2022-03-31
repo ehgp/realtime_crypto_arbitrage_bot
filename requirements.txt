@@ -5,7 +5,7 @@ pathlib2==2.3.5
 keyring==22.3.0
 pyyaml==5.4.1
 bs4==0.0.1
-black==21.12b0
+black==22.3.0
 SQLAlchemy==1.4.3
 aiosqlite==0.17.0
 kucoin-python==1.0.11
@@ -16,3 +16,4 @@ networkx==2.6.3
 flake8==3.9.0
 pydocstyle==6.0.0
 pydotplus==2.0.2
+pipenv==2021.11.23

@@ -12,13 +12,14 @@ pathlib2 = {version = "==2.3.5", index="pypi"}
 keyring = {version = "==22.3.0", index="pypi"}
 pyyaml = {version = "==5.4.1", index="pypi"}
 bs4 = {version = "==0.0.1", index="pypi"}
-black = {version = "==21.12b0", index="pypi"}
-SQLAlchemy= {version = "==1.4.3", index="pypi"}
-aiosqlite= {version = "==0.17.0", index="pypi"}
-kucoin-python = "==1.0.11"
-Sphinx = "==4.4.0"
-sphinx-rtd-theme = "==1.0.0"
-recommonmark = "==0.7.1"
-networkx = "==2.7.1"
-flake8 = "==3.9.0"
-pydocstyle = "==6.0.0"
+black = {version = "==22.3.0", index="pypi"}
+SQLAlchemy = {version = "==1.4.3", index="pypi"}
+aiosqlite = {version = "==0.17.0", index="pypi"}
+kucoin-python = {version = "==1.0.11", index="pypi"}
+Sphinx = {version = "==4.4.0", index="pypi"}
+sphinx-rtd-theme = {version = "==1.0.0", index="pypi"}
+recommonmark = {version = "==0.7.1", index="pypi"}
+networkx = {version = "==2.7.1", index="pypi"}
+flake8 = {version = "==3.9.0", index="pypi"}
+pydocstyle = {version = "==6.0.0", index="pypi"}
+pydotplus = {version = "==2.0.2", index="pypi"}
