@@ -37,14 +37,14 @@ Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 
 ## Installation
 
-Fill out credentials in parameters.yaml.
+Fill out credentials in parameters.yaml
 
 To use docker you must have docker desktop available with docker compose:
 
 You can use either pipenv or your base python installation (default is requirements):<br>
 Pipenv:<br>
 pipenv install<br>
-pipenv run pytnon main.py
+pipenv run python main.py
 
 Requirements:<br>
 pip install -r requirements.txt<br>

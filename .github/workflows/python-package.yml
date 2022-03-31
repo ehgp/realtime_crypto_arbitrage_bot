@@ -72,6 +72,7 @@ jobs:
 # apt-get upgrade -y --quiet
 # apt-get install build-essential libssl-dev libffi-dev python3-dev -y --quiet
 # pip install --upgrade pip --quiet
+# pip install -r requirements.txt --quiet
 # pip install pytest --quiet
 # pip install . --quiet
 # python -m pytest
@@ -98,10 +99,7 @@ jobs:
     - name: Sphinx Pages
       run: |
         pip install --upgrade pip --quiet
-        pip install sphinx==4.4.0 --quiet
-        pip install sphinx_rtd_theme==1.0.0 --quiet
-        pip install recommonmark==0.7.1 --quiet
-        pip install pyyaml==5.4.1 --quiet
+        pip install -r requirements.txt --quiet
         sphinx-build -b html docs/source docs/build/html
 
     - name: Upload artifacts
