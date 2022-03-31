@@ -107,6 +107,91 @@
 <h1>Trade<a class="headerlink" href="#trade" title="Permalink to this headline"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
+<span class="target" id="module-trade"></span><p>Trade.</p>
+<p>The module will execute the arbitrage opportunities for you as it finds them.
+Currently two arbitrage models are being used:
+1.Triangular Arbitrage.
+2.Bellman Ford Optimization.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="trade.execute_bellman_ford">
+<span class="sig-prename descclassname"><span class="pre">trade.</span></span><span class="sig-name descname"><span class="pre">execute_bellman_ford</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trade.execute_bellman_ford" title="Permalink to this definition"></a></dt>
+<dd><p>Execute Bellman Ford Trading Opportunity.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trade.execute_fwd_tri_arbitrage">
+<span class="sig-prename descclassname"><span class="pre">trade.</span></span><span class="sig-name descname"><span class="pre">execute_fwd_tri_arbitrage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">kucoin.client.Trade</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#trade.execute_fwd_tri_arbitrage" title="Permalink to this definition"></a></dt>
+<dd><p>Execute Forward Triangle Arbitrage.</p>
+<p>Using the amount that you are willing to initially spend in fiat per triangular trade (3 trades),
+execute all trades one after the other immediately and check for their success.
+If the trade is not successful, discard trade completely.
+Time in force set as ‘Fill or Kill’ to force trade to be filled, no partial filled trades allowed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> – Trade module for kucoin.client.</p></li>
+<li><p><strong>row</strong> – Dataframe containing pricing and volume information for tickers.</p></li>
+<li><p><strong>cost</strong> – initial trade cost.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Shows if trade successful or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trade.execute_rev_tri_arbitrage">
+<span class="sig-prename descclassname"><span class="pre">trade.</span></span><span class="sig-name descname"><span class="pre">execute_rev_tri_arbitrage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">kucoin.client.Trade</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#trade.execute_rev_tri_arbitrage" title="Permalink to this definition"></a></dt>
+<dd><p>Execute Reverse Triangle Arbitrage.</p>
+<p>Using the amount that you are willing to initially spend in fiat per triangular trade (3 trades),
+execute all trades one after the other immediately and check for their success.
+If the trade is not successful, discard trade completely.
+Time in force set as ‘Fill or Kill’ to force trade to be filled, no partial filled trades allowed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> – Trade module for kucoin.client.</p></li>
+<li><p><strong>row</strong> – Dataframe containing pricing and volume information for tickers.</p></li>
+<li><p><strong>cost</strong> – initial trade cost.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Shows if trade successful or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trade.execute_triangular_arbitrage">
+<span class="sig-prename descclassname"><span class="pre">trade.</span></span><span class="sig-name descname"><span class="pre">execute_triangular_arbitrage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trade.execute_triangular_arbitrage" title="Permalink to this definition"></a></dt>
+<dd><p>Execute Triangular Arbitrage.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="trade.order_handling">
+<span class="sig-prename descclassname"><span class="pre">trade.</span></span><span class="sig-name descname"><span class="pre">order_handling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#trade.order_handling" title="Permalink to this definition"></a></dt>
+<dd><p>Check if order went through.</p>
+<p>Requires analysis.py to be running in real time for trade info collection into DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>order</strong> – order dictionary containing order ID.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Shows if order is has been executed in exchange or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
