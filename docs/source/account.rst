@@ -1,7 +1,8 @@
+ .. toctree::
+       :maxdepth: 2
+
 Account
 ===============================
-.. toctree::
-    :maxdepth: 2
 
 .. automodule:: account
     :members:
