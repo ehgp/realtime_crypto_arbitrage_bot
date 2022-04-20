@@ -44,11 +44,11 @@ To use docker you must have docker desktop available with docker compose:
 You can use either pipenv or your base python installation (default is requirements):<br>
 Pipenv:<br>
 pipenv install<br>
-pipenv run python main.py
+pipenv run python live.py
 
 Requirements:<br>
 pip install -r requirements.txt<br>
-python main.py
+python live.py
 
 ## Authors
 
@@ -83,4 +83,4 @@ ADA: DdzFFzCqrhtBuwQRtRKNSVca58HDwicLx5aDWn8K5pyg36665BL5s6WBLAc9bCTxWk15MFiefoe
 
 ## TODO
 
-Add trading implementation of bellman ford profit in bf_arb_ops table.
+Add trading implementation of bellman ford profit in bf_arb_ops table. [Gemini](https://docs.gemini.com/rest-api/#sandbox) and [Coinbase](https://docs.cloud.coinbase.com/exchange/docs/sandbox) sandbox implementations.

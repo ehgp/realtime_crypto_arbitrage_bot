@@ -270,7 +270,7 @@ def _add_weighted_edge_to_graph(
     :param depth: If True, also adds an attribute 'depth' to each edge which represents the current volume of orders
     available at the price represented by the 'weight' attribute of each edge.
     """
-    logger.info("Adding edge to graph")
+    # logger.info("Adding edge to graph")
 
     if fees:
         fee = cf["taker_fee"]
@@ -384,7 +384,7 @@ def _add_weighted_edge_to_graph(
                 no_fee_rate=ask_rate,
             )
 
-    logger.info("Added edge to graph", market=market_name)
+    # logger.info("Added edge to graph: %s" % (market_name))
 
 
 def load_exchange_graph(
@@ -515,7 +515,7 @@ attempted text, time text, UNIQUE (path, trade_type, sizes, rates) ON CONFLICT I
             '"N"',
             '"%s"' % (dt.datetime.now()),
         )
-        logger.info("Inserting a row of data")
+        logger.info("Inserting a row of data in %s" % (table))
         cur.execute(insert_table)
         con.commit()
     con.close()

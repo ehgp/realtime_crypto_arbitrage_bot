@@ -68,6 +68,7 @@ cf = _load_config()
 
 def find_tri_arb_ops():
     """Find Triangle Arbitrage Opportunities."""
+    logger.info("Finding Triangle Arbitrage Opportunities")
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
     df = pd.read_sql_query("SELECT * FROM tickers", con)
@@ -239,9 +240,10 @@ def find_tri_arb_ops():
     arb_op.loc[
         ~(arb_op["rev_arb"] > cf["minimum_perc_tri_arb_profit"]), "rev_arb"
     ] = np.nan
-    arb_op = arb_op.loc[arb_op[["fwd_arb", "rev_arb"]].idxmax()]
+
     arb_op.dropna(subset=["fwd_arb", "rev_arb"], how="all", inplace=True)
     arb_op.drop_duplicates(inplace=True)
+    # arb_op = arb_op.loc[arb_op[["fwd_arb", "rev_arb"]].idxmax(skipna=True)]
     table = "tri_arb_ops"
     create_table = """CREATE TABLE IF NOT EXISTS tri_arb_ops \
 (a text, b text,  c text, ba_bstb text, ba_bsta text, ba_bstbsize text, ba_bstasize text, bc_bstb text, \
@@ -263,7 +265,7 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
             '"N"',
             '"%s"' % (dt.datetime.now()),
         )
-        logger.info("Inserting a row of data")
+        logger.info("Inserting a row of data in %s" % (table))
         cur.execute(insert_table)
         con.commit()
     con.close()
@@ -273,6 +275,7 @@ UNIQUE (fwd_arb, rev_arb) ON CONFLICT IGNORE)"""
 
 def bellman_ford_graph():
     """Execute Bellman Ford Graph."""
+    logger.info("Finding Opportunities Using Bellman Ford")
     con = sqlite3.connect("db/kucoin.db")
     df = pd.read_sql_query("SELECT * FROM tickers", con)
     df = df.astype(
@@ -301,6 +304,7 @@ def bellman_ford_graph():
     # and install graphviz executable if you are in windows.
     # draw_graph_to_png(graph, to_file="graph.png")
     paths = bellman_ford_exec(graph, unique_paths=True, depth=True)
+
     for path, starting_amount in paths:
         # Note that depth=True and starting_amount are set in this example
         print_profit_opportunity_for_path_store_db(

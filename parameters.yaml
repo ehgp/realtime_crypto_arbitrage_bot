@@ -13,5 +13,5 @@ kline_type: "1min"
 exchange: 'Kucoin'
 # taker fee in decimal
 taker_fee: 0.001
-# analysis.py parameters
+# tri arb parameters
 minimum_perc_tri_arb_profit: 0.1

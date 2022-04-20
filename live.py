@@ -86,6 +86,8 @@ async def main():
             placeholders[9] = dt.datetime.fromtimestamp(placeholders[9] / 1e3)
             placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
             columns = ", ".join(msg["data"].keys())
+            print(placeholders)
+            print(columns)
             create_table = """CREATE TABLE IF NOT EXISTS tickers \
 (baseTick text, quoteTick text,  bestAsk text, \
 bestAskSize text, bestBid text, bestBidSize text, price text, sequence text, \
@@ -113,7 +115,9 @@ size text, time text
     # is public
     client = WsToken()
     # is private
-    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False)
+    # client = WsToken(
+    #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False
+    # )
     # is sandbox
     # client = WsToken(
     #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True

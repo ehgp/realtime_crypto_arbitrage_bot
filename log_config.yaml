@@ -1,6 +1,6 @@
 version: 1
 
-disable_existing_loggers: True
+disable_existing_loggers: False
 formatters:
   simple:
     format: "%(asctime)s %(name)-5s %(message)s"
@@ -27,6 +27,41 @@ loggers:
     propagate: False
 
   networkx:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  bellmanford:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  forecasting:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  account:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  analysis:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  history:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  live:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  trade:
     level: DEBUG
     handlers: [console, file]
     propagate: False

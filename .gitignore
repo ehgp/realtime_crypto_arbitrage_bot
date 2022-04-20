@@ -102,7 +102,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env copy
 .venv
 env/
 venv/
@@ -131,3 +131,4 @@ dmypy.json
 **/.vscode
 **/creds copy.yaml
 **/*.log
+**/.VSCodeCounter
