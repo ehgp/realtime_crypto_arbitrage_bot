@@ -142,7 +142,26 @@ Github Pages Sphinx Documentation</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
-<p>Fill out credentials in parameters.yaml</p>
+<p>Fill out parameters.yaml</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KUCOIN_YOUR_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_API_KEY}</span><span class="w"></span>
+<span class="nt">KUCOIN_YOUR_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_SECRET}</span><span class="w"></span>
+<span class="nt">KUCOIN_YOUR_PASS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_PASS}</span><span class="w"></span>
+<span class="c1"># trade.py parameters</span><span class="w"></span>
+<span class="nt">fiat_cost_per_trade</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50.00</span><span class="w"></span>
+<span class="nt">fiat_unit_per_trade</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">USD</span><span class="w"></span>
+<span class="c1"># historical.py and forecasting.py parameters</span><span class="w"></span>
+<span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://api.kucoin.com&quot;</span><span class="w"></span>
+<span class="nt">start_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2022-03-10</span><span class="nv"> </span><span class="s">10:00:00&quot;</span><span class="w"></span>
+<span class="nt">end_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2022-03-10</span><span class="nv"> </span><span class="s">10:05:00&quot;</span><span class="w"></span>
+<span class="nt">kline_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1min&quot;</span><span class="w"></span>
+<span class="c1"># bellman ford parameters</span><span class="w"></span>
+<span class="nt">exchange</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Kucoin&#39;</span><span class="w"></span>
+<span class="c1"># taker fee in decimal</span><span class="w"></span>
+<span class="nt">taker_fee</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span><span class="w"></span>
+<span class="c1"># tri arb parameters</span><span class="w"></span>
+<span class="nt">minimum_perc_tri_arb_profit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span><span class="w"></span>
+</pre></div>
+</div>
 <p>To use docker you must have docker desktop available with docker compose:</p>
 <p>You can use either pipenv or your base python installation (default is requirements):<br>
 Pipenv:<br>
@@ -178,7 +197,7 @@ We accept donations in cryptocurrencies, anything helps. Thank you.</p>
 </section>
 <section id="todo">
 <h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline"></a></h2>
-<p>Add trading implementation of bellman ford profit in bf_arb_ops table. <a class="reference external" href="https://docs.gemini.com/rest-api/#sandbox">Gemini</a> and <a class="reference external" href="https://docs.cloud.coinbase.com/exchange/docs/sandbox">Coinbase</a> sandbox implementations.</p>
+<p><a class="reference external" href="https://docs.gemini.com/rest-api/#sandbox">Gemini</a> and <a class="reference external" href="https://docs.cloud.coinbase.com/exchange/docs/sandbox">Coinbase</a> sandbox implementations.</p>
 </section>
 </section>
 
