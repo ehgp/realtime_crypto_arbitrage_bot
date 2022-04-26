@@ -37,7 +37,27 @@ Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 
 ## Installation
 
-Fill out credentials in parameters.yaml
+Fill out parameters.yaml
+
+```yaml
+KUCOIN_YOUR_API_KEY: ${KUCOIN_YOUR_API_KEY}
+KUCOIN_YOUR_SECRET: ${KUCOIN_YOUR_SECRET}
+KUCOIN_YOUR_PASS: ${KUCOIN_YOUR_PASS}
+# trade.py parameters
+fiat_cost_per_trade: 50.00
+fiat_unit_per_trade: USD
+# historical.py and forecasting.py parameters
+url: "https://api.kucoin.com"
+start_date: "2022-03-10 10:00:00"
+end_date: "2022-03-10 10:05:00"
+kline_type: "1min"
+# bellman ford parameters
+exchange: 'Kucoin'
+# taker fee in decimal
+taker_fee: 0.001
+# tri arb parameters
+minimum_perc_tri_arb_profit: 0.1
+```
 
 To use docker you must have docker desktop available with docker compose:
 
@@ -83,4 +103,4 @@ ADA: DdzFFzCqrhtBuwQRtRKNSVca58HDwicLx5aDWn8K5pyg36665BL5s6WBLAc9bCTxWk15MFiefoe
 
 ## TODO
 
-Add trading implementation of bellman ford profit in bf_arb_ops table. [Gemini](https://docs.gemini.com/rest-api/#sandbox) and [Coinbase](https://docs.cloud.coinbase.com/exchange/docs/sandbox) sandbox implementations.
+[Gemini](https://docs.gemini.com/rest-api/#sandbox) and [Coinbase](https://docs.cloud.coinbase.com/exchange/docs/sandbox) sandbox implementations.

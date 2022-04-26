@@ -174,13 +174,19 @@ def execute_fwd_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> 
                 logger.info("Forward Triangle Arbitrage successful")
                 return True
             else:
-                logger.info("Order 3 not filled successfully, cancelling arbitrage op")
+                logger.info(
+                    "Forward Triangle Arbitrage Order 3 not filled successfully, cancelling arbitrage op"
+                )
                 return False
         else:
-            logger.info("Order 2 not filled successfully, cancelling arbitrage op")
+            logger.info(
+                "Forward Triangle Arbitrage Order 2 not filled successfully, cancelling arbitrage op"
+            )
             return False
     else:
-        logger.info("Order 1 not filled successfully, cancelling arbitrage op")
+        logger.info(
+            "Forward Triangle Arbitrage Order 1 not filled successfully, cancelling arbitrage op"
+        )
         return False
 
 
@@ -278,13 +284,19 @@ def execute_rev_tri_arbitrage(client: Trade, row: pd.DataFrame, cost: float) -> 
                 logger.info("Reverse Triangle Arbitrage successful")
                 return True
             else:
-                logger.info("Order 3 not filled successfully, cancelling arbitrage op")
+                logger.info(
+                    "Reverse Triangle Arbitrage Order 3 not filled successfully, cancelling arbitrage op"
+                )
                 return False
         else:
-            logger.info("Order 2 not filled successfully, cancelling arbitrage op")
+            logger.info(
+                "Reverse Triangle Arbitrage Order 2 not filled successfully, cancelling arbitrage op"
+            )
             return False
     else:
-        logger.info("Order 1 not filled successfully, cancelling arbitrage op")
+        logger.info(
+            "Reverse Triangle Arbitrage Order 1 not filled successfully, cancelling arbitrage op"
+        )
         return False
 
 
@@ -364,107 +376,51 @@ def execute_triangular_arbitrage():
             execute_fwd_tri_arbitrage(client, row, cost)
 
 
-def execute_bellman_ford():
+def execute_bellman_ford(client: Trade) -> bool:
     """Execute Bellman Ford Trading Opportunity."""
     con = sqlite3.connect("db/kucoin.db")
+    cur = con.cursor()
     bf_profit_query = pd.read_sql_query("select * from bf_arb_ops", con=con)
     bf_profit_query = bf_profit_query[bf_profit_query["attempted"] == "N"]
-    con.close()
     for idx, row in bf_profit_query.iterrows():
         path = row["path"].strip("][").split(", ")
         trade_type = row["trade_type"].strip("][").split(", ")
         sizes = row["sizes"].strip("][").split(", ")
         rates = row["rates"].strip("][").split(", ")
         for i in range(len(path)):
-            print(path[i])
-
-    # size = cost / row["ba_bsta"]  # bc_bstb,ca_bstb
-    # if size < row["ba_bstasize"]:
-    #     order_ca = client.create_limit_order(
-    #         symbol="%s-%s" % (row["b"], row["a"]),
-    #         side="buy",
-    #         price=str(row["ba_bsta"]),
-    #         size=str(size),
-    #         remark="test",
-    #         stp="CN",
-    #         trade_type="TRADE",
-    #         time_in_force="FOK",
-    #     )
-    # else:
-    #     size = row["ba_bstasize"]
-    #     order_ca = client.create_limit_order(
-    #         symbol="%s-%s" % (row["b"], row["a"]),
-    #         side="buy",
-    #         price=str(row["ba_bsta"]),
-    #         size=str(size),
-    #         remark="test",
-    #         stp="CN",
-    #         trade_type="TRADE",
-    #         time_in_force="FOK",
-    #     )
-    # if order_handling(order_ca) is True:
-    #     size = (row["ba_bsta"] * size) / row["bc_bstb"]  # bc_bstb,ca_bstb
-    #     if size < row["bc_bstbsize"]:
-    #         order_bc = client.create_limit_order(
-    #             symbol="%s-%s" % (row["b"], row["c"]),
-    #             side="sell",
-    #             price=str(row["bc_bstb"]),
-    #             size=str(size),
-    #             remark="test",
-    #             stp="CN",
-    #             trade_type="TRADE",
-    #             time_in_force="FOK",
-    #         )
-    #     else:
-    #         size = row["bc_bstbsize"]
-    #         order_bc = client.create_limit_order(
-    #             symbol="%s-%s" % (row["b"], row["c"]),
-    #             side="sell",
-    #             price=str(row["bc_bstb"]),
-    #             size=str(size),
-    #             remark="test",
-    #             stp="CN",
-    #             trade_type="TRADE",
-    #             time_in_force="FOK",
-    #         )
-    #     if order_handling(order_bc) is True:
-    #         size = (row["bc_bstb"] * size) / row["ca_bstb"]  # bc_bstb,ca_bstb
-    #         if size < row["ca_bstbsize"]:
-    #             order_bc = client.create_limit_order(
-    #                 symbol="%s-%s" % (row["c"], row["a"]),
-    #                 side="sell",
-    #                 price=str(row["ca_bstb"]),
-    #                 size=size,
-    #                 remark="test",
-    #                 stp="CN",
-    #                 trade_type="TRADE",
-    #                 time_in_force="FOK",
-    #             )
-    #         else:
-    #             size = row["ca_bstbsize"]
-    #             order_bc = client.create_limit_order(
-    #                 symbol="%s-%s" % (row["c"], row["a"]),
-    #                 side="sell",
-    #                 price=str(row["ca_bstb"]),
-    #                 size=size,
-    #                 remark="test",
-    #                 stp="CN",
-    #                 trade_type="TRADE",
-    #                 time_in_force="FOK",
-    #             )
-    #         if order_handling(order_bc) is True:
-    #             logger.info("Reverse Triangle Arbitrage successful")
-    #             return True
-    #         else:
-    #             logger.info("Order 3 not filled successfully, cancelling arbitrage op")
-    #             return False
-    #     else:
-    #         logger.info("Order 2 not filled successfully, cancelling arbitrage op")
-    #         return False
-    # else:
-    #     logger.info("Order 1 not filled successfully, cancelling arbitrage op")
-    #     return False
-    return None
+            order = client.create_limit_order(
+                symbol="%s" % (path[i]),
+                side=trade_type[i],
+                price=rates[i],
+                size=sizes[i],
+                remark="test",
+                stp="CN",
+                trade_type="TRADE",
+                time_in_force="FOK",
+            )
+            if order_handling(order) is True:
+                logger.info(
+                    "Bellman Ford arbitrage order %d successful for %s" % (i, path[i])
+                )
+                continue
+            else:
+                logger.info(
+                    "Bellman Ford arbitrage order %d not filled successfully for %s, cancelling arbitrage op"
+                    % (i, path[i])
+                )
+                break
+        table = "bf_arb_ops"
+        update_table = "UPDATE %s SET %s = %s WHERE %s = %s;" % (
+            table,
+            "attempted",
+            "Y",
+            "path",
+            row["path"],
+        )
+        logger.info("Updating a row of data")
+        cur.execute(update_table)
+        con.commit()
+        con.close()
 
 
 if __name__ == "__main__":

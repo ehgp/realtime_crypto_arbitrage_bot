@@ -19,7 +19,7 @@ import logging
 import logging.config
 from pathlib import Path
 from analysis import find_tri_arb_ops, bellman_ford_graph
-from trade import execute_triangular_arbitrage
+from trade import execute_triangular_arbitrage, execute_bellman_ford
 
 
 def _load_config():
