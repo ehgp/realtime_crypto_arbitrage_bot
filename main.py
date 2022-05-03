@@ -38,7 +38,7 @@ def run_process(process):
 def main():
     """Execute Main."""
     if cf["exchange"] == "Kucoin":
-        processes = ("kucoin.py", "kucoinaccount.py")
+        processes = ("kucoinlive.py", "kucoinaccount.py")
         pool = Pool(processes=2)
         pool.map(run_process, processes)
     # if cf["exchange"] == "Coinbase Pro":

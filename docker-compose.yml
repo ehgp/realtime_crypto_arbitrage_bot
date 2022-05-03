@@ -24,7 +24,7 @@ services:
   - ./:/app
   - ./db/:/app/db
   # Command already passed in dockerfile
-  command: "python kucoin.py"
+  command: "python kucoinlive.py"
   # If you must use pipenv comment out requirements.txt install and uncomment the pipenv run commands in dockerfile
   # command: "pipenv run python live.py"
 
