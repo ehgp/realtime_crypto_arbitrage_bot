@@ -413,7 +413,7 @@ class SuperOpportunityFinder:
 
 
 def get_opportunities_for_collection(exchanges, collections, name=True):
-    """Get opportunities for collection"""
+    """Get opportunities for collection."""
     finder = SuperOpportunityFinder(exchanges, collections, name=name)
     return finder.get_opportunities()
 

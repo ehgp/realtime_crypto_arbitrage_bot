@@ -13,7 +13,7 @@ class NegativeWeightFinderMulti(NegativeWeightFinder):
     """Negative Weight Finder Multi."""
 
     def __init__(self, graph: nx.MultiGraph):
-        """Initialize"""
+        """Initialize."""
         super(NegativeWeightFinderMulti, self).__init__(graph)
         self.new_graph = nx.DiGraph()
 
