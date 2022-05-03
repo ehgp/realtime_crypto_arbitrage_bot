@@ -33,7 +33,7 @@ Triangular arbitrage bots are slightly different than regular arbitrage bots bec
 
 Triangular arbitrage works in the same logic as in foreign exchange market. It exploits from the market inefficiencies in crypto market. Below example explains how it works:
 
-[![](/_static/triangular.jpg)](/_static/triangular.jpg)
+[![](/_static/triangular.jpg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/triangular.jpg)
 **Figure 1** - Triangular Arbitrage
 
 ### Parameters of Our Triangular Arbitrage Bot
@@ -54,7 +54,7 @@ In this model there are multiple notebooks generated for different purposes. In 
 
 Firstly, configuration yaml is loaded and dictionary of setting is returned in this notebook. Then, log files are created with the date stamp added on each file name to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables.
 
-[![](/_static/tickers.png)](/_static/tickers.png)
+[![](/_static/tickers.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png)
 **Figure 2** - kucoin.tickers table
 
 ### Account.py
@@ -71,7 +71,7 @@ The opportunities detected in analysis.py are executed in this notebook. Trade o
 
 ### Data Flow for This Project
 
-[![](/_static/dataflow.png)](/_static/dataflow.png)
+[![](/_static/dataflow.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.png)
 **Figure 3** - Data Flow Diagram
 
 ## Price Prediction with Time Series Analysis
@@ -85,7 +85,7 @@ NBeat
 Analysis
 Results
 
-[![](/_static/graph.png)](/_static/graph.png)
+[![](/_static/graph.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png)
 **Figure 4** - Bellman Ford Graph
 
 ## Comparing the Results of the Models
