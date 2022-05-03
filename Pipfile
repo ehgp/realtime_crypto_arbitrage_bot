@@ -22,4 +22,4 @@ networkx = {version = "==2.7.1", index="pypi"}
 flake8 = {version = "==3.9.0", index="pypi"}
 pydocstyle = {version = "==6.0.0", index="pypi"}
 pydotplus = {version = "==2.0.2", index="pypi"}
-ccxt = {version = "==1.42.99", index="pypi"}
+ccxt = {version = "==1.81.30", index="pypi"}
