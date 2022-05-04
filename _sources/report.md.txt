@@ -85,7 +85,7 @@ NBeat
 Analysis
 Results
 
-[![](/_static/graph.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png)
+[![](/_static/graph.jpg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png)
 **Figure 4** - Bellman Ford Graph
 
 ## Comparing the Results of the Models
