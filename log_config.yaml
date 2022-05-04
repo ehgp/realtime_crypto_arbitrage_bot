@@ -1,0 +1,67 @@
+version: 1
+
+disable_existing_loggers: False
+formatters:
+  simple:
+    format: "%(asctime)s %(name)-5s %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+  extended:
+    format: "%(asctime)s %(name)s %(levelname)s: %(message)s"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: simple
+    filename: log/log.log
+
+loggers:
+  __main__:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  networkx:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  bellmanford:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  forecasting:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  account:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  analysis:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  history:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  live:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+
+  trade:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False

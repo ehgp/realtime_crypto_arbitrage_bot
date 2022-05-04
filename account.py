@@ -1,4 +1,8 @@
-"""Account Info."""
+"""Account Info.
+
+Websocket feed that will provide any account changes and trade information as it happens in real time.
+Returns it into two DB tables that can be used for order handling and account management.
+"""
 import pandas as pd
 from codecs import lookup
 import sqlite3
@@ -8,7 +12,25 @@ import asyncio
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 import datetime as dt
-import re
+import logging
+import logging.config
+from pathlib import Path
+
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
 
 
 def _load_config():
@@ -44,10 +66,17 @@ pd.set_option("display.max_colwidth", None)
 async def main():
     """Execute Main."""
 
-    async def deal_msg(msg):
-        """Message Handler."""
+    async def deal_msg(msg: dict) -> None:
+        """Message Handler.
+
+        Args:
+            msg: dictionary containing subject and data of request.
+
+        Returns:
+            database storage and function actions.
+        """
         if msg["topic"] == "/account/balance":
-            print(f'got {msg["subject"]}:{msg["data"]}')
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "acc_bal"
@@ -60,7 +89,7 @@ async def main():
         (total text, available text,  availableChange text, \
         currency text, hold text, holdChange text, relationEvent text, relationEventId text, \
         relationContext text, time text, )"""
-            print("Creating Table acc_info")
+            logger.info("Creating Table acc_info")
             cur.execute(create_table)
             con.commit()
             insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
@@ -68,13 +97,12 @@ async def main():
                 columns,
                 placeholders,
             )
-            print(insert_table)
-            print("Inserting a row of data")
+            logger.info("Inserting a row of data")
             cur.execute(insert_table)
             con.commit()
             con.close()
         if msg["topic"] == "/spotMarket/tradeOrders":
-            print(f'got {msg["subject"]}:{msg["data"]}')
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
             cur = con.cursor()
             table = "trade_info"
@@ -86,7 +114,7 @@ async def main():
         (symbol text, orderType text,  side text, \
         orderId text, type text, orderTime text, size text, filledSize text, \
         price text, clientOid text, remainSize text, status text, ts text, )"""
-            print("Creating Table trade_info")
+            logger.info("Creating Table trade_info")
             cur.execute(create_table)
             con.commit()
             insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
@@ -94,26 +122,23 @@ async def main():
                 columns,
                 placeholders,
             )
-            print(insert_table)
-            print("Inserting a row of data")
+            logger.info("Inserting a row of data")
             cur.execute(insert_table)
             con.commit()
             con.close()
 
-    # is public
-    # client = WsToken()
     # is private
+    # client = WsToken(key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False)
+    # is sandbox
     client = WsToken(
         key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     )
 
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=True)
-    # await ws_client.subscribe("/market/ticker:ETH-USDT")
-    # await ws_client.subscribe("/market/ticker:all")
     await ws_client.subscribe("/account/balance")
     await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
-        print("sleeping to keep loop open")
+        logger.info("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)
 
 
@@ -122,5 +147,5 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
     except KeyboardInterrupt as e:
-        print(f"Closing Loop {e}")
+        logger.info("Closing Loop %r", e)
         pass

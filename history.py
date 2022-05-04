@@ -1,13 +1,20 @@
-"""Historical Market Data."""
-from kucoin.client import Market
+"""Historical Market Data.
+
+Grabs realtime ticker data and pulls historical data from it according to what is defined
+from parameters.yaml then stores it in historical table in database.
+
+Daniel wanted a way to grab all tickers for his forecasting and not real time tickers to analyze
+historical data from, therefore this is left as a deprecated script for others to use.
+"""
 import pandas as pd
 import sqlite3
 import datetime as dt
 import requests
-import time
-import json
 import os
 import yaml
+import logging
+import logging.config
+from pathlib import Path
 
 
 def _load_config():
@@ -27,6 +34,22 @@ def _load_config():
     return config_defs
 
 
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+
 cf = _load_config()
 
 # pandas controls on how much data to see
@@ -37,7 +60,14 @@ pd.set_option("display.max_colwidth", None)
 
 
 def gimme_hist():
-    """Give Me Historical Data from API."""
+    """Give Me Historical Data from API.
+
+    Grabs realtime ticker data and pulls historical data from it according to what is defined
+    from parameters.yaml then stores it in historical table in database.
+
+    Returns:
+        Historical table in kucoin.db
+    """
     con = sqlite3.connect("db/kucoin.db")
     cur = con.cursor()
     df = pd.read_sql_query("SELECT * FROM tickers", con)
@@ -73,15 +103,16 @@ def gimme_hist():
         dt.datetime.timestamp(dt.datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S"))
     )
     for i, row in df.iterrows():
-        symbol = f"{row['baseTick']}-{row['quoteTick']}"
+        symbol = "%s-%s" % (row["baseTick"], row["quoteTick"])
 
         res = requests.get(
             url
-            + f"/api/v1/market/candles?type={kline_type}&symbol={symbol}&startAt={start_at}&endAt={end_at}"
+            + "/api/v1/market/candles?type=%s&symbol=%s&startAt=%s&endAt=%s"
+            % (kline_type, symbol, start_at, end_at)
         )
 
         jsonRes = res.json()
-        try:
+        if "data" in jsonRes.keys():
             for i in jsonRes["data"]:
                 con = sqlite3.connect("db/kucoin.db")
                 cur = con.cursor()
@@ -105,7 +136,7 @@ def gimme_hist():
                     ]
                 )
                 create_table = """CREATE TABLE IF NOT EXISTS historical (quoteTick text, baseTick text, start_time text, opening_price text, closing_price text, highest_price text, lowest_price text, transaction_amount text, transaction_volume text)"""
-                print("Creating Table historical")
+                logger.info("Creating Table historical")
                 cur.execute(create_table)
                 con.commit()
                 insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
@@ -113,12 +144,11 @@ def gimme_hist():
                     columns,
                     placeholders,
                 )
-                print("Inserting a row of data")
+                logger.info("Inserting a row of data")
                 cur.execute(insert_table)
                 con.commit()
                 con.close()
-        except Exception as e:
-            print(f"Exception Error {e}")
+        else:
             pass
 
 
