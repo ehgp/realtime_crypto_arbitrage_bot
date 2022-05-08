@@ -14,8 +14,7 @@ ENV KUCOIN_YOUR_API_KEY=${KUCOIN_YOUR_API_KEY}
 ENV KUCOIN_YOUR_SECRET=${KUCOIN_YOUR_SECRET}
 ENV KUCOIN_YOUR_PASS=${KUCOIN_YOUR_PASS}
 # Install pipenv and compilation dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev graphviz
-
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev graphviz parallel
 WORKDIR /app
 
 # Install application into container
