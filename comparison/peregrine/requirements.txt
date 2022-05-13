@@ -1,0 +1,4 @@
+numpy==1.19.4
+ccxt==1.42.99
+networkx==2.2rc1.dev20210313013043
+Cython==0.29.17

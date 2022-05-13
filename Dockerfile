@@ -5,29 +5,29 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
-
+# EXPOSE 3080
+# ENV PORT 3080
+# ARG KUCOIN_YOUR_API_KEY
+# ARG KUCOIN_YOUR_SECRET
+# ARG KUCOIN_YOUR_PASS
+ENV KUCOIN_YOUR_API_KEY=${KUCOIN_YOUR_API_KEY}
+ENV KUCOIN_YOUR_SECRET=${KUCOIN_YOUR_SECRET}
+ENV KUCOIN_YOUR_PASS=${KUCOIN_YOUR_PASS}
 # Install pipenv and compilation dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev
-
-# Install python dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
+RUN apt-get update && apt-get install -y --no-install-recommends gcc python3-dev libssl-dev graphviz parallel
 WORKDIR /app
 
 # Install application into container
 COPY . .
+RUN pip install --upgrade pip
 
+RUN pip install -r requirements.txt
 # Run the application
+# CMD ["python", "live.py"]
 
 
-# ENTRYPOINT ["python", "-m", "http.server"]
-# CMD ["--directory", "directory", "3080"]
-# CMD python main.py runserver 0.0.0.0:3080
-EXPOSE 3080
-# ENV PORT 3080
-# CMD [ "pipenv", "run", "python", "/app/bin/main.py" ]
-# CMD ["echo", "no testing"]
+# If you must use pipenv comment out requirements.txt install first
+# RUN pip install pipenv==2022.1.8
+# RUN pipenv install --verbose 3
 # Run the application
-# ENTRYPOINT ["python", "-m", "http.server"]
-# CMD ["--directory", "directory", "8000"]
+# CMD ["pipenv", "run", "python", "live.py"]
