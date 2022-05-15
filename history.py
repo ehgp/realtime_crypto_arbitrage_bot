@@ -6,15 +6,16 @@ from parameters.yaml then stores it in historical table in database.
 Daniel wanted a way to grab all tickers for his forecasting and not real time tickers to analyze
 historical data from, therefore this is left as a deprecated script for others to use with the realtime data.
 """
-import pandas as pd
-import sqlite3
+
 import datetime as dt
-import requests
-import os
-import yaml
 import logging
 import logging.config
+import os
 from pathlib import Path
+import pandas as pd
+import requests
+import sqlite3
+import yaml
 
 
 def _load_config():
@@ -135,7 +136,9 @@ def gimme_hist():
                         "transaction_volume",
                     ]
                 )
-                create_table = """CREATE TABLE IF NOT EXISTS historical (quoteTick text, baseTick text, start_time text, opening_price text, closing_price text, highest_price text, lowest_price text, transaction_amount text, transaction_volume text)"""
+                create_table = """CREATE TABLE IF NOT EXISTS historical (quoteTick text, \
+baseTick text, start_time text, opening_price text, closing_price text, highest_price text, \
+lowest_price text, transaction_amount text, transaction_volume text)"""
                 logger.info("Creating Table historical")
                 cur.execute(create_table)
                 con.commit()

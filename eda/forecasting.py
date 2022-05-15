@@ -1,17 +1,19 @@
 """Historical Market Data all tickers for forecasting.
 
-For all tickers available in Kucoin API, get historical data for all of them according to the following parameters:
+For all tickers available in Kucoin API, get
+historical data for all of them according to the following parameters:
 start_date, end_date, kline_type
 """
-import pandas as pd
-import sqlite3
+
 import datetime as dt
-import requests
-import os
-import yaml
 import logging
 import logging.config
+import os
 from pathlib import Path
+import pandas as pd
+import requests
+import sqlite3
+import yaml
 
 
 def _load_config():

@@ -33,6 +33,6 @@ RUN pip install -r requirements.txt
 
 # If you must use pipenv comment out requirements.txt install first
 # RUN pip install pipenv==2022.1.8
-# RUN pipenv install --verbose 3
+# RUN pipenv install --verbose
 # Run the application
 # CMD ["pipenv", "run", "python", "main.py"]
