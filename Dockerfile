@@ -24,9 +24,9 @@ WORKDIR /app
 
 # Install application into container
 COPY . .
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip --no-cache-dir
 
-RUN pip install -r requirements.txt
+RUN pip install --requirement requirements.txt --no-cache-dir
 # Run the application
 # CMD ["python", "main.py"]
 

@@ -1,0 +1,7 @@
+ignored:
+    - DL3008 # warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+    - DL3009 #info: Delete the apt-get lists after installing something
+    - DL3042 #warning: Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`
+    - DL3013 #warning: Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`
+    - DL3042 #warning: Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`
+    - DL3059 #info: Multiple consecutive `RUN` instructions. Consider consolidation.

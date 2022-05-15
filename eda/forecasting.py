@@ -9,10 +9,11 @@ import datetime as dt
 import logging
 import logging.config
 import os
+import sqlite3
 from pathlib import Path
+
 import pandas as pd
 import requests
-import sqlite3
 import yaml
 
 
