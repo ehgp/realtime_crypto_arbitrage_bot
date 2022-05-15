@@ -43,28 +43,26 @@ In this study, Kucoin exchange is used for analysis. Necessary API keys are gene
 
 In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the "Live.py" notebook to gather real time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs' ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and time stamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so none of the opportunities can be missed. 
 
-_Insert dataset image._ 
+[![](/_static/dataset.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataset.png)
 
 ### Exploratory data analysis
 
 The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 colums and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type. 
 
-_Insert dataset image_ 
-_Insert dtypes image_
-_Insert .describe image_ 
+[![](/_static/describe.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/describe.jpeg)
 
 BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset. 
 
-_Insert sort values by size image_
+[![](/_static/sort.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg)
 
 When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.  
 
-_Insert the size correlation image_
+[![](/_static/bid-ask-size correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size correlation.png)
 
 There is another interesting correlation is between Bitcoin's price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum's trading pairs. 
 
-_Insert btc's correlation image_
-_Insert eth's correlation image_
+[![](/_static/btc size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc size price correlation.png)
+[![](/_static/eth size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth size price correlation.pngg)
 
 ### Price Prediction with Time Series Analysis
 
@@ -72,9 +70,42 @@ In this study, we did time series analysis to have a better understanding of the
 
 **AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ..._CHECK WITH DANIEL p d q values, etc._ 
 
+[![](/_static/AUTOARIMA MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA MAPE.jpeg)
+
+[![](/_static/AUTOARIMA chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 1.jpeg)
+
+[![](/_static/AUTOARIMA scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA scores.jpeg)
+
+[![](/_static/AUTOARIMA chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 2.jpeg)
+
+
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ..._CHECK WITH DANIEL_
 
+[![](/_static/SARIMAX scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX scores.jpeg)
+
+[![](/_static/SARIMAX chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 1.jpeg)
+
+[![](/_static/SARIMAX MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX MAPE.jpeg)
+
+[![](/_static/SARIMAX chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 2.jpeg)
+
 **LSTM**, 
+
+[![](/_static/LSTM chart 6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 6.jpeg)
+
+[![](/_static/LSTM chart 5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 5.jpeg)
+
+[![](/_static/LSTM scores 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 2.jpegg)
+
+[![](/_static/LSTM scores 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 1.jpegg)
+
+[![](/_static/LSTM chart 4.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 4.jpeg)
+
+[![](/_static/LSTM chart 3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 3.jpeg)
+
+[![](/_static/LSTM chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 2.jpeg)
+
+[![](/_static/LSTM chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 1.jpeg)
 
 ## How does our bot work?
 
