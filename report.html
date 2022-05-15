@@ -64,7 +64,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#how-does-our-bot-work">How does our bot work?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#live-py">Live.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exchangelive-py"><em>exchange</em>live.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#account-py">Account.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#analysis-py">Analysis.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#trade-py">Trade.py</a></li>
@@ -120,6 +120,39 @@
              
   <section id="report">
 <h1>Report<a class="headerlink" href="#report" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="#report">Report</a></p>
+<ul>
+<li><p><a class="reference external" href="#abstract">Abstract</a></p></li>
+<li><p><a class="reference external" href="#introduction">Introduction</a></p>
+<ul>
+<li><p><a class="reference external" href="#what-is-a-crypto-tradingarbitrage-bot">What is a Crypto Trading/Arbitrage Bot?</a></p></li>
+<li><p><a class="reference external" href="#parameters-of-our-triangular-arbitrage-bot">Parameters of Our Triangular Arbitrage Bot</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#dataset">Dataset</a></p>
+<ul>
+<li><p><a class="reference external" href="#exploratory-data-analysis">Exploratory data analysis</a></p></li>
+<li><p><a class="reference external" href="#price-prediction-with-time-series-analysis">Price Prediction with Time Series Analysis</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#how-does-our-bot-work">How does our bot work?</a></p>
+<ul>
+<li><p><a class="reference external" href="#exchangelivepy"><em>exchange</em>live.py</a></p></li>
+<li><p><a class="reference external" href="#accountpy">Account.py</a></p></li>
+<li><p><a class="reference external" href="#analysispy">Analysis.py</a></p></li>
+<li><p><a class="reference external" href="#tradepy">Trade.py</a></p></li>
+<li><p><a class="reference external" href="#data-flow-for-this-project">Data Flow for This Project</a></p></li>
+<li><p><a class="reference external" href="#results-of-the-triangular-arbitrage-model">Results of the Triangular Arbitrage Model</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="#bellman-ford-algorithm">Bellman-Ford Algorithm</a></p></li>
+<li><p><a class="reference external" href="#comparing-the-results-of-the-models">Comparing the Results of the Models</a></p></li>
+<li><p><a class="reference external" href="#conclusion">Conclusion</a></p></li>
+<li><p><a class="reference external" href="#references">References</a></p></li>
+</ul>
+</li>
+</ul>
 <section id="abstract">
 <h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h2>
 <p>The purpose of this study is to create a crypto arbitrage bot which allows users to execute automated trades. Triangular arbitrage is chosen as the arbitrage method, so the aim is to take advantage of the price differences between three different pairs. Kucoin is the chosen exchange for this project. The Bellman-Ford algorithm is also used as a second arbitrage model which computes the shortest path in a single source vortex.</p>
@@ -162,40 +195,40 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <p>BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg"><img alt="_images/sort.jpeg" src="_images/sort.jpeg" /></a></p>
 <p>When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.</p>
-<p>[![](/_static/bid-ask-size correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size correlation.png)</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.png"><img alt="_images/bid-ask-size-correlation.png" src="_images/bid-ask-size-correlation.png" /></a></p>
 <p>There is another interesting correlation is between Bitcoin’s price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum’s trading pairs.</p>
-<p>[![](/_static/btc size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc size price correlation.png)
-[![](/_static/eth size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth size price correlation.pngg)</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc-size-price-correlation.png"><img alt="_images/btc-size-price-correlation.png" src="_images/btc-size-price-correlation.png" /></a>
+<a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.pngg"><img alt="_images/eth-size-price-correlation.png" src="_images/eth-size-price-correlation.png" /></a></p>
 </section>
 <section id="price-prediction-with-time-series-analysis">
 <h3>Price Prediction with Time Series Analysis<a class="headerlink" href="#price-prediction-with-time-series-analysis" title="Permalink to this headline"></a></h3>
 <p>In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin’s price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin’s price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies’ prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.</p>
 <p><strong>AUTOARIMA</strong>, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are …<em>CHECK WITH DANIEL p d q values, etc.</em></p>
-<p>[![](/_static/AUTOARIMA MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA MAPE.jpeg)</p>
-<p>[![](/_static/AUTOARIMA chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 1.jpeg)</p>
-<p>[![](/_static/AUTOARIMA scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA scores.jpeg)</p>
-<p>[![](/_static/AUTOARIMA chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 2.jpeg)</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg"><img alt="_images/AUTOARIMA-MAPE.jpeg" src="_images/AUTOARIMA-MAPE.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg"><img alt="_images/AUTOARIMA-chart-1.jpeg" src="_images/AUTOARIMA-chart-1.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg"><img alt="_images/AUTOARIMA-scores.jpeg" src="_images/AUTOARIMA-scores.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg"><img alt="_images/AUTOARIMA-chart-2.jpeg" src="_images/AUTOARIMA-chart-2.jpeg" /></a></p>
 <p><strong>SARIMAX</strong>, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model’s results are …<em>CHECK WITH DANIEL</em></p>
-<p>[![](/_static/SARIMAX scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX scores.jpeg)</p>
-<p>[![](/_static/SARIMAX chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 1.jpeg)</p>
-<p>[![](/_static/SARIMAX MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX MAPE.jpeg)</p>
-<p>[![](/_static/SARIMAX chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 2.jpeg)</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg"><img alt="_images/SARIMAX-scores.jpeg" src="_images/SARIMAX-scores.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg"><img alt="_images/SARIMAX-chart-1.jpeg" src="_images/SARIMAX-chart-1.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg"><img alt="_images/SARIMAX-MAPE.jpeg" src="_images/SARIMAX-MAPE.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-2.jpeg"><img alt="_images/SARIMAX-chart-2.jpeg" src="_images/SARIMAX-chart-2.jpeg" /></a></p>
 <p><strong>LSTM</strong>,</p>
-<p>[![](/_static/LSTM chart 6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 6.jpeg)</p>
-<p>[![](/_static/LSTM chart 5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 5.jpeg)</p>
-<p>[![](/_static/LSTM scores 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 2.jpegg)</p>
-<p>[![](/_static/LSTM scores 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 1.jpegg)</p>
-<p>[![](/_static/LSTM chart 4.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 4.jpeg)</p>
-<p>[![](/_static/LSTM chart 3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 3.jpeg)</p>
-<p>[![](/_static/LSTM chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 2.jpeg)</p>
-<p>[![](/_static/LSTM chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 1.jpeg)</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg"><img alt="_images/LSTM-chart-6.jpeg" src="_images/LSTM-chart-6.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg"><img alt="_images/LSTM-chart-5.jpeg" src="_images/LSTM-chart-5.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpegg"><img alt="_images/LSTM-scores-2.jpeg" src="_images/LSTM-scores-2.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpegg"><img alt="_images/LSTM-scores-1.jpeg" src="_images/LSTM-scores-1.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-4.jpeg"><img alt="_images/LSTM-chart-4.jpeg" src="_images/LSTM-chart-4.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg"><img alt="_images/LSTM-chart-3.jpeg" src="_images/LSTM-chart-3.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg"><img alt="_images/LSTM-chart-2.jpeg" src="_images/LSTM-chart-2.jpeg" /></a></p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg"><img alt="_images/LSTM-chart-1.jpeg" src="_images/LSTM-chart-1.jpeg" /></a></p>
 </section>
 </section>
 <section id="how-does-our-bot-work">
 <h2>How does our bot work?<a class="headerlink" href="#how-does-our-bot-work" title="Permalink to this headline"></a></h2>
 <p>In this model there are multiple notebooks generated for different purposes. In this section, we will dive into these notebooks and explain how they work.</p>
-<section id="live-py">
-<h3>Live.py<a class="headerlink" href="#live-py" title="Permalink to this headline"></a></h3>
+<section id="exchangelive-py">
+<h3><em>exchange</em>live.py<a class="headerlink" href="#exchangelive-py" title="Permalink to this headline"></a></h3>
 <p>Firstly, configuration yaml is loaded and dictionary of setting is returned in this notebook. Then, log files are created with the date stamp added on each file name to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin’s best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png"><img alt="_images/tickers.png" src="_images/tickers.png" /></a>
 <strong>Figure 2</strong> - kucoin.tickers table</p>
