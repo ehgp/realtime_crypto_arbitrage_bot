@@ -4,12 +4,58 @@ For all tickers available in Kucoin API, get historical data for all of them acc
 start_date, end_date, kline_type
 """
 import pandas as pd
+import sqlite3
 import datetime as dt
 import requests
-import sqlite3
+import os
+import yaml
+import logging
+import logging.config
+from pathlib import Path
+
+
+def _load_config():
+    """Load the configuration yaml and return dictionary of setttings.
+
+    Returns:
+        yaml as a dictionary.
+    """
+    config_path = os.path.dirname(os.path.realpath(__file__))
+    config_path = os.path.join(config_path, "../parameters.yaml")
+    with open(config_path, "r") as config_file:
+        config_defs = yaml.safe_load(config_file.read())
+
+    if config_defs.values() is None:
+        raise ValueError("parameters yaml file incomplete")
+
+    return config_defs
+
+
+# Logging
+path = Path(os.getcwd())
+Path("log").mkdir(parents=True, exist_ok=True)
+log_config = Path(path, "log_config.yaml")
+timestamp = "{:%Y_%m_%d_%H_%M_%S}".format(dt.datetime.now())
+with open(log_config, "r") as log_file:
+    config_dict = yaml.safe_load(log_file.read())
+    # Append date stamp to the file name
+    log_filename = config_dict["handlers"]["file"]["filename"]
+    base, extension = os.path.splitext(log_filename)
+    base2 = "_" + os.path.splitext(os.path.basename(__file__))[0] + "_"
+    log_filename = "{}{}{}{}".format(base, base2, timestamp, extension)
+    config_dict["handlers"]["file"]["filename"] = log_filename
+    logging.config.dictConfig(config_dict)
+logger = logging.getLogger(__name__)
+
+cf = _load_config()
+
+url = cf["url"]
+start_date = cf["start_date"]
+end_date = cf["end_date"]
+kline_type = cf["kline_type"]
+
 
 symbols = []
-url = "https://api.kucoin.com"
 res = requests.get(url + "/api/v1/market/allTickers")
 
 jsonRes = res.json()
@@ -24,10 +70,6 @@ pd.set_option("display.width", None)
 pd.set_option("display.max_colwidth", None)
 historical_df = pd.DataFrame()
 df_list = []
-url = "https://api.kucoin.com"
-start_date = "2021-02-20 00:00:00"
-end_date = "2022-02-20 00:00:00"
-kline_type = "1day"
 start_at = int(
     dt.datetime.timestamp(dt.datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S"))
 )
@@ -62,7 +104,7 @@ historical_df = historical_df.append(
         ],
     )
 )
-con = sqlite3.connect("db/kucoin.db")
+con = sqlite3.connect("../db/kucoin.db")
 historical_df.to_sql(name="historical_all_tickers", con=con, index=False)
 df = pd.read_sql_query("select * from historical_all_tickers", con=con)
 con.close()

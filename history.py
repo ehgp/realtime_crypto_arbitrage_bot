@@ -1,10 +1,10 @@
-"""Historical Market Data.
+"""Historical Market Data From Realtime Data Pulls.
 
 Grabs realtime ticker data and pulls historical data from it according to what is defined
 from parameters.yaml then stores it in historical table in database.
 
 Daniel wanted a way to grab all tickers for his forecasting and not real time tickers to analyze
-historical data from, therefore this is left as a deprecated script for others to use.
+historical data from, therefore this is left as a deprecated script for others to use with the realtime data.
 """
 import pandas as pd
 import sqlite3

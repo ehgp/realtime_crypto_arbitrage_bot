@@ -21,3 +21,7 @@ https://github.com/calebpitts/CryptoArbitrageBot
 https://github.com/wardbradt/peregrine
 
 https://github.com/Kucoin/kucoin-python-sdk
+
+https://github.com/danpaquin/coinbasepro-python
+
+https://github.com/mtusman/gemini-python

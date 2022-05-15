@@ -4,7 +4,7 @@ KUCOIN_YOUR_PASS: ${KUCOIN_YOUR_PASS}
 # trade.py parameters
 fiat_cost_per_trade: 50.00
 fiat_unit_per_trade: USD
-# historical.py and forecasting.py parameters
+# history.py and forecasting.py parameters
 url: "https://api.kucoin.com"
 start_date: "2022-03-10 10:00:00"
 end_date: "2022-03-10 10:05:00"
