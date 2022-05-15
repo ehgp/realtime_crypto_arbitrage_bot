@@ -25,3 +25,5 @@ Isichenko, Michael. Quantitative Portfolio Management: The Art and Science of St
 <https://github.com/danpaquin/coinbasepro-python>
 
 <https://github.com/mtusman/gemini-python>
+
+<https://github.com/Kucoin/kucoin-python-sdk/issues/33>
