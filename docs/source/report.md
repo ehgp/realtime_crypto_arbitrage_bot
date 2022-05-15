@@ -1,8 +1,28 @@
 # Report
 
+- [Report](#report)
+  - [Abstract](#abstract)
+  - [Introduction](#introduction)
+    - [What is a Crypto Trading/Arbitrage Bot?](#what-is-a-crypto-tradingarbitrage-bot)
+    - [Parameters of Our Triangular Arbitrage Bot](#parameters-of-our-triangular-arbitrage-bot)
+  - [Dataset](#dataset)
+    - [Exploratory data analysis](#exploratory-data-analysis)
+    - [Price Prediction with Time Series Analysis](#price-prediction-with-time-series-analysis)
+  - [How does our bot work?](#how-does-our-bot-work)
+    - [*exchange*live.py](#exchangelivepy)
+    - [Account.py](#accountpy)
+    - [Analysis.py](#analysispy)
+    - [Trade.py](#tradepy)
+    - [Data Flow for This Project](#data-flow-for-this-project)
+    - [Results of the Triangular Arbitrage Model](#results-of-the-triangular-arbitrage-model)
+  - [Bellman-Ford Algorithm](#bellman-ford-algorithm)
+  - [Comparing the Results of the Models](#comparing-the-results-of-the-models)
+  - [Conclusion](#conclusion)
+  - [References](#references)
+
 ## Abstract
 
-The purpose of this study is to create a crypto arbitrage bot which allows users to execute automated trades. Triangular arbitrage is chosen as the arbitrage method, so the aim is to take advantage of the price differences between three different pairs. Kucoin is the chosen exchange for this project. The Bellman-Ford algorithm is also used as a second arbitrage model which computes the shortest path in a single source vortex. 
+The purpose of this study is to create a crypto arbitrage bot which allows users to execute automated trades. Triangular arbitrage is chosen as the arbitrage method, so the aim is to take advantage of the price differences between three different pairs. Kucoin is the chosen exchange for this project. The Bellman-Ford algorithm is also used as a second arbitrage model which computes the shortest path in a single source vortex.
 
 ## Introduction
 
@@ -41,77 +61,77 @@ In this study, Kucoin exchange is used for analysis. Necessary API keys are gene
 
 ## Dataset
 
-In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the "Live.py" notebook to gather real time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs' ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and time stamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so none of the opportunities can be missed. 
+In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the "Live.py" notebook to gather real time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs' ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and time stamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so none of the opportunities can be missed.
 
 [![](/_static/dataset.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataset.png)
 
 ### Exploratory data analysis
 
-The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 colums and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type. 
+The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 colums and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type.
 
 [![](/_static/describe.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/describe.jpeg)
 
-BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset. 
+BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset.
 
 [![](/_static/sort.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg)
 
-When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.  
+When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.
 
-[![](/_static/bid-ask-size correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size correlation.png)
+[![](/_static/bid-ask-size-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.png)
 
-There is another interesting correlation is between Bitcoin's price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum's trading pairs. 
+There is another interesting correlation is between Bitcoin's price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum's trading pairs.
 
-[![](/_static/btc size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc size price correlation.png)
-[![](/_static/eth size price correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth size price correlation.pngg)
+[![](/_static/btc-size-price-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc-size-price-correlation.png)
+[![](/_static/eth-size-price-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.pngg)
 
 ### Price Prediction with Time Series Analysis
 
 In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin's price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin's price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies' prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.
 
-**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ..._CHECK WITH DANIEL p d q values, etc._ 
+**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ..._CHECK WITH DANIEL p d q values, etc._
 
-[![](/_static/AUTOARIMA MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA MAPE.jpeg)
+[![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)
 
-[![](/_static/AUTOARIMA chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 1.jpeg)
+[![](/_static/AUTOARIMA-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg)
 
-[![](/_static/AUTOARIMA scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA scores.jpeg)
+[![](/_static/AUTOARIMA-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg)
 
-[![](/_static/AUTOARIMA chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA chart 2.jpeg)
+[![](/_static/AUTOARIMA-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg)
 
 
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ..._CHECK WITH DANIEL_
 
-[![](/_static/SARIMAX scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX scores.jpeg)
+[![](/_static/SARIMAX-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg)
 
-[![](/_static/SARIMAX chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 1.jpeg)
+[![](/_static/SARIMAX-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg)
 
-[![](/_static/SARIMAX MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX MAPE.jpeg)
+[![](/_static/SARIMAX-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg)
 
-[![](/_static/SARIMAX chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX chart 2.jpeg)
+[![](/_static/SARIMAX-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-2.jpeg)
 
-**LSTM**, 
+**LSTM**,
 
-[![](/_static/LSTM chart 6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 6.jpeg)
+[![](/_static/LSTM-chart-6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg)
 
-[![](/_static/LSTM chart 5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 5.jpeg)
+[![](/_static/LSTM-chart-5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg)
 
-[![](/_static/LSTM scores 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 2.jpegg)
+[![](/_static/LSTM-scores-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpegg)
 
-[![](/_static/LSTM scores 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM scores 1.jpegg)
+[![](/_static/LSTM-scores-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpegg)
 
-[![](/_static/LSTM chart 4.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 4.jpeg)
+[![](/_static/LSTM-chart-4.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-4.jpeg)
 
-[![](/_static/LSTM chart 3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 3.jpeg)
+[![](/_static/LSTM-chart-3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg)
 
-[![](/_static/LSTM chart 2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 2.jpeg)
+[![](/_static/LSTM-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg)
 
-[![](/_static/LSTM chart 1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM chart 1.jpeg)
+[![](/_static/LSTM-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg)
 
 ## How does our bot work?
 
 In this model there are multiple notebooks generated for different purposes. In this section, we will dive into these notebooks and explain how they work.
 
-### Live.py
+### *exchange*live.py
 
 Firstly, configuration yaml is loaded and dictionary of setting is returned in this notebook. Then, log files are created with the date stamp added on each file name to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables.
 
@@ -135,27 +155,27 @@ The opportunities detected in analysis.py are executed in this notebook. Trade o
 [![](/_static/dataflow.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.png)
 **Figure 3** - Data Flow Diagram
 
-### Results of the Triangular Arbitrage Model 
+### Results of the Triangular Arbitrage Model
 
-Our model was able to detect multiple trading opportunities in minutes with higher profit margin than 1%. Most opportunities have much higher profit than 1%. As you can see in the below image, the profit margins varies between 13% and 67%. The below image displays the pairs traded, trading size, trading price, forward arbitrage profit, and reverse arbitrage profit. Either forward arbitrage or reverse arbitrage shows 'nan' because whichever of them has higher profit the other one is not even considered as an opportunity. 
+Our model was able to detect multiple trading opportunities in minutes with higher profit margin than 1%. Most opportunities have much higher profit than 1%. As you can see in the below image, the profit margins varies between 13% and 67%. The below image displays the pairs traded, trading size, trading price, forward arbitrage profit, and reverse arbitrage profit. Either forward arbitrage or reverse arbitrage shows 'nan' because whichever of them has higher profit the other one is not even considered as an opportunity.
 
 _Insert triangular arbitrage results image_
 
 ## Bellman-Ford Algorithm
 
-The Bellman–Ford algorithm calculates the shortest routes in a weighted digraph from a single source vertex to all other vertices. It is a versatile algorithm which is capable of hangling graphs. Some time the edge weights can be negative numbers. If the sum of the edges are negative, it means that they are reachable from the source. 
-In this project, we used Bellman-Ford to detect arbitrage opportunities between different pairs. Our goal was to find the shortest trades to take advantage from the price discrepencies. Below image shows all the crypto currencies in Kucoin exchange with their trading pairs. 
+The Bellman–Ford algorithm calculates the shortest routes in a weighted digraph from a single source vertex to all other vertices. It is a versatile algorithm which is capable of hangling graphs. Some time the edge weights can be negative numbers. If the sum of the edges are negative, it means that they are reachable from the source.
+In this project, we used Bellman-Ford to detect arbitrage opportunities between different pairs. Our goal was to find the shortest trades to take advantage from the price discrepencies. Below image shows all the crypto currencies in Kucoin exchange with their trading pairs.
 
 [![](/_static/graph.jpg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png)
 **Figure 4** - Bellman Ford Graph
 
-We tried to find other arbitrage opportunities than using only three pairs. Triangular arbitrage allowed us to trade three pairs by taking advantage the price difference between them. In this section we traded multiple pairs and use the arbitrage opportunities between them. However, more trades mean more fees. Thus, the profit margin would go down when the number of trades increase. For that reason Bellman-Ford is useful because it finds the shortest path. Below image shows a few of the results we got by using Bellman-Ford algorithm. The trade path, trade type, trade size, trade rates, and profit margin can be seen in the image. As it can be seen in the image, our model found 8 opportunities in 12 minutes. Some of the profit margins are higher than 50%. For some of them the dollar profit is not that high due to price change in milliseconds on the pairs, and the fees applied to execute the trades. 
+We tried to find other arbitrage opportunities than using only three pairs. Triangular arbitrage allowed us to trade three pairs by taking advantage the price difference between them. In this section we traded multiple pairs and use the arbitrage opportunities between them. However, more trades mean more fees. Thus, the profit margin would go down when the number of trades increase. For that reason Bellman-Ford is useful because it finds the shortest path. Below image shows a few of the results we got by using Bellman-Ford algorithm. The trade path, trade type, trade size, trade rates, and profit margin can be seen in the image. As it can be seen in the image, our model found 8 opportunities in 12 minutes. Some of the profit margins are higher than 50%. For some of them the dollar profit is not that high due to price change in milliseconds on the pairs, and the fees applied to execute the trades.
 
 _Bellman-Ford Analysis result screen shot_
 
 ## Comparing the Results of the Models
 
-After we finished our analysis, the results are compared between our models' performances and the existing repositories on github. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on github. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models. 
+After we finished our analysis, the results are compared between our models' performances and the existing repositories on github. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on github. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models.
 
 _Insert the table image from presentation._
 
