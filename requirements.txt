@@ -17,3 +17,5 @@ pydocstyle==6.0.0
 pydotplus==2.0.2
 pipenv==2022.1.8
 ccxt==1.81.30
+cbpro==1.1.4
+gemini-python==0.2.1

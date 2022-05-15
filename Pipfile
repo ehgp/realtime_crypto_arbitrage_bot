@@ -23,3 +23,5 @@ flake8 = {version = "==3.9.0", index="pypi"}
 pydocstyle = {version = "==6.0.0", index="pypi"}
 pydotplus = {version = "==2.0.2", index="pypi"}
 ccxt = {version = "==1.81.30", index="pypi"}
+cbpro = {version = "==1.1.4", index="pypi"}
+gemini-python = {version = "==0.2.1", index="pypi"}

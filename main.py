@@ -11,6 +11,7 @@ Currently two arbitrage models are being used:
 import os
 import yaml
 from multiprocessing import Pool
+import subprocess
 
 
 def _load_config():
@@ -30,19 +31,24 @@ def _load_config():
     return config_defs
 
 
-def run_process(process):
-    """Run Process."""
-    os.system("python {}".format(process))
+# Multithreading
+# def run_process(process):
+#     """Run Process."""
+#     os.system("python {}".format(process))
+
+#         processes = ("kucoinlive.py",)
+#         pool = Pool(processes=2)
+#         pool.map(run_process, processes)
 
 
 def main():
     """Execute Main."""
     if cf["exchange"] == "Kucoin":
-        processes = ("kucoinlive.py", "kucoinaccount.py")
-        pool = Pool(processes=2)
-        pool.map(run_process, processes)
-    # if cf["exchange"] == "Coinbase Pro":
-    # if cf["exchange"] == "Gemini":
+        subprocess.run("python kucoinlive.py")
+        # if cf["exchange"] == "Coinbase Pro":
+        # subprocess.run("python coinbaselive.py")
+        # if cf["exchange"] == "Gemini":
+        # subprocess.run("python geminilive.py")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ import datetime as dt
 import logging
 import logging.config
 from pathlib import Path
-from analysis import find_tri_arb_ops, bellman_ford_graph
+from analysis import triangular_arbitrage, bellman_ford_arbitrage
 from trade import execute_triangular_arbitrage, execute_bellman_ford
 
 
@@ -66,6 +66,62 @@ async def main():
         Returns:
             database storage and function actions.
         """
+        # api response from /account/balance
+        if msg["topic"] == "/account/balance":
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
+            con = sqlite3.connect("db/kucoin.db")
+            cur = con.cursor()
+            table = "acc_bal"
+            placeholders = list(msg["data"].values()).append(
+                dt.datetime.fromtimestamp(msg["time"] / 1e3)
+            )
+            placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
+            columns = ", ".join(msg["data"].keys())
+            create_table = """CREATE TABLE IF NOT EXISTS acc_bal \
+        (total text, available text,  availableChange text, \
+        currency text, hold text, holdChange text, relationEvent text, relationEventId text, \
+        relationContext text, time text, )"""
+            logger.info("Creating Table acc_info")
+            cur.execute(create_table)
+            con.commit()
+            insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
+                table,
+                columns,
+                placeholders,
+            )
+            logger.info("Inserting a row of data")
+            cur.execute(insert_table)
+            con.commit()
+            con.close()
+
+        # api response from /spotMarket/tradeOrders
+        if msg["topic"] == "/spotMarket/tradeOrders":
+            logger.info("got %s: %s" % (msg["subject"], msg["data"]))
+            con = sqlite3.connect("db/kucoin.db")
+            cur = con.cursor()
+            table = "trade_info"
+            placeholders = list(msg["data"].values())
+            placeholders[12] = dt.datetime.fromtimestamp(placeholders[12] / 1e3)
+            placeholders = ",".join('"' + str(e) + '"' for e in placeholders)
+            columns = ", ".join(msg["data"].keys())
+            create_table = """CREATE TABLE IF NOT EXISTS trade_info \
+        (symbol text, orderType text,  side text, \
+        orderId text, type text, orderTime text, size text, filledSize text, \
+        price text, clientOid text, remainSize text, status text, ts text, )"""
+            logger.info("Creating Table trade_info")
+            cur.execute(create_table)
+            con.commit()
+            insert_table = "INSERT INTO %s ( %s ) VALUES ( %s )" % (
+                table,
+                columns,
+                placeholders,
+            )
+            logger.info("Inserting a row of data")
+            cur.execute(insert_table)
+            con.commit()
+            con.close()
+
+        # api response from /market/ticker:all
         if msg["topic"] == "/market/ticker:all":
             logger.info("got %s tick: %s" % (msg["subject"], msg["data"]))
             con = sqlite3.connect("db/kucoin.db")
@@ -98,23 +154,27 @@ size text, time text
             cur.execute(insert_table)
             con.commit()
             con.close()
-            find_tri_arb_ops()
-            bellman_ford_graph()
+            triangular_arbitrage()
+            bellman_ford_arbitrage()
             # execute_triangular_arbitrage()
             # execute_bellman_ford()
 
     # is public
     client = WsToken()
-    # is private
-    # client = WsToken(
-    #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False
-    # )
     # is sandbox
     # client = WsToken(
     #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=True
     # )
+    # If you want to do production, you will need to uncomment these
+    # is private
+    # client = WsToken(
+    #     key=api_key, secret=api_secret, passphrase=api_passphrase, is_sandbox=False
+    # )
     ws_client = await KucoinWsClient.create(loop, client, deal_msg, private=False)
     await ws_client.subscribe("/market/ticker:all")
+    # If you want to do production, you will need to uncomment these
+    # await ws_client.subscribe("/account/balance")
+    # await ws_client.subscribe("/spotMarket/tradeOrders")
     while True:
         logger.info("sleeping to keep loop open")
         await asyncio.sleep(60, loop=loop)
