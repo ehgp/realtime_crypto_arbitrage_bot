@@ -228,3 +228,5 @@ MacKenzie, D. (2016). A material political economy: Automated Trading Desk and p
 Piccotti, L. R. (2018). Jumps, cojumps, and efficiency in the spot foreign exchange market. Journal of Banking & Finance, 87, 49–67. <https://doi.org/10.1016/j.jbankfin.2017.09.007>
 
 What Is Triangular Arbitrage? (2021, November 8). Investopedia. <https://www.investopedia.com/terms/t/triangulararbitrage.asp>
+
+<https://github.com/Kucoin/kucoin-python-sdk/issues/33>
