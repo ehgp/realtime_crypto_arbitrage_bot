@@ -79,7 +79,7 @@ BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has 
 
 When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.
 
-[![](/_static/bid-ask-size-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.png)
+[![](/_static/bid-ask-size-correlation.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.jpeg)
 **Figure 5** - Correlation across dataset columns
 
 There is another interesting correlation is between Bitcoin's price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum's trading pairs.
