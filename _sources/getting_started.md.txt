@@ -1,11 +1,14 @@
 # UMBC Data 606 Capstone: Real Time Arbitrage Bot
 
-Kucoin supported websockets implementation of real time arbitrage opportunity bot.
+Websockets implementation of real time arbitrage opportunity bot supporting Kucoin currently..
 
 Relies on four scripts:
 
-* live:<br>
-Websockets real time feed of price data.
+* main:<br>
+Main executable that will read the exchange chosen from parameters.yaml.
+
+* *exchange*live
+Websockets real time feed of price data depending on exchange, real time account and trade tracking (Kucoin only)
 
 * trade:<br>
 Trading module for execution of arbitrage trades.
@@ -13,11 +16,8 @@ Trading module for execution of arbitrage trades.
 * analysis:<br>
 actual implementation of ML models.
 
-1. Reverse and Forward Triangular Arbitrage in analysis.py
+1. Reverse and Forward Triangular Arbitrage in triarb.py
 2. Bellman Ford Optimization in bellmanford.py
-
-* account:<br>
-Websockets real time account and trade implementation.
 
 Features:<br>
 Github CICD Pipeline<br>
@@ -37,7 +37,7 @@ Documentation found [here](https://ehgp.github.io/data_606_capstone/)
 
 ## Installation
 
-Fill out parameters.yaml
+1. Fill out parameters.yaml
 
 ```yaml
 KUCOIN_YOUR_API_KEY: ${KUCOIN_YOUR_API_KEY}
@@ -51,7 +51,7 @@ url: "https://api.kucoin.com"
 start_date: "2022-03-10 10:00:00"
 end_date: "2022-03-10 10:05:00"
 kline_type: "1min"
-# bellman ford parameters
+# Choose the exchange you want to run this on
 exchange: 'Kucoin'
 # taker fee in decimal
 taker_fee: 0.001
@@ -59,16 +59,20 @@ taker_fee: 0.001
 minimum_perc_tri_arb_profit: 0.1
 ```
 
-To use docker you must have docker desktop available with docker compose:
+2. If using Kucoin in production check the comment in line 168 in kucoinlive.py to enable private session.
 
-You can use either pipenv or your base python installation (default is requirements):<br>
+## Usage
+
+* To use docker you must have docker desktop available with docker compose and fill out credentials in .env:
+
+* You can use either pipenv or your base python installation (default is requirements):<br>
 Pipenv:<br>
 pipenv install<br>
-pipenv run python live.py
+pipenv run python main.py
 
 Requirements:<br>
 pip install -r requirements.txt<br>
-python live.py
+python main.py
 
 ## Authors
 

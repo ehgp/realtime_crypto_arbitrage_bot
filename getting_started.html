@@ -44,6 +44,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authors">Authors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#disclosure">Disclosure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#support">Support</a></li>
@@ -115,24 +116,22 @@
              
   <section id="umbc-data-606-capstone-real-time-arbitrage-bot">
 <h1>UMBC Data 606 Capstone: Real Time Arbitrage Bot<a class="headerlink" href="#umbc-data-606-capstone-real-time-arbitrage-bot" title="Permalink to this headline"></a></h1>
-<p>Kucoin supported websockets implementation of real time arbitrage opportunity bot.</p>
+<p>Websockets implementation of real time arbitrage opportunity bot supporting Kucoin currently..</p>
 <p>Relies on four scripts:</p>
 <ul class="simple">
-<li><p>live:<br>
-Websockets real time feed of price data.</p></li>
+<li><p>main:<br>
+Main executable that will read the exchange chosen from parameters.yaml.</p></li>
+<li><p><em>exchange</em>live
+Websockets real time feed of price data depending on exchange, real time account and trade tracking (Kucoin only)</p></li>
 <li><p>trade:<br>
 Trading module for execution of arbitrage trades.</p></li>
 <li><p>analysis:<br>
 actual implementation of ML models.</p></li>
 </ul>
 <ol class="simple">
-<li><p>Reverse and Forward Triangular Arbitrage in analysis.py</p></li>
+<li><p>Reverse and Forward Triangular Arbitrage in triarb.py</p></li>
 <li><p>Bellman Ford Optimization in bellmanford.py</p></li>
 </ol>
-<ul class="simple">
-<li><p>account:<br>
-Websockets real time account and trade implementation.</p></li>
-</ul>
 <p>Features:<br>
 Github CICD Pipeline<br>
 SQLite implementation<br>
@@ -152,7 +151,9 @@ Github Pages Sphinx Documentation</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
-<p>Fill out parameters.yaml</p>
+<ol class="simple">
+<li><p>Fill out parameters.yaml</p></li>
+</ol>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">KUCOIN_YOUR_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_API_KEY}</span><span class="w"></span>
 <span class="nt">KUCOIN_YOUR_SECRET</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_SECRET}</span><span class="w"></span>
 <span class="nt">KUCOIN_YOUR_PASS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${KUCOIN_YOUR_PASS}</span><span class="w"></span>
@@ -164,7 +165,7 @@ Github Pages Sphinx Documentation</p>
 <span class="nt">start_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2022-03-10</span><span class="nv"> </span><span class="s">10:00:00&quot;</span><span class="w"></span>
 <span class="nt">end_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2022-03-10</span><span class="nv"> </span><span class="s">10:05:00&quot;</span><span class="w"></span>
 <span class="nt">kline_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1min&quot;</span><span class="w"></span>
-<span class="c1"># bellman ford parameters</span><span class="w"></span>
+<span class="c1"># Choose the exchange you want to run this on</span><span class="w"></span>
 <span class="nt">exchange</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Kucoin&#39;</span><span class="w"></span>
 <span class="c1"># taker fee in decimal</span><span class="w"></span>
 <span class="nt">taker_fee</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span><span class="w"></span>
@@ -172,14 +173,22 @@ Github Pages Sphinx Documentation</p>
 <span class="nt">minimum_perc_tri_arb_profit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span><span class="w"></span>
 </pre></div>
 </div>
-<p>To use docker you must have docker desktop available with docker compose:</p>
-<p>You can use either pipenv or your base python installation (default is requirements):<br>
+<ol class="simple">
+<li><p>If using Kucoin in production check the comment in line 168 in kucoinlive.py to enable private session.</p></li>
+</ol>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>To use docker you must have docker desktop available with docker compose and fill out credentials in .env:</p></li>
+<li><p>You can use either pipenv or your base python installation (default is requirements):<br>
 Pipenv:<br>
 pipenv install<br>
-pipenv run python live.py</p>
+pipenv run python main.py</p></li>
+</ul>
 <p>Requirements:<br>
 pip install -r requirements.txt<br>
-python live.py</p>
+python main.py</p>
 </section>
 <section id="authors">
 <h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline"></a></h2>
