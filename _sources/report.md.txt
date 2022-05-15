@@ -33,7 +33,7 @@ Sell dollars to buy euros: $1 million ÷ 1.1586 = €863,110
 Sell euros for pounds: €863,100 ÷ 1.4600 = £591,171
 Sell pounds for dollars: £591,171 x 1.6939 = $1,001,384
 Subtract the initial investment from the final amount: $1,001,384 – $1,000,000 = $1,384
-From these transactions (assuming no transaction costs or taxes), you would receive an arbitrage profit of $1,384 (_What Is Triangular Arbitrage?_, 2021).
+From these transactions (assuming no transaction costs or taxes), you would receive an arbitrage profit of $1,384 (*What Is Triangular Arbitrage?*, 2021).
 
 Triangular arbitrage is widely studied before from different aspects mostly in foreign exchange trading platforms. People practice triangular arbitrage between fiat currencies like the example above. While the analysis of Aloosh and Bekaert (2017) aims at controlling for the triangular arbitrage, our project tries to charactrize and take advantage from arbitrage opportunities. Another research from Piccotti (2018) uses 5-minute period in his quote revisions, while our project tries to detect arbitrage opportunities in milliseconds. Speed is important while trading arbitrage, but in crypto world it is even more essential. The crypto market's volatility is extremely higher than foreign exchange market, thus working with shorter time intervals is necessary. Another constraint to trade arbitrage is the number of opportunities over the years. According to the examination of time series data from 1999 to 2009, it is found that there is a decrease in the number of triangle arbitrage possibilities (Ito, 2012). This is expected and can be normalized because the market becomes more efficient over the years with the advancement of the technology. However, it is never perfect, so there is still room for users to take advantage from price discrepencies.
 
@@ -45,7 +45,7 @@ In research from Gradojevic et al. (2020) it is found that high frequency trader
 
 Automated trading started in 1980s. It has been used and developed since then by institutional investors and large trading firms for different purposes. It is also known as algorithmic trading by investors. Nowadays algorithmic trading composes 60-70% of the total equity trades in the US market. It is 100% legal, and very preferable by users due to its ability for high frequency trading. The investors are able to trade 7/24 with the help of these computer programs without spending days and nights on their computers. Once they setup their parameters, the program is ready to execute trades on selected currencies. The first product invented for this purpose was Automated Trading Desk (ATD). MacKenzie (2016) explains that ATDs were primarily automated marketmakers in his research. They were invented to replace NYSE (New York Stock Exchange) specialists whose role is to buy an asset from a given price and sell it for a higher price. Nevertheless, relying on people makes this process slow, and it is very fragile against human mistakes. While ATDs make this process a lot faster and better, they are not considered as the official marketmakers.
 
-Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. _?For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.?_
+Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. *?For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.?*
 
 Triangular arbitrage bots are slightly different than regular arbitrage bots because of the concept of triangular arbitrage. Rather than trading an asset in different exchanges, triangular arbitrage focuses on the selected three trading pairs and trades them in the same exchange. Multiple opportunities are created in crypto market for triangular arbitrage trading. Due to its high volatility and non-stop market structure, crypto currency market is a gem for most traders.
 
@@ -60,7 +60,7 @@ In this study, Kucoin exchange is used for analysis. Necessary API keys are gene
 
 ## Dataset
 
-In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the "*exchange*live.py" script to gather real time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs' ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and time stamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so none of the opportunities can be missed.
+In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the "*exchange*live.py" script to gather real time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs' ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and timestamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so none of the opportunities can be missed.
 
 [![](/_static/dataset.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataset.png)<br>
 **Figure 2** - ETL dataset
@@ -93,7 +93,7 @@ There is another interesting correlation is between Bitcoin's price and trading 
 
 In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin's price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin's price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies' prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.
 
-**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ..._CHECK WITH DANIEL p d q values, etc._
+**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ...*CHECK WITH DANIEL p d q values, etc.*
 
 [![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)<br>
 **Figure 8** - AUTOARIMA MAPE
@@ -108,7 +108,7 @@ In this study, we did time series analysis to have a better understanding of the
 **Figure 11** - AUTOARIMA CHART 2
 
 
-**SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ..._CHECK WITH DANIEL_
+**SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ...*CHECK WITH DANIEL*
 
 [![](/_static/SARIMAX-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg)<br>
 **Figure 12** - AUTOARIMA CHART 2
@@ -154,14 +154,14 @@ In this model there are multiple scripts generated for different purposes. In th
 
 ### *exchange*live.py
 
-Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each file name to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.
+Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each filename to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.
 
 [![](/_static/tickers.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png)<br>
 **Figure 24** - kucoin.tickers table
 
 ### Analysis.py
 
-Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. _?This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.?_
+Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. *?This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.?*
 
 ### Trade.py
 
@@ -194,7 +194,7 @@ We tried to find other arbitrage opportunities than using only three pairs. Tria
 
 ## Comparing the Results of the Models
 
-After we finished our analysis, the results are compared between our models' performances and the existing repositories on github. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on github. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models.
+After we finished our analysis, the results are compared between our models' performances and the existing repositories on GitHub. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on GitHub. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models.
 
 [![](/_static/result-model-comparison.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.jpeg)<br>
 **Figure 29** - Result Model Comparison of Performance
@@ -227,8 +227,4 @@ MacKenzie, D. (2016). A material political economy: Automated Trading Desk and p
 
 Piccotti, L. R. (2018). Jumps, cojumps, and efficiency in the spot foreign exchange market. Journal of Banking & Finance, 87, 49–67. <https://doi.org/10.1016/j.jbankfin.2017.09.007>
 
-What Is Triangular Arbitrage? (2021, November 8). Investopedia. https://www.investopedia.com/terms/t/triangulararbitrage.asp
-
-
-
-
+What Is Triangular Arbitrage? (2021, November 8). Investopedia. <https://www.investopedia.com/terms/t/triangulararbitrage.asp>
