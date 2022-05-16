@@ -204,6 +204,16 @@ reached from any other via only a few trades.</p></li>
 <dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">NegativeWeightFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.classes.graph.Graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder" title="Permalink to this definition"></a></dt>
 <dd><p>Negative Weight Finder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>~NegativeWeightFinder.graph</strong> – the Graph</p></li>
+<li><p><strong>~NegativeWeightFinder.predecessor_to</strong> – The node that came before the new one created</p></li>
+<li><p><strong>~NegativeWeightFinder.distance_to</strong> – the distance to the closest node</p></li>
+<li><p><strong>~NegativeWeightFinder.seen_nodes</strong> – the nodes that it got along the way of the path</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.bellman_ford">
 <span class="sig-name descname"><span class="pre">bellman_ford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.bellman_ford" title="Permalink to this definition"></a></dt>
