@@ -68,6 +68,7 @@ cf = _load_config()
 
 
 def triangular_arbitrage():
+    """Execute Triangular Arbitrage."""
     logger.info("Finding Triangle Arbitrage Opportunities")
     find_tri_arb_ops()
 

@@ -2,22 +2,23 @@
 
 Triangular Arbitrage goes in forward and reverse executions and looks for any profit higher what was defined in parameters.yaml
 
-::: NOTES :::
+NOTES
 =============
 EX: left_x_right
 Want left = 1/Ask
 Want right = Bid
+
 FORWARD ARBITRAGE (EX: ETHBTC) -> a = USDT, b = ETH, c = BTC
 ========================================================================
 # 1. buy BTCUSDT   - ask  <- pay for lowest asking price (faster)
 # 2. buy ETHBTC    - ask  <- pay for lowest asking price (faster)
 # 3. sell ETHUSDT  - bid  <- sell to top bid price (faster)
+
 REVERSE ARBITRAGE (EX: ETHBTC) -> a = USDT, b = ETH, c = BTC
 ========================================================================
 # 1. buy ETHUSDT   - ask  <- pay for lowest asking price (faster)
 # 2. sell ETHBTC   - bid  <- sell to top bid price (faster)
 # 3. sell BTCUSDT  - bid  <- sell to top bid price (faster)
-
 """
 
 import sqlite3
