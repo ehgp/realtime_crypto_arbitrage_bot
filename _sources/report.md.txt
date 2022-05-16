@@ -122,12 +122,12 @@ In this study, we did time series analysis to have a better understanding of the
 [![](/_static/SARIMAX-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-2.jpeg)<br>
 **Figure 15** - SARIMAX Model Forecasting - 14 days into the Future, expecting a decrease in price.
 
-**LSTM**, LSTM(Long Short-Term Memory) is based on the Recurrent Neural Network (RNN) architecture. It is widely used in Natural Language Processing along with time series analysis. Unlike traditional Recurrent Neural Networks, LSTM utilizes short-memory by using a series of gates, each which has it own Recurrent Neural Network. Based on the probabilistic model with the LSTM model manages the datapoints. When a prediction is made, it is fed back into the model inorder to predict the next point within that sequence. Error is introduced with each new prediction. In order to aviod gradienting issues, values are manuplated through tanh and sigmoid activation function prior to entering and leaving the gate. 
+**LSTM**, Long Short-Term Memory is based on the Recurrent Neural Network (RNN) architecture. It is widely used in Natural Language Processing along with time series analysis. Unlike traditional Recurrent Neural Networks, LSTM utilizes short-memory by using a series of gates, each which has it own Recurrent Neural Network. Based on the probabilistic model with the LSTM model manages the datapoints. When a prediction is made, it is fed back into the model inorder to predict the next point within that sequence. Error is introduced with each new prediction. In order to aviod gradienting issues, values are manuplated through tanh and sigmoid activation function prior to entering and leaving the gate.
 
 [![](/_static/LSTM.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM.jpeg)<br>
 **Figure 16** - LSTM Architecture
 
-For the LSTM aspect,, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
+For the LSTM aspect, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/LSTM-chart-6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg)<br>
 **Figure 17** - Histogram - Understanding BTC Price Movement
@@ -145,7 +145,7 @@ For the LSTM aspect,, our historically time series data is aggregated by the min
 **Figure 21** - LSTM Model Construction
 
 [![](/_static/LSTM-chart-3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg)<br>
-**Figure 22** - Performance Metric Evaluation 
+**Figure 22** - Performance Metric Evaluation
 
 [![](/_static/LSTM-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg)<br>
 **Figure 23** - 
@@ -229,6 +229,8 @@ Knif, J., Pynnönen, S., & Luoma, M. (1995). An analysis of lead-lag structures 
 Lin, A., Shang, P., & Zhao, X. (2011). The cross-correlations of stock markets based on DCCA and time-delay DCCA. Nonlinear Dynamics, 67(1), 425–435. <https://doi.org/10.1007/s11071-011-9991-8>
 
 MacKenzie, D. (2016). A material political economy: Automated Trading Desk and price prediction in high-frequency trading. Social Studies of Science, 47(2), 172–194. <https://doi.org/10.1177/0306312716676900>
+
+Mushailov, J. (Iosif). (2021, March 31). LSTM Framework For Univariate Time-Series Prediction. Medium. https://towardsdatascience.com/lstm-framework-for-univariate-time-series-prediction-d9e7252699e
 
 Piccotti, L. R. (2018). Jumps, cojumps, and efficiency in the spot foreign exchange market. Journal of Banking & Finance, 87, 49–67. <https://doi.org/10.1016/j.jbankfin.2017.09.007>
 
