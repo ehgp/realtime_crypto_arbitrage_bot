@@ -166,7 +166,7 @@ Firstly, configuration yaml is loaded and dictionary of setting is returned in t
 
 ### Analysis.py
 
-Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. *?This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.?*
+Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.
 
 ### Trade.py
 
@@ -204,7 +204,10 @@ After we finished our analysis, the results are compared between our models' per
 [![](/_static/result-model-comparison.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.jpeg)<br>
 **Figure 30** - Result Model Comparison of Performance
 
-## Conclusion
+## Conclusion and Future Work
+
+In this study triangular arbitrage model, and Bellman-Ford model are selected to execute arbitrage trades in crypto currency market. Our results show that they are both successful models which can help us execute profitable trades. As indicated in previous sections, our models performed better than the existing models found on GitHub. Both models were able to find multiple arbitrage options in minutes. The profit rates were always higher than 0.1%. For certain examples it was as high as 74%. 
+These trades were executed in sandbox environment with fake currency due to issues in Kucoin exchange. Trying these models in different exchanges can be one of the improvements for future work. Executing these arbitrage trades in a real exchange with real time data would be the best improvement for this project. Both models performed well according to our analysis, but it can be improved with additional market analysis. If users can confirm that the market is in an uptrend, arbitrage opportunities can be executed with less risk and more profit. For that reason, a model can be created to analyze and detect market trend.
 
 ## References
 

@@ -73,7 +73,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#bellman-ford-algorithm">Bellman-Ford Algorithm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#comparing-the-results-of-the-models">Comparing the Results of the Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion-and-future-work">Conclusion and Future Work</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -258,7 +258,7 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 </section>
 <section id="analysis-py">
 <h3>Analysis.py<a class="headerlink" href="#analysis-py" title="Permalink to this headline"></a></h3>
-<p>Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. <em>?This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.?</em></p>
+<p>Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.</p>
 </section>
 <section id="trade-py">
 <h3>Trade.py<a class="headerlink" href="#trade-py" title="Permalink to this headline"></a></h3>
@@ -292,8 +292,10 @@ In this project, we used Bellman-Ford to detect arbitrage opportunities between 
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.jpeg"><img alt="_images/result-model-comparison.jpeg" src="_images/result-model-comparison.jpeg" /></a><br>
 <strong>Figure 30</strong> - Result Model Comparison of Performance</p>
 </section>
-<section id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline"></a></h2>
+<section id="conclusion-and-future-work">
+<h2>Conclusion and Future Work<a class="headerlink" href="#conclusion-and-future-work" title="Permalink to this headline"></a></h2>
+<p>In this study triangular arbitrage model, and Bellman-Ford model are selected to execute arbitrage trades in crypto currency market. Our results show that they are both successful models which can help us execute profitable trades. As indicated in previous sections, our models performed better than the existing models found on GitHub. Both models were able to find multiple arbitrage options in minutes. The profit rates were always higher than 0.1%. For certain examples it was as high as 74%.
+These trades were executed in sandbox environment with fake currency due to issues in Kucoin exchange. Trying these models in different exchanges can be one of the improvements for future work. Executing these arbitrage trades in a real exchange with real time data would be the best improvement for this project. Both models performed well according to our analysis, but it can be improved with additional market analysis. If users can confirm that the market is in an uptrend, arbitrage opportunities can be executed with less risk and more profit. For that reason, a model can be created to analyze and detect market trend.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline"></a></h2>
