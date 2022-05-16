@@ -64,7 +64,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#how-does-our-bot-work">How does our bot work?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#exchangelive-py"><em>exchange</em>live.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kucoinlive-py">Kucoinlive.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#analysis-py">Analysis.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#trade-py">Trade.py</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data-flow-for-this-project">Data Flow for This Project</a></li>
@@ -191,17 +191,17 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <h3>Exploratory data analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this headline"></a></h3>
 <p>The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 colums and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/describe.jpeg"><img alt="_images/describe.jpeg" src="_images/describe.jpeg" /></a><br>
-<strong>Figure 3</strong> - Describe exploration</p>
+<strong>Figure 3</strong> - Describe function exploration</p>
 <p>BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg"><img alt="_images/sort.jpeg" src="_images/sort.jpeg" /></a><br>
-<strong>Figure 4</strong> - Sort exploration</p>
+<strong>Figure 4</strong> - Size column sort function exploration</p>
 <p>When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.jpeg"><img alt="_images/bid-ask-size-correlation.jpeg" src="_images/bid-ask-size-correlation.jpeg" /></a><br>
-<strong>Figure 5</strong> - Correlation across dataset columns</p>
+<strong>Figure 5</strong> - Correlation across bestbidSize and Size columns</p>
 <p>There is another interesting correlation is between Bitcoin’s price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum’s trading pairs.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc-size-price-correlation.png"><img alt="_images/btc-size-price-correlation.png" src="_images/btc-size-price-correlation.png" /></a><br>
-<strong>Figure 6</strong> - Correlation across BTC size and price
-<a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.png"><img alt="_images/eth-size-price-correlation.png" src="_images/eth-size-price-correlation.png" /></a><br>
+<strong>Figure 6</strong> - Correlation across BTC size and price</p>
+<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.png"><img alt="_images/eth-size-price-correlation.png" src="_images/eth-size-price-correlation.png" /></a><br>
 <strong>Figure 7</strong> - Correlation across ETH size and price</p>
 </section>
 <section id="price-prediction-with-time-series-analysis">
@@ -232,7 +232,7 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg"><img alt="_images/LSTM-chart-6.jpeg" src="_images/LSTM-chart-6.jpeg" /></a><br>
 <strong>Figure 17</strong> - Histogram - Understanding BTC Price Movement</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg"><img alt="_images/LSTM-chart-5.jpeg" src="_images/LSTM-chart-5.jpeg" /></a><br>
-<strong>Figure 18</strong> - Historically Pricemovement - BTC</p>
+<strong>Figure 18</strong> - Historically Price Movement - BTC</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg"><img alt="_images/LSTM-scores-2.jpeg" src="_images/LSTM-scores-2.jpeg" /></a><br>
 <strong>Figure 19</strong> -</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpeg"><img alt="_images/LSTM-scores-1.jpeg" src="_images/LSTM-scores-1.jpeg" /></a><br>
@@ -250,8 +250,8 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <section id="how-does-our-bot-work">
 <h2>How does our bot work?<a class="headerlink" href="#how-does-our-bot-work" title="Permalink to this headline"></a></h2>
 <p>In this model there are multiple scripts generated for different purposes. In this section, we will dive into these scripts and explain how they work.</p>
-<section id="exchangelive-py">
-<h3><em>exchange</em>live.py<a class="headerlink" href="#exchangelive-py" title="Permalink to this headline"></a></h3>
+<section id="kucoinlive-py">
+<h3>Kucoinlive.py<a class="headerlink" href="#kucoinlive-py" title="Permalink to this headline"></a></h3>
 <p>Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each filename to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin’s best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.</p>
 <p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png"><img alt="_images/tickers.png" src="_images/tickers.png" /></a><br>
 <strong>Figure 25</strong> - kucoin.tickers table</p>
