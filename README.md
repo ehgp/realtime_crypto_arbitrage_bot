@@ -82,7 +82,7 @@ Yuksel Baris Dokuzoglu
 
 ## Disclosure
 
-Use are your own risk and do your own research.<br>
+Use at your own risk and do your own research.<br>
 Not responsible for lost funds.
 
 ## Support
