@@ -95,17 +95,17 @@ In this study, we did time series analysis to have a better understanding of the
 
 **AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, the results for AUTOARIMA model are ...*CHECK WITH DANIEL p d q values, etc.*
 
-[![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)<br>
-**Figure 8** - AUTOARIMA MAPE
+[![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)
+**Figure 8** - AUTOARIMA Model Construction and Parameters Setting
 
-[![](/_static/AUTOARIMA-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg)<br>
-**Figure 9** - AUTOARIMA CHART 1
+[![](/_static/AUTOARIMA-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg)
+**Figure 9** - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance. 
 
-[![](/_static/AUTOARIMA-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg)<br>
-**Figure 10** - AUTOARIMA SCORES
+[![](/_static/AUTOARIMA-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg)
+**Figure 10** - AUTOARIMA MAPE Score - 3.79%
 
-[![](/_static/AUTOARIMA-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg)<br>
-**Figure 11** - AUTOARIMA CHART 2
+[![](/_static/AUTOARIMA-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg)
+**Figure 11** - AUTOARIMA Model Forecasting - 14 days into the Future, expecting a decrease in price. 
 
 
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ...*CHECK WITH DANIEL*
