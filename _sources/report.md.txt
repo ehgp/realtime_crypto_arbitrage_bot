@@ -9,14 +9,14 @@
     - [Exploratory data analysis](#exploratory-data-analysis)
     - [Price Prediction with Time Series Analysis](#price-prediction-with-time-series-analysis)
   - [How does our bot work?](#how-does-our-bot-work)
-    - [*exchange*live.py](#exchangelivepy)
+    - [Kucoinlive.py](#kucoinlivepy)
     - [Analysis.py](#analysispy)
     - [Trade.py](#tradepy)
     - [Data Flow for This Project](#data-flow-for-this-project)
     - [Results of the Triangular Arbitrage Model](#results-of-the-triangular-arbitrage-model)
   - [Bellman-Ford Algorithm](#bellman-ford-algorithm)
   - [Comparing the Results of the Models](#comparing-the-results-of-the-models)
-  - [Conclusion](#conclusion)
+  - [Conclusion and Future Work](#conclusion-and-future-work)
   - [References](#references)
 
 ## Abstract
@@ -45,7 +45,7 @@ In research from Gradojevic et al. (2020) it is found that high frequency trader
 
 Automated trading started in 1980s. It has been used and developed since then by institutional investors and large trading firms for different purposes. It is also known as algorithmic trading by investors. Nowadays algorithmic trading composes 60-70% of the total equity trades in the US market. It is 100% legal, and very preferable by users due to its ability for high frequency trading. The investors are able to trade 7/24 with the help of these computer programs without spending days and nights on their computers. Once they setup their parameters, the program is ready to execute trades on selected currencies. The first product invented for this purpose was Automated Trading Desk (ATD). MacKenzie (2016) explains that ATDs were primarily automated marketmakers in his research. They were invented to replace NYSE (New York Stock Exchange) specialists whose role is to buy an asset from a given price and sell it for a higher price. Nevertheless, relying on people makes this process slow, and it is very fragile against human mistakes. While ATDs make this process a lot faster and better, they are not considered as the official marketmakers.
 
-Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. *?For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.?*
+Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. *For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.*
 
 Triangular arbitrage bots are slightly different than regular arbitrage bots because of the concept of triangular arbitrage. Rather than trading an asset in different exchanges, triangular arbitrage focuses on the selected three trading pairs and trades them in the same exchange. Multiple opportunities are created in crypto market for triangular arbitrage trading. Due to its high volatility and non-stop market structure, crypto currency market is a gem for most traders.
 
@@ -94,13 +94,13 @@ There is another interesting correlation is between Bitcoin's price and trading 
 
 In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin's price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin's price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies' prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.
 
-**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC. 
+**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)
 **Figure 8** - AUTOARIMA Model Construction and Parameters Setting - p d q value are automatically generated within the AUTOARIMA model.
 
 [![](/_static/AUTOARIMA-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg)
-**Figure 9** - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance. 
+**Figure 9** - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.
 
 [![](/_static/AUTOARIMA-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg)
 **Figure 10** - AUTOARIMA MAPE Score - 3.79%
@@ -108,14 +108,13 @@ In this study, we did time series analysis to have a better understanding of the
 [![](/_static/AUTOARIMA-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg)
 **Figure 11** - AUTOARIMA Model Forecasting - 14 days into the Future, expecting a decrease in price.
 
-
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/SARIMAX-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg)<br>
 **Figure 12** - SARIMAX Model Construction and Parameters Setting - p d q value are based on the lowest AIC score previously determined.
 
 [![](/_static/SARIMAX-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg)<br>
-**Figure 13** - SARIMAX Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance. 
+**Figure 13** - SARIMAX Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.
 
 [![](/_static/SARIMAX-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg)<br>
 **Figure 14** - SARIMAX MAPE Score - 3.81%
@@ -175,7 +174,7 @@ The opportunities detected in analysis.py are executed in this script. Trade opp
 
 ### Data Flow for This Project
 
-[![](/_static/dataflow.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.png)<br>
+[![](/_static/dataflow.jpg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.jpg)<br>
 **Figure 26** - Data Flow Diagram
 
 ### Results of the Triangular Arbitrage Model
@@ -202,14 +201,14 @@ We tried to find other arbitrage opportunities than using only three pairs. Tria
 
 After we finished our analysis, the results are compared between our models' performances and the existing repositories on GitHub. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on GitHub. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models.
 
-[![](/_static/result-model-comparison.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.jpeg)<br>
+[![](/_static/result-model-comparison.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.png)<br>
 **Figure 30** - Result Model Comparison of Performance
 
 ## Conclusion and Future Work
 
-In this study triangular arbitrage model, and Bellman-Ford model are selected to execute arbitrage trades in crypto currency market. Our results show that they are both successful models which can help us execute profitable trades. As indicated in previous sections, our models performed better than the existing models found on GitHub. Both models were able to find multiple arbitrage options in minutes. The profit rates were always higher than 0.1%. For certain examples it was as high as 74%. 
+In this study triangular arbitrage model, and Bellman-Ford model are selected to execute arbitrage trades in crypto currency market. Our results show that they are both successful models which can help us execute profitable trades. As indicated in previous sections, our models performed better than the existing models found on GitHub. Both models were able to find multiple arbitrage options in minutes. The profit rates were always higher than 0.1%. For certain examples it was as high as 74%.
 
-These trades were executed in sandbox environment with fake currency due to issues in Kucoin exchange. Trying these models in different exchanges like Gemini and Coinbase Pro can be one of the improvements for future work. Executing these arbitrage trades in a real exchange with real time data would be the best improvement for this project. Both models performed well according to our analysis, but it can be improved with additional market analysis. If users can confirm that the market is in an uptrend, arbitrage opportunities can be executed with less risk and more profit. For that reason, a model can be created to analyze and detect market trend. Lastly, executing arbitrage trades across multiple exchanges would be an important addition to this project. 
+These trades were executed in sandbox environment with fake currency due to issues in Kucoin exchange. Trying these models in different exchanges like Gemini and Coinbase Pro can be one of the improvements for future work. Executing these arbitrage trades in a real exchange with real time data would be the best improvement for this project. Both models performed well according to our analysis, but it can be improved with additional market analysis. If users can confirm that the market is in an uptrend, arbitrage opportunities can be executed with less risk and more profit. For that reason, a model can be created to analyze and detect market trend. Lastly, executing arbitrage trades across multiple exchanges would be an important addition to this project.
 
 ## References
 
