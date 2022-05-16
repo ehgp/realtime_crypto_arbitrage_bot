@@ -124,33 +124,34 @@ In this study, we did time series analysis to have a better understanding of the
 
 **LSTM**, LSTM(Long Short-Term Memory) is based on the Recurrent Neural Network (RNN) architecture. It is widely used in Natural Language Processing along with time series analysis. Unlike traditional Recurrent Neural Networks, LSTM utilizes short-memory by using a series of gates, each which has it own Recurrent Neural Network. Based on the probabilistic model with the LSTM model manages the datapoints. When a prediction is made, it is fed back into the model inorder to predict the next point within that sequence. Error is introduced with each new prediction. In order to aviod gradienting issues, values are manuplated through tanh and sigmoid activation function prior to entering and leaving the gate. 
 
-
+[![](/_static/LSTM.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM.jpeg)<br>
+**Figure 16** - LSTM Architecture
 
 For the LSTM aspect,, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/LSTM-chart-6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg)<br>
-**Figure 16** - Histogram - Understanding BTC Price Movement
+**Figure 17** - Histogram - Understanding BTC Price Movement
 
 [![](/_static/LSTM-chart-5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg)<br>
-**Figure 17** - Historically Pricemovement - BTC
+**Figure 18** - Historically Pricemovement - BTC
 
 [![](/_static/LSTM-scores-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg)<br>
-**Figure 18** - 
+**Figure 19** - 
 
 [![](/_static/LSTM-scores-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpeg)<br>
-**Figure 19** - High P value indicates poor model performance
+**Figure 20** - High P value indicates poor model performance
 
 [![](/_static/LSTM-chart-4.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-4.jpeg)<br>
-**Figure 20** - LSTM Model Construction
+**Figure 21** - LSTM Model Construction
 
 [![](/_static/LSTM-chart-3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg)<br>
-**Figure 21** - Performance Metric Evaluation 
+**Figure 22** - Performance Metric Evaluation 
 
 [![](/_static/LSTM-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg)<br>
-**Figure 22** - 
+**Figure 23** - 
 
 [![](/_static/LSTM-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg)<br>
-**Figure 23** - LSTM - Prediction Verus Actual
+**Figure 24** - LSTM - Prediction Verus Actual
 
 ## How does our bot work?
 
@@ -161,7 +162,7 @@ In this model there are multiple scripts generated for different purposes. In th
 Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each filename to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.
 
 [![](/_static/tickers.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png)<br>
-**Figure 24** - kucoin.tickers table
+**Figure 25** - kucoin.tickers table
 
 ### Analysis.py
 
@@ -174,14 +175,14 @@ The opportunities detected in analysis.py are executed in this script. Trade opp
 ### Data Flow for This Project
 
 [![](/_static/dataflow.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.png)<br>
-**Figure 25** - Data Flow Diagram
+**Figure 26** - Data Flow Diagram
 
 ### Results of the Triangular Arbitrage Model
 
 Our model was able to detect multiple trading opportunities in minutes with higher profit margin than 1%. Most opportunities have much higher profit than 1%. As you can see in the below image, the profit margins varies between 13% and 67%. The below image displays the pairs traded, trading size, trading price, forward arbitrage profit, and reverse arbitrage profit. Either forward arbitrage or reverse arbitrage shows 'nan' because whichever of them has higher profit the other one is not even considered as an opportunity.
 
 [![](/_static/triangular-arbitrage-model-results.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/triangular-arbitrage-model-results.png)<br>
-**Figure 26** - Triangular Arbitrage Model Results
+**Figure 27** - Triangular Arbitrage Model Results
 
 ## Bellman-Ford Algorithm
 
@@ -189,19 +190,19 @@ The Bellman–Ford algorithm calculates the shortest routes in a weighted digrap
 In this project, we used Bellman-Ford to detect arbitrage opportunities between different pairs. Our goal was to find the shortest trades to take advantage from the price discrepencies. Below image shows all the crypto currencies in Kucoin exchange with their trading pairs.
 
 [![](/_static/graph.jpg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png)<br>
-**Figure 27** - Bellman Ford Graph
+**Figure 28** - Bellman Ford Graph
 
 We tried to find other arbitrage opportunities than using only three pairs. Triangular arbitrage allowed us to trade three pairs by taking advantage the price difference between them. In this section we traded multiple pairs and use the arbitrage opportunities between them. However, more trades mean more fees. Thus, the profit margin would go down when the number of trades increase. For that reason Bellman-Ford is useful because it finds the shortest path. Below image shows a few of the results we got by using Bellman-Ford algorithm. The trade path, trade type, trade size, trade rates, and profit margin can be seen in the image. As it can be seen in the image, our model found 8 opportunities in 12 minutes. Some of the profit margins are higher than 50%. For some of them the dollar profit is not that high due to price change in milliseconds on the pairs, and the fees applied to execute the trades.
 
 [![](/_static/Bellman-Ford-Model-results.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/Bellman-Ford-Model-results.png)<br>
-**Figure 28** - Bellman Ford Model Results
+**Figure 29** - Bellman Ford Model Results
 
 ## Comparing the Results of the Models
 
 After we finished our analysis, the results are compared between our models' performances and the existing repositories on GitHub. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on GitHub. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below you can see the performance comparison with the maximum profit percentage achieved with both models.
 
 [![](/_static/result-model-comparison.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.jpeg)<br>
-**Figure 29** - Result Model Comparison of Performance
+**Figure 30** - Result Model Comparison of Performance
 
 ## Conclusion
 
