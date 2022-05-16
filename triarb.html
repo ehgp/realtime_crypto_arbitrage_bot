@@ -94,7 +94,9 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">triarb</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#notes">::: NOTES :::</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#notes">NOTES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#forward-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">FORWARD ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reverse-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">REVERSE ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bellmanford.html">bellmanford</a><ul class="simple">
@@ -135,18 +137,20 @@
 <span class="target" id="module-triarb"></span><p>Find Triangular Arbitrage Opportunities.</p>
 <p>Triangular Arbitrage goes in forward and reverse executions and looks for any profit higher what was defined in parameters.yaml</p>
 <section id="notes">
-<h2>::: NOTES :::<a class="headerlink" href="#notes" title="Permalink to this headline"></a></h2>
+<h2>NOTES<a class="headerlink" href="#notes" title="Permalink to this headline"></a></h2>
 <p>EX: left_x_right
 Want left = 1/Ask
-Want right = Bid
-FORWARD ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC
-========================================================================
-# 1. buy BTCUSDT   - ask  &lt;- pay for lowest asking price (faster)
+Want right = Bid</p>
+</section>
+<section id="forward-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">
+<h2>FORWARD ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC<a class="headerlink" href="#forward-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc" title="Permalink to this headline"></a></h2>
+<p># 1. buy BTCUSDT   - ask  &lt;- pay for lowest asking price (faster)
 # 2. buy ETHBTC    - ask  &lt;- pay for lowest asking price (faster)
-# 3. sell ETHUSDT  - bid  &lt;- sell to top bid price (faster)
-REVERSE ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC
-========================================================================
-# 1. buy ETHUSDT   - ask  &lt;- pay for lowest asking price (faster)
+# 3. sell ETHUSDT  - bid  &lt;- sell to top bid price (faster)</p>
+</section>
+<section id="reverse-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">
+<h2>REVERSE ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC<a class="headerlink" href="#reverse-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc" title="Permalink to this headline"></a></h2>
+<p># 1. buy ETHUSDT   - ask  &lt;- pay for lowest asking price (faster)
 # 2. sell ETHBTC   - bid  &lt;- sell to top bid price (faster)
 # 3. sell BTCUSDT  - bid  &lt;- sell to top bid price (faster)</p>
 <dl class="py function">
