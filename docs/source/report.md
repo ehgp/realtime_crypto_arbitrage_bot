@@ -114,7 +114,7 @@ In this study, we did time series analysis to have a better understanding of the
 **Figure 12** - AUTOARIMA CHART 2
 
 [![](/_static/SARIMAX-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg)<br>
-**Figure 13** - AUTOARIMA CHART 23
+**Figure 13** - AUTOARIMA CHART 2
 
 [![](/_static/SARIMAX-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg)<br>
 **Figure 14** - AUTOARIMA CHART 2
