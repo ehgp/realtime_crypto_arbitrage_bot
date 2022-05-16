@@ -70,22 +70,23 @@ In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys a
 The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 colums and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type.
 
 [![](/_static/describe.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/describe.jpeg)<br>
-**Figure 3** - Describe exploration
+**Figure 3** - Describe function exploration
 
 BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset.
 
 [![](/_static/sort.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg)<br>
-**Figure 4** - Sort exploration
+**Figure 4** - Size column sort function exploration
 
 When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.
 
 [![](/_static/bid-ask-size-correlation.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.jpeg)<br>
-**Figure 5** - Correlation across dataset columns
+**Figure 5** - Correlation across bestbidSize and Size columns
 
 There is another interesting correlation is between Bitcoin's price and trading size. While it is observed that there is negative correlation between these two, there is positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum's trading pairs.
 
 [![](/_static/btc-size-price-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc-size-price-correlation.png)<br>
 **Figure 6** - Correlation across BTC size and price
+
 [![](/_static/eth-size-price-correlation.png)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.png)<br>
 **Figure 7** - Correlation across ETH size and price
 
@@ -133,7 +134,7 @@ For the LSTM aspect, our historically time series data is aggregated by the minu
 **Figure 17** - Histogram - Understanding BTC Price Movement
 
 [![](/_static/LSTM-chart-5.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg)<br>
-**Figure 18** - Historically Pricemovement - BTC
+**Figure 18** - Historically Price Movement - BTC
 
 [![](/_static/LSTM-scores-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg)<br>
 **Figure 19** - 
@@ -157,7 +158,7 @@ For the LSTM aspect, our historically time series data is aggregated by the minu
 
 In this model there are multiple scripts generated for different purposes. In this section, we will dive into these scripts and explain how they work.
 
-### *exchange*live.py
+### Kucoinlive.py
 
 Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each filename to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin's best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.
 
