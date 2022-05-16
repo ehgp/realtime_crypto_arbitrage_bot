@@ -68,7 +68,14 @@ def last_index_in_list(li: list, element):
 
 
 class NegativeWeightFinder:
-    """Negative Weight Finder."""
+    """Negative Weight Finder.
+
+    Attributes:
+        graph: the Graph
+        predecessor_to: The node that came before the new one created
+        distance_to: the distance to the closest node
+        seen_nodes: the nodes that it got along the way of the path
+    """
 
     __slots__ = ["graph", "predecessor_to", "distance_to", "seen_nodes"]
 
