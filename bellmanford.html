@@ -134,8 +134,9 @@
 <div class="toctree-wrapper compound">
 </div>
 <span class="target" id="module-bellmanford"></span><p>Bellman Ford Graph Execution.</p>
-<p>With an initialized networkx DiGraph DAG using our real time ticker data, execute Bellman Ford Optimization
-to find most profitable trade path by finding the biggest negative weights in price and volume.</p>
+<p>With an initialized networkx DiGraph DAG using our real time ticker data,
+execute Bellman Ford Optimizationto find most profitable trade path by finding
+the biggest negative weights in price and volume.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">NegativeWeightDepthFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.classes.graph.Graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder" title="Permalink to this definition"></a></dt>
@@ -300,7 +301,8 @@ starting_amount.</p>
 <dt class="sig sig-object py" id="bellmanford.load_exchange_graph">
 <span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">load_exchange_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exchange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">networkx.classes.digraph.DiGraph</span></span></span><a class="headerlink" href="#bellmanford.load_exchange_graph" title="Permalink to this definition"></a></dt>
 <dd><p>Return a networkx DiGraph populated with the current ask and bid prices for each market in graph.</p>
-<p>(represented by edges). If depth, also adds an attribute ‘depth’ to each edge which represents the current volume of orders
+<p>(represented by edges). If depth, also adds an attribute ‘depth’ to each
+edge which represents the current volume of orders
 available at the price represented by the ‘weight’ attribute of each edge.</p>
 </dd></dl>
 
