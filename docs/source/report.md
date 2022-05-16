@@ -111,7 +111,7 @@ In this study, we did time series analysis to have a better understanding of the
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. SARIMAX model's results are ...*CHECK WITH DANIEL*
 
 [![](/_static/SARIMAX-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg)<br>
-**Figure 12** - AUTOARIMA CHART 2
+**Figure 12** - AUTOARIMA CHART 222
 
 [![](/_static/SARIMAX-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg)<br>
 **Figure 13** - AUTOARIMA CHART 2
