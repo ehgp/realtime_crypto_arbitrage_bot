@@ -1,9 +1,9 @@
-Account
+geminilive
 ===============================
 .. toctree::
     :maxdepth: 2
 
-.. automodule:: account
+.. automodule:: geminilive
     :members:
     :inherited-members:
     :undoc-members:

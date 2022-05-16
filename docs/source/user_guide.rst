@@ -3,7 +3,10 @@ User Guide
 .. toctree::
     :maxdepth: 2
 
-    live
+    kucoinlive
+    coinbaselive
+    geminilive
     analysis
-    account
     trade
+    triarb
+    bellmanford
