@@ -6,21 +6,19 @@ Currently two arbitrage models are being used:
 2.Bellman Ford Optimization.
 """
 
-import sqlite3
-import pandas as pd
 import datetime as dt
 import logging
 import logging.config
-import yaml
 import os
-
+import sqlite3
 from pathlib import Path
-from bellmanford import (
-    bellman_ford_exec,
-    print_profit_opportunity_for_path_store_db,
-    load_exchange_graph,
-    # draw_graph_to_png,
-)
+
+import pandas as pd
+import yaml
+
+from bellmanford import (bellman_ford_exec,  # draw_graph_to_png,
+                         load_exchange_graph,
+                         print_profit_opportunity_for_path_store_db)
 from triarb import find_tri_arb_ops
 
 # Logging
