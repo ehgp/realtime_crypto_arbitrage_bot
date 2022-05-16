@@ -1,4 +1,4 @@
-Analysis
+analysis
 ===============================
 .. toctree::
     :maxdepth: 2

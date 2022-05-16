@@ -78,14 +78,12 @@ class NegativeWeightFinder:
         self.predecessor_to = {}
         # the maximum weight which can be transferred from source to each node
         self.distance_to = {}
-
         self.seen_nodes = set()
 
     def reset_all_but_graph(self):
         """Call this to look for opportunities after updating the graph."""
         self.predecessor_to = {}
         self.distance_to = {}
-
         self.seen_nodes = set()
 
     def initialize(self, source):

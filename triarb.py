@@ -1,6 +1,7 @@
 """Find Triangular Arbitrage Opportunities.
 
-Triangular Arbitrage goes in forward and reverse executions and looks for any profit higher what was defined in parameters.yaml
+Triangular Arbitrage goes in forward and reverse executions and looks
+for any profit higher what was defined in parameters.yaml
 
 NOTES
 =============
@@ -28,6 +29,7 @@ import datetime as dt
 import logging
 import logging.config
 from pathlib import Path
+
 import yaml
 import os
 

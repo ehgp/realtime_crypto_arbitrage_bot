@@ -8,18 +8,18 @@ Currently two arbitrage models are being used:
 
 import sqlite3
 import pandas as pd
-import numpy as np
 import datetime as dt
 import logging
 import logging.config
-from pathlib import Path
 import yaml
 import os
+
+from pathlib import Path
 from bellmanford import (
     bellman_ford_exec,
     print_profit_opportunity_for_path_store_db,
     load_exchange_graph,
-    draw_graph_to_png,
+    # draw_graph_to_png,
 )
 from triarb import find_tri_arb_ops
 

@@ -22,7 +22,7 @@ Lin, A., Shang, P., & Zhao, X. (2011). The cross-correlations of stock markets b
 
 MacKenzie, D. (2016). A material political economy: Automated Trading Desk and price prediction in high-frequency trading. Social Studies of Science, 47(2), 172–194. <https://doi.org/10.1177/0306312716676900>
 
-Mushailov, J. (Iosif). (2021, March 31). LSTM Framework For Univariate Time-Series Prediction. Medium. https://towardsdatascience.com/lstm-framework-for-univariate-time-series-prediction-d9e7252699e
+Mushailov, J. (Iosif). (2021, March 31). LSTM Framework For Univariate Time-Series Prediction. Medium. <https://towardsdatascience.com/lstm-framework-for-univariate-time-series-prediction-d9e7252699e>
 
 Piccotti, L. R. (2018). Jumps, cojumps, and efficiency in the spot foreign exchange market. Journal of Banking & Finance, 87, 49–67. <https://doi.org/10.1016/j.jbankfin.2017.09.007>
 
