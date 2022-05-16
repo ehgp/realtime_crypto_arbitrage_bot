@@ -1,4 +1,4 @@
-Trade
+trade
 ===============================
 .. toctree::
     :maxdepth: 2
