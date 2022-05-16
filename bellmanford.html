@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bellmanford &mdash; UMBC Data 606 Capstone: Real Time Arbitrage Bot 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/umbc_logo.jpg"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="triarb" href="triarb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/umbc_logo.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">UMBC Data 606 Capstone: Real Time Arbitrage Bot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#authors">Authors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#disclosure">Disclosure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#support">Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#todo">TODO</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="report.html">Report</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="report.html#abstract">Abstract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="report.html#what-is-a-crypto-trading-arbitrage-bot">What is a Crypto Trading/Arbitrage Bot?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#parameters-of-our-triangular-arbitrage-bot">Parameters of Our Triangular Arbitrage Bot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#dataset">Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="report.html#exploratory-data-analysis">Exploratory data analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#price-prediction-with-time-series-analysis">Price Prediction with Time Series Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#how-does-our-bot-work">How does our bot work?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="report.html#kucoinlive-py">Kucoinlive.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#analysis-py">Analysis.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#trade-py">Trade.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#data-flow-for-this-project">Data Flow for This Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="report.html#results-of-the-triangular-arbitrage-model">Results of the Triangular Arbitrage Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#bellman-ford-algorithm">Bellman-Ford Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#comparing-the-results-of-the-models">Comparing the Results of the Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#conclusion-and-future-work">Conclusion and Future Work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="report.html#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="user_guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="kucoinlive.html">kucoinlive</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="coinbaselive.html">coinbaselive</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geminilive.html">geminilive</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trade.html">Trade</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="triarb.html">triarb</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="triarb.html#notes">::: NOTES :::</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bellmanford</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">UMBC Data 606 Capstone: Real Time Arbitrage Bot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="user_guide.html">User Guide</a> &raquo;</li>
+      <li>bellmanford</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bellmanford">
+<h1>bellmanford<a class="headerlink" href="#bellmanford" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-bellmanford"></span><p>Bellman Ford Graph Execution.</p>
+<p>With an initialized networkx DiGraph DAG using our real time ticker data, execute Bellman Ford Optimization
+to find most profitable trade path by finding the biggest negative weights in price and volume.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">NegativeWeightDepthFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.classes.graph.Graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder" title="Permalink to this definition"></a></dt>
+<dd><p>Negative Weight Depth Finder.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.bellman_ford">
+<span class="sig-name descname"><span class="pre">bellman_ford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.bellman_ford" title="Permalink to this definition"></a></dt>
+<dd><p>Find arbitrage opportunities in self graph and yields them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – A node (currency) in self.graph. Opportunities will be yielded only if they are “reachable” from source.
+Reachable means that a series of trades can be executed to buy one of the currencies in the opportunity.
+For the most part, it does not matter what the value of source is, because typically any currency can be
+reached from any other via only a few trades.</p></li>
+<li><p><strong>unique_paths</strong> – If True, each opportunity is not yielded more than once</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a generator of profitable (negatively-weighted) arbitrage paths in self.graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.distance_to">
+<span class="sig-name descname"><span class="pre">distance_to</span></span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.distance_to" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.predecessor_to">
+<span class="sig-name descname"><span class="pre">predecessor_to</span></span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.predecessor_to" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.relax">
+<span class="sig-name descname"><span class="pre">relax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.relax" title="Permalink to this definition"></a></dt>
+<dd><p>Relax edges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.reset_all_but_graph">
+<span class="sig-name descname"><span class="pre">reset_all_but_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.reset_all_but_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Call this to look for opportunities after updating the graph.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightDepthFinder.seen_nodes">
+<span class="sig-name descname"><span class="pre">seen_nodes</span></span><a class="headerlink" href="#bellmanford.NegativeWeightDepthFinder.seen_nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">NegativeWeightFinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">networkx.classes.graph.Graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder" title="Permalink to this definition"></a></dt>
+<dd><p>Negative Weight Finder.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.bellman_ford">
+<span class="sig-name descname"><span class="pre">bellman_ford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.bellman_ford" title="Permalink to this definition"></a></dt>
+<dd><p>Find arbitrage opportunities in self graph and yields them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – A node (currency) in self.graph. Opportunities will be yielded only if they are “reachable” from source.
+Reachable means that a series of trades can be executed to buy one of the currencies in the opportunity.
+For the most part, it does not matter what the value of source is, because typically any currency can be
+reached from any other via only a few trades.</p></li>
+<li><p><strong>unique_paths</strong> – If True, each opportunity is not yielded more than once</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a generator of profitable (negatively-weighted) arbitrage paths in self.graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.distance_to">
+<span class="sig-name descname"><span class="pre">distance_to</span></span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.distance_to" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.graph" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.predecessor_to">
+<span class="sig-name descname"><span class="pre">predecessor_to</span></span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.predecessor_to" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.relax">
+<span class="sig-name descname"><span class="pre">relax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.relax" title="Permalink to this definition"></a></dt>
+<dd><p>Relax edges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.reset_all_but_graph">
+<span class="sig-name descname"><span class="pre">reset_all_but_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.reset_all_but_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Call this to look for opportunities after updating the graph.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bellmanford.NegativeWeightFinder.seen_nodes">
+<span class="sig-name descname"><span class="pre">seen_nodes</span></span><a class="headerlink" href="#bellmanford.NegativeWeightFinder.seen_nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bellmanford.bellman_ford_exec">
+<span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">bellman_ford_exec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BTC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.bellman_ford_exec" title="Permalink to this definition"></a></dt>
+<dd><p>Look at the docstring of the bellman_ford method in the NegativeWeightFinder class.</p>
+<p>(This is a static wrapper function.)
+If depth is true, yields all negatively weighted paths
+(accounting for depth) when starting with a weight of
+starting_amount.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bellmanford.draw_graph_to_png">
+<span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">draw_graph_to_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.draw_graph_to_png" title="Permalink to this definition"></a></dt>
+<dd><p>Draw graph to png.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bellmanford.last_index_in_list">
+<span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">last_index_in_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">li</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.last_index_in_list" title="Permalink to this definition"></a></dt>
+<dd><p>Thanks to <a class="reference external" href="https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list">https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bellmanford.load_exchange_graph">
+<span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">load_exchange_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exchange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">networkx.classes.digraph.DiGraph</span></span></span><a class="headerlink" href="#bellmanford.load_exchange_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Return a networkx DiGraph populated with the current ask and bid prices for each market in graph.</p>
+<p>(represented by edges). If depth, also adds an attribute ‘depth’ to each edge which represents the current volume of orders
+available at the price represented by the ‘weight’ attribute of each edge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bellmanford.print_profit_opportunity_for_path_store_db">
+<span class="sig-prename descclassname"><span class="pre">bellmanford.</span></span><span class="sig-name descname"><span class="pre">print_profit_opportunity_for_path_store_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bellmanford.print_profit_opportunity_for_path_store_db" title="Permalink to this definition"></a></dt>
+<dd><p>Print profit opportunity for graph path.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="triarb.html" class="btn btn-neutral float-left" title="triarb" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

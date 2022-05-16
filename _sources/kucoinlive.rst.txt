@@ -1,9 +1,9 @@
-Live
+kucoinlive
 ===============================
 .. toctree::
     :maxdepth: 2
 
-.. automodule:: live
+.. automodule:: kucoinlive
     :members:
     :inherited-members:
     :undoc-members:
