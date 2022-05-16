@@ -45,7 +45,7 @@ In research from Gradojevic et al. (2020) it is found that high frequency trader
 
 Automated trading started in 1980s. It has been used and developed since then by institutional investors and large trading firms for different purposes. It is also known as algorithmic trading by investors. Nowadays algorithmic trading composes 60-70% of the total equity trades in the US market. It is 100% legal, and very preferable by users due to its ability for high frequency trading. The investors are able to trade 7/24 with the help of these computer programs without spending days and nights on their computers. Once they setup their parameters, the program is ready to execute trades on selected currencies. The first product invented for this purpose was Automated Trading Desk (ATD). MacKenzie (2016) explains that ATDs were primarily automated marketmakers in his research. They were invented to replace NYSE (New York Stock Exchange) specialists whose role is to buy an asset from a given price and sell it for a higher price. Nevertheless, relying on people makes this process slow, and it is very fragile against human mistakes. While ATDs make this process a lot faster and better, they are not considered as the official marketmakers.
 
-Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. *?For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.?*
+Trading bots can be considered a type of ATDs. They are computer programs that are programmed to automatically execute buy and sell orders on an exchange based on a trading strategy. There are various service providers on the market not just for trading but for arbitrage trading too. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. *For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people's spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders in every 8 hours, their earnings and losses balances each other but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, this strategy can make money to the investors especially in bullish market cycles.*
 
 Triangular arbitrage bots are slightly different than regular arbitrage bots because of the concept of triangular arbitrage. Rather than trading an asset in different exchanges, triangular arbitrage focuses on the selected three trading pairs and trades them in the same exchange. Multiple opportunities are created in crypto market for triangular arbitrage trading. Due to its high volatility and non-stop market structure, crypto currency market is a gem for most traders.
 
@@ -93,13 +93,13 @@ There is another interesting correlation is between Bitcoin's price and trading 
 
 In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin's price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin's price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies' prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.
 
-**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC. 
+**AUTOARIMA**, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/AUTOARIMA-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg)
 **Figure 8** - AUTOARIMA Model Construction and Parameters Setting - p d q value are automatically generated within the AUTOARIMA model.
 
 [![](/_static/AUTOARIMA-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg)
-**Figure 9** - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance. 
+**Figure 9** - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.
 
 [![](/_static/AUTOARIMA-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg)
 **Figure 10** - AUTOARIMA MAPE Score - 3.79%
@@ -107,14 +107,13 @@ In this study, we did time series analysis to have a better understanding of the
 [![](/_static/AUTOARIMA-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg)
 **Figure 11** - AUTOARIMA Model Forecasting - 14 days into the Future, expecting a decrease in price.
 
-
 **SARIMAX**, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, and this is its main difference from AUTOARIMA model. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/SARIMAX-scores.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg)<br>
 **Figure 12** - SARIMAX Model Construction and Parameters Setting - p d q value are based on the lowest AIC score previously determined.
 
 [![](/_static/SARIMAX-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg)<br>
-**Figure 13** - SARIMAX Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance. 
+**Figure 13** - SARIMAX Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.
 
 [![](/_static/SARIMAX-MAPE.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg)<br>
 **Figure 14** - SARIMAX MAPE Score - 3.81%
@@ -124,7 +123,7 @@ In this study, we did time series analysis to have a better understanding of the
 
 **LSTM**,
 
-For the LSTM aspect,, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC. 
+For the LSTM aspect,, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.
 
 [![](/_static/LSTM-chart-6.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg)<br>
 **Figure 16** - Histogram - Understanding BTC Price Movement
@@ -133,7 +132,7 @@ For the LSTM aspect,, our historically time series data is aggregated by the min
 **Figure 17** - Historically Pricemovement - BTC
 
 [![](/_static/LSTM-scores-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg)<br>
-**Figure 18** - 
+**Figure 18** -
 
 [![](/_static/LSTM-scores-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpeg)<br>
 **Figure 19** - High P value indicates poor model performance
@@ -142,10 +141,10 @@ For the LSTM aspect,, our historically time series data is aggregated by the min
 **Figure 20** - LSTM Model Construction
 
 [![](/_static/LSTM-chart-3.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg)<br>
-**Figure 21** - Performance Metric Evaluation 
+**Figure 21** - Performance Metric Evaluation
 
 [![](/_static/LSTM-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg)<br>
-**Figure 22** - 
+**Figure 22** -
 
 [![](/_static/LSTM-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg)<br>
 **Figure 23** - LSTM - Prediction Verus Actual
@@ -163,7 +162,7 @@ Firstly, configuration yaml is loaded and dictionary of setting is returned in t
 
 ### Analysis.py
 
-Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. *?This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.?*
+Trade opportunities are filtered depending on their profit rates in this script. The pairs are scanned in milliseconds for both forward and reverse trading opportunities. Trade opportunities with 0.1% or greater are going to be executed. Base ticker, quote ticker, best bid price, best ask price, best ask size, best bid size, price, sequence, size, and time columns of each opportunity are displayed. The trade opportunities which satisfy the constraints are executed in trade.py. *This script includes both opportunities from triangular arbitrage, and bellman-ford optimization.*
 
 ### Trade.py
 
