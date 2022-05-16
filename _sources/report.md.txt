@@ -137,7 +137,7 @@ For the LSTM aspect, our historically time series data is aggregated by the minu
 **Figure 18** - Historically Price Movement - BTC
 
 [![](/_static/LSTM-scores-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg)<br>
-**Figure 19** - 
+**Figure 19** - Histogram and QQ Plot
 
 [![](/_static/LSTM-scores-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpeg)<br>
 **Figure 20** - High P value indicates poor model performance
@@ -149,7 +149,7 @@ For the LSTM aspect, our historically time series data is aggregated by the minu
 **Figure 22** - Performance Metric Evaluation
 
 [![](/_static/LSTM-chart-2.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg)<br>
-**Figure 23** - 
+**Figure 23** - Epochs Over Loss - LSTM
 
 [![](/_static/LSTM-chart-1.jpeg)](https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg)<br>
 **Figure 24** - LSTM - Prediction Verus Actual
