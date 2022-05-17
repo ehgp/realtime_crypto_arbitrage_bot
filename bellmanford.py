@@ -1,18 +1,20 @@
 """Bellman Ford Graph Execution.
 
-With an initialized networkx DiGraph DAG using our real time ticker data, execute Bellman Ford Optimization
-to find most profitable trade path by finding the biggest negative weights in price and volume.
+With an initialized networkx DiGraph DAG using our real time ticker data,
+execute Bellman Ford Optimizationto find most profitable trade path by finding
+the biggest negative weights in price and volume.
 """
-import math
-import networkx as nx
+import datetime as dt
 import logging
 import logging.config
-from pathlib import Path
-import yaml
+import math
 import os
-import datetime as dt
-import pandas as pd
 import sqlite3
+from pathlib import Path
+
+import networkx as nx
+import pandas as pd
+import yaml
 
 __all__ = [
     "NegativeWeightFinder",
@@ -63,7 +65,8 @@ cf = _load_config()
 
 
 def last_index_in_list(li: list, element):
-    """Thanks to https://stackoverflow.com/questions/6890170/how-to-find-the-last-occurrence-of-an-item-in-a-python-list."""
+    """Thanks to https://stackoverflow.com/questions/6890170/\
+how-to-find-the-last-occurrence-of-an-item-in-a-python-list."""
     return len(li) - next(i for i, v in enumerate(reversed(li), 1) if v == element)
 
 
@@ -96,7 +99,8 @@ class NegativeWeightFinder:
     def initialize(self, source):
         """Initialize nodes."""
         for node in self.graph:
-            # Initialize all distance_to values to infinity and all predecessor_to values to None
+            # Initialize all distance_to values to infinity
+            # and all predecessor_to values to None
             self.distance_to[node] = float("Inf")
             self.predecessor_to[node] = None
 
@@ -122,7 +126,8 @@ class NegativeWeightFinder:
         logger.info("Relaxing edges")
         # After len(graph) - 1 passes, algorithm is complete.
         for i in range(len(self.graph) - 1):
-            # for each node in the graph, test if the distance to each of its siblings is shorter by going from
+            # for each node in the graph, test if the distance to each
+            # of its siblings is shorter by going from
             # source->base_currency + base_currency->quote_currency
             for edge in self.graph.edges(data=True):
                 self.relax(edge)
@@ -259,20 +264,24 @@ def _add_weighted_edge_to_graph(
     fees=False,
     depth=False,
 ):
-    """todo: add global variable to bid_volume/ ask_volume to see if all tickers (for a given exchange) have value == None.
+    """todo: add global variable to bid_volume/ ask_volume.
+    to see if all tickers (for a given exchange) have value == None.
 
-    Returns a Networkx DiGraph populated with the current ask and bid prices for each market in graph (represented by
-    edges).
+    Returns a Networkx DiGraph populated with the current ask and bid prices
+    for each market in graph (represented by edges).
     :param exchange: A ccxt Exchange object
     :param market_name: A string representing a cryptocurrency market formatted like so:
     '{base_currency}/{quote_currency}'
     :param graph: A Networkx DiGraph upon
-    :param log: If the edge weights given to the graph should be the negative logarithm of the ask and bid prices. This
-    is necessary to calculate arbitrage opportunities.
+    :param log: If the edge weights given to the graph should be the negative
+    logarithm of the ask and bid prices. This is necessary to calculate arbitrage opportunities.
     :param fees: If fees should be taken into account for prices.
-    :param suppress: A list or set which tells which types of warnings to not throw. Accepted elements are 'markets'.
-    :param ticker: A dictionary representing a market as returned by ccxt's Exchange's fetch_ticker method
-    :param depth: If True, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    :param suppress: A list or set which tells which types of warnings to not throw.
+    Accepted elements are 'markets'.
+    :param ticker: A dictionary representing a market as returned by ccxt's
+    Exchange's fetch_ticker method
+    :param depth: If True, also adds an attribute 'depth' to each edge which
+    represents the current volume of orders
     available at the price represented by the 'weight' attribute of each edge.
     """
     # logger.info("Adding edge to graph")
@@ -397,7 +406,8 @@ def load_exchange_graph(
 ) -> nx.DiGraph:
     """Return a networkx DiGraph populated with the current ask and bid prices for each market in graph.
 
-    (represented by edges). If depth, also adds an attribute 'depth' to each edge which represents the current volume of orders
+    (represented by edges). If depth, also adds an attribute 'depth' to each
+    edge which represents the current volume of orders
     available at the price represented by the 'weight' attribute of each edge.
     """
     logger.info("Initializing empty graph with exchange_name attribute")

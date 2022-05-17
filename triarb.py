@@ -22,16 +22,16 @@ REVERSE ARBITRAGE (EX: ETHBTC) -> a = USDT, b = ETH, c = BTC
 # 3. sell BTCUSDT  - bid  <- sell to top bid price (faster)
 """
 
-import sqlite3
-import pandas as pd
-import numpy as np
 import datetime as dt
 import logging
 import logging.config
+import os
+import sqlite3
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import yaml
-import os
 
 # Logging
 path = Path(os.getcwd())
