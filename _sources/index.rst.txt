@@ -1,6 +1,6 @@
-.. UMBC Data 606 Capstone: Real Time Arbitrage Bot documentation main file
+..  Realtime Crypto Arbitrage Bot documentation main file
 
-UMBC Data 606 Capstone: Real Time Arbitrage Bot
+ Realtime Crypto Arbitrage Bot
 ================================================================
 .. toctree::
    :maxdepth: 2

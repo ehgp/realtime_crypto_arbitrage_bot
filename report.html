@@ -4,10 +4,9 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Report &mdash; UMBC Data 606 Capstone: Real Time Arbitrage Bot 0.1.0 documentation</title>
+  <title>Report &mdash;  Realtime Crypto Arbitrage Bot 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="shortcut icon" href="_static/umbc_logo.jpg"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -18,9 +17,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Guide" href="user_guide.html" />
-    <link rel="prev" title="UMBC Data 606 Capstone: Real Time Arbitrage Bot" href="getting_started.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,8 +25,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html">
-            <img src="_static/umbc_logo.jpg" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home">  Realtime Crypto Arbitrage Bot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -39,80 +35,43 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">UMBC Data 606 Capstone: Real Time Arbitrage Bot</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#documentation">Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#authors">Authors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#disclosure">Disclosure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#support">Support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#todo">TODO</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Report</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#what-is-a-crypto-trading-arbitrage-bot">What is a Crypto Trading/Arbitrage Bot?</a></li>
+<li><a class="reference internal" href="#parameters-of-our-triangular-arbitrage-bot">Parameters of Our Triangular Arbitrage Bot</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Report</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#abstract">Abstract</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#what-is-a-crypto-trading-arbitrage-bot">What is a Crypto Trading/Arbitrage Bot?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#parameters-of-our-triangular-arbitrage-bot">Parameters of Our Triangular Arbitrage Bot</a></li>
+<li><a class="reference internal" href="#dataset">Dataset</a><ul>
+<li><a class="reference internal" href="#exploratory-data-analysis">Exploratory data analysis</a></li>
+<li><a class="reference internal" href="#price-prediction-with-time-series-analysis">Price Prediction with Time Series Analysis</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#exploratory-data-analysis">Exploratory data analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#price-prediction-with-time-series-analysis">Price Prediction with Time Series Analysis</a></li>
+<li><a class="reference internal" href="#how-does-our-bot-work">How does our bot work?</a><ul>
+<li><a class="reference internal" href="#kucoinlive-py">Kucoinlive.py</a></li>
+<li><a class="reference internal" href="#analysis-py">Analysis.py</a></li>
+<li><a class="reference internal" href="#trade-py">Trade.py</a></li>
+<li><a class="reference internal" href="#data-flow-for-this-project">Data Flow for This Project</a></li>
+<li><a class="reference internal" href="#results-of-the-triangular-arbitrage-model">Results of the Triangular Arbitrage Model</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#how-does-our-bot-work">How does our bot work?</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#kucoinlive-py">Kucoinlive.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#analysis-py">Analysis.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#trade-py">Trade.py</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#data-flow-for-this-project">Data Flow for This Project</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#results-of-the-triangular-arbitrage-model">Results of the Triangular Arbitrage Model</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#bellman-ford-algorithm">Bellman-Ford Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#comparing-the-results-of-the-models">Comparing the Results of the Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#conclusion-and-future-work">Conclusion and Future Work</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="kucoinlive.html">kucoinlive</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="coinbaselive.html">coinbaselive</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="geminilive.html">geminilive</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">analysis</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="trade.html">trade</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="triarb.html">triarb</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="triarb.html#notes">NOTES</a></li>
-<li class="toctree-l3"><a class="reference internal" href="triarb.html#forward-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">FORWARD ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="triarb.html#reverse-arbitrage-ex-ethbtc-a-usdt-b-eth-c-btc">REVERSE ARBITRAGE (EX: ETHBTC) -&gt; a = USDT, b = ETH, c = BTC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bellmanford.html">bellmanford</a><ul class="simple">
+<li><a class="reference internal" href="#bellman-ford-algorithm">Bellman-Ford Algorithm</a></li>
+<li><a class="reference internal" href="#comparing-the-results-of-the-models">Comparing the Results of the Models</a></li>
+<li><a class="reference internal" href="#conclusion-and-future-work">Conclusion and Future Work</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-
+</div>
         </div>
       </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">UMBC Data 606 Capstone: Real Time Arbitrage Bot</a>
+          <a href="index.html"> Realtime Crypto Arbitrage Bot</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -186,7 +145,7 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <p>Trading bots can be considered a type of ATDs. They are computer programs are programmed to automatically execute buy and sell orders on an exchange, based on a trading strategy. There are various service providers on the market, not just for trading, but for arbitrage trading as well. Users can either choose an in-built trading strategy or make their own with their favorite indicators and currency pairs. Arbitrage bots have the same concept as the trading bots, but their strategy is based on making profit from price differences. <em>For example, Pionex is a crypto trading bot provider which also offers arbitrage bot. Their system is based on opening a hedge position in perpetual futures market on people’s spot crypto positions. If a client has $1000 invested Ethereum (ETH) in spot, the bot opens a short position worth of $1000 on ETH-USDT pair. Since long position holders pay a funding fee to short position holders every 8 hours, their earnings and losses balances each other, but the earnings from funding fee is their profit. If the investors hold short positions more than the long positions, this strategy will not work. However, the funding rate (a ratio shows the balance between the long and short positions) is mostly positive, and this strategy can make money to the investors, especially in bullish market cycles.</em></p>
 <p>Triangular arbitrage bots are slightly different than regular arbitrage bots because of the concept of triangular arbitrage. Rather than trading an asset in different exchanges, triangular arbitrage focuses on the selected three trading pairs and trades them in the same exchange. Multiple opportunities are created in crypto market for triangular arbitrage trading. Due to its high volatility and non-stop market structure, crypto currency market is a gem for most traders.</p>
 <p>Triangular arbitrage works in the same logic as in foreign exchange market. It exploits from the market inefficiencies in crypto market. Below example explains how it works:</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/triangular.jpg"><img alt="_images/triangular.jpg" src="_images/triangular.jpg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/triangular.jpg"><img alt="_images/triangular.jpg" src="_images/triangular.jpg" /></a><br>
 <strong>Figure 1</strong> - Triangular Arbitrage</p>
 </section>
 <section id="parameters-of-our-triangular-arbitrage-bot">
@@ -197,65 +156,65 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <section id="dataset">
 <h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline"></a></h2>
 <p>In this study, the dataset is gathered from Kucoin exchange. Firstly, API keys are generated on Kucoin. Then, these API keys are used to gather data from the exchange. These API keys are also necessary to execute orders automatically. After generating API keys, they are put in the “<em>exchange</em>live.py” script to gather real-time trading data for all crypto currencies in Kucoin. The dataset consists of the pairs’ ticker, best ask price, best bid price, best ask trade size, best bid trade size, price, sequence, trade size, and timestamp. It is necessary to have the real time data to find triangular arbitrage opportunities. It is also necessary to have all the pairs in the exchange, so no opportunities can be missed.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataset.png"><img alt="_images/dataset.png" src="_images/dataset.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/dataset.png"><img alt="_images/dataset.png" src="_images/dataset.png" /></a><br>
 <strong>Figure 2</strong> - ETL dataset</p>
 <section id="exploratory-data-analysis">
 <h3>Exploratory data analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this headline"></a></h3>
 <p>The dataset contains all the trading pairs in the Kucoin exchange for a given time. There are 10 columns and 690 rows, meaning there are 690 trading pairs. From the 10 columns three of them have object data type and the others are float data type.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/describe.jpeg"><img alt="_images/describe.jpeg" src="_images/describe.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/describe.jpeg"><img alt="_images/describe.jpeg" src="_images/describe.jpeg" /></a><br>
 <strong>Figure 3</strong> - Describe function exploration</p>
 <p>BTC/TUSD has the highest price in this dataset. It is expected that Bitcoin has the highest price as leading and the first coin in crypto exchange. NFT/USDT trading pair has the biggest trading size in this dataset.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/sort.jpeg"><img alt="_images/sort.jpeg" src="_images/sort.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/sort.jpeg"><img alt="_images/sort.jpeg" src="_images/sort.jpeg" /></a><br>
 <strong>Figure 4</strong> - Size column sort function exploration</p>
 <p>When we analyzed the correlation between the columns, it was obvious that there was a positive correlation between bestbidSize and size columns. For all the trading pairs, it is understandable that the bidders increases the size of the total trades.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/bid-ask-size-correlation.jpeg"><img alt="_images/bid-ask-size-correlation.jpeg" src="_images/bid-ask-size-correlation.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/bid-ask-size-correlation.jpeg"><img alt="_images/bid-ask-size-correlation.jpeg" src="_images/bid-ask-size-correlation.jpeg" /></a><br>
 <strong>Figure 5</strong> - Correlation across bestbidSize and Size columns</p>
 <p>Another interesting correlation is between Bitcoin’s price and trading size. While it was observed that there was negative correlation between these two, there was positive correlation between bestbidSize and the price. On the other hand, these correlations are positive for Ethereum’s trading pairs.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/btc-size-price-correlation.png"><img alt="_images/btc-size-price-correlation.png" src="_images/btc-size-price-correlation.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/btc-size-price-correlation.png"><img alt="_images/btc-size-price-correlation.png" src="_images/btc-size-price-correlation.png" /></a><br>
 <strong>Figure 6</strong> - Correlation across BTC size and price</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/eth-size-price-correlation.png"><img alt="_images/eth-size-price-correlation.png" src="_images/eth-size-price-correlation.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/eth-size-price-correlation.png"><img alt="_images/eth-size-price-correlation.png" src="_images/eth-size-price-correlation.png" /></a><br>
 <strong>Figure 7</strong> - Correlation across ETH size and price</p>
 </section>
 <section id="price-prediction-with-time-series-analysis">
 <h3>Price Prediction with Time Series Analysis<a class="headerlink" href="#price-prediction-with-time-series-analysis" title="Permalink to this headline"></a></h3>
 <p>In this study, we did time series analysis to have a better understanding of the price movements in crypto currencies. We used AUTOARIMA, SARIMAX, and LSTM models to analyze Bitcoin’s price movements in time. Since it is a highly volatile market, it is hard to predict the future price compared to other crypto currencies. Average true range is larger compared to regular stock exchange. Price prediction is important because arbitrage opportunities can be gone in seconds if the market is in a down trend. Even though the trades are executed very quickly, an instant drop in the Bitcoin’s price can take away the potential profits and cause the trader to lose money. Since, the crypto currencies’ prices are highly connected to each other, a price decrease in Bitcoin affects the entire market instantly. For that reason, this price analysis helps traders understand when to execute arbitrage trades. It is less risky to do arbitrage in an uptrend market.</p>
 <p><strong>AUTOARIMA</strong>, Autoregressive Integrated Moving Average, model is used to better understand and forecast future trends. It is a statistical analysis model that uses time series data. It is autoregressive because it uses past values to predict future values. It is used in statistics and econometrics to track occurrences across time. In our study, our historically time series data is aggregated by the daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg"><img alt="_images/AUTOARIMA-MAPE.jpeg" src="_images/AUTOARIMA-MAPE.jpeg" /></a>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/AUTOARIMA-MAPE.jpeg"><img alt="_images/AUTOARIMA-MAPE.jpeg" src="_images/AUTOARIMA-MAPE.jpeg" /></a>
 <strong>Figure 8</strong> - AUTOARIMA Model Construction and Parameters Setting - p d q value are automatically generated within the AUTOARIMA model.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg"><img alt="_images/AUTOARIMA-chart-2.jpeg" src="_images/AUTOARIMA-chart-2.jpeg" /></a>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/AUTOARIMA-chart-2.jpeg"><img alt="_images/AUTOARIMA-chart-2.jpeg" src="_images/AUTOARIMA-chart-2.jpeg" /></a>
 <strong>Figure 9</strong> - AUTOARIMA Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg"><img alt="_images/AUTOARIMA-scores.jpeg" src="_images/AUTOARIMA-scores.jpeg" /></a>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/AUTOARIMA-scores.jpeg"><img alt="_images/AUTOARIMA-scores.jpeg" src="_images/AUTOARIMA-scores.jpeg" /></a>
 <strong>Figure 10</strong> - AUTOARIMA MAPE Score - 3.79%</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg"><img alt="_images/AUTOARIMA-chart-1.jpeg" src="_images/AUTOARIMA-chart-1.jpeg" /></a>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/AUTOARIMA-chart-1.jpeg"><img alt="_images/AUTOARIMA-chart-1.jpeg" src="_images/AUTOARIMA-chart-1.jpeg" /></a>
 <strong>Figure 11</strong> - AUTOARIMA Model Forecasting - 14 days into the Future, expecting a decrease in price.</p>
 <p><strong>SARIMAX</strong>, Seasonal Autoregressive Integrated Moving Average, is another model which uses past data to better understand and predict future values. SARIMA model takes seasonal trends into consideration, which is the main difference from AUTOARIMA model. In our study, our historically time series data is aggregated daily. Because of the viotility of the crypto market, as seen recently Luna and Terra, it is extremely difficult to predict future price point. For this reason, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-scores.jpeg"><img alt="_images/SARIMAX-scores.jpeg" src="_images/SARIMAX-scores.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/SARIMAX-scores.jpeg"><img alt="_images/SARIMAX-scores.jpeg" src="_images/SARIMAX-scores.jpeg" /></a><br>
 <strong>Figure 12</strong> - SARIMAX Model Construction and Parameters Setting - p d q value are based on the lowest AIC score previously determined.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg"><img alt="_images/SARIMAX-chart-1.jpeg" src="_images/SARIMAX-chart-1.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/SARIMAX-chart-1.jpeg"><img alt="_images/SARIMAX-chart-1.jpeg" src="_images/SARIMAX-chart-1.jpeg" /></a><br>
 <strong>Figure 13</strong> - SARIMAX Model - Model was constructed using data from 1/1/2022 through 5/13/2022. Data from 5/02/2022 through 5/13/2022 was without to evaulate performance.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg"><img alt="_images/SARIMAX-MAPE.jpeg" src="_images/SARIMAX-MAPE.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/SARIMAX-MAPE.jpeg"><img alt="_images/SARIMAX-MAPE.jpeg" src="_images/SARIMAX-MAPE.jpeg" /></a><br>
 <strong>Figure 14</strong> - SARIMAX MAPE Score - 3.81%</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/SARIMAX-chart-2.jpeg"><img alt="_images/SARIMAX-chart-2.jpeg" src="_images/SARIMAX-chart-2.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/SARIMAX-chart-2.jpeg"><img alt="_images/SARIMAX-chart-2.jpeg" src="_images/SARIMAX-chart-2.jpeg" /></a><br>
 <strong>Figure 15</strong> - SARIMAX Model Forecasting - 14 days into the Future, expecting a decrease in price.</p>
 <p><strong>LSTM</strong>, Long Short-Term Memory is based on the Recurrent Neural Network (RNN) architecture. It is widely used in Natural Language Processing along with time series analysis. Unlike traditional Recurrent Neural Networks, LSTM utilizes short-memory by using a series of gates, each which has it own Recurrent Neural Network. Based on the probabilistic model with the LSTM model manages the datapoints. When a prediction is made, it is fed back into the model in order to predict the next point within that sequence. Error is introduced with each new prediction. In order to aviod gradienting issues, values are manuplated through tanh and sigmoid activation function prior to entering and leaving the gate.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM.jpeg"><img alt="_images/LSTM.jpeg" src="_images/LSTM.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM.jpeg"><img alt="_images/LSTM.jpeg" src="_images/LSTM.jpeg" /></a><br>
 <strong>Figure 16</strong> - LSTM Architecture</p>
 <p>For the LSTM aspect, our historically time series data is aggregated by the minute range. Again, because of the viotility of the crypto market, we only analyze large marketcap currencies for EDA/Time Series analysis such as BTC.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-6.jpeg"><img alt="_images/LSTM-chart-6.jpeg" src="_images/LSTM-chart-6.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-6.jpeg"><img alt="_images/LSTM-chart-6.jpeg" src="_images/LSTM-chart-6.jpeg" /></a><br>
 <strong>Figure 17</strong> - Histogram - Understanding BTC Price Movement</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-5.jpeg"><img alt="_images/LSTM-chart-5.jpeg" src="_images/LSTM-chart-5.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-5.jpeg"><img alt="_images/LSTM-chart-5.jpeg" src="_images/LSTM-chart-5.jpeg" /></a><br>
 <strong>Figure 18</strong> - Historically Price Movement - BTC</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-2.jpeg"><img alt="_images/LSTM-scores-2.jpeg" src="_images/LSTM-scores-2.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-scores-2.jpeg"><img alt="_images/LSTM-scores-2.jpeg" src="_images/LSTM-scores-2.jpeg" /></a><br>
 <strong>Figure 19</strong> - Histogram and QQ Plot</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-scores-1.jpeg"><img alt="_images/LSTM-scores-1.jpeg" src="_images/LSTM-scores-1.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-scores-1.jpeg"><img alt="_images/LSTM-scores-1.jpeg" src="_images/LSTM-scores-1.jpeg" /></a><br>
 <strong>Figure 20</strong> - High P value indicates poor model performance</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-4.jpeg"><img alt="_images/LSTM-chart-4.jpeg" src="_images/LSTM-chart-4.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-4.jpeg"><img alt="_images/LSTM-chart-4.jpeg" src="_images/LSTM-chart-4.jpeg" /></a><br>
 <strong>Figure 21</strong> - LSTM Model Construction</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-3.jpeg"><img alt="_images/LSTM-chart-3.jpeg" src="_images/LSTM-chart-3.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-3.jpeg"><img alt="_images/LSTM-chart-3.jpeg" src="_images/LSTM-chart-3.jpeg" /></a><br>
 <strong>Figure 22</strong> - Performance Metric Evaluation</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-2.jpeg"><img alt="_images/LSTM-chart-2.jpeg" src="_images/LSTM-chart-2.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-2.jpeg"><img alt="_images/LSTM-chart-2.jpeg" src="_images/LSTM-chart-2.jpeg" /></a><br>
 <strong>Figure 23</strong> - Epochs Over Loss - LSTM</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/LSTM-chart-1.jpeg"><img alt="_images/LSTM-chart-1.jpeg" src="_images/LSTM-chart-1.jpeg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/LSTM-chart-1.jpeg"><img alt="_images/LSTM-chart-1.jpeg" src="_images/LSTM-chart-1.jpeg" /></a><br>
 <strong>Figure 24</strong> - LSTM - Prediction Verus Actual</p>
 </section>
 </section>
@@ -265,7 +224,7 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <section id="kucoinlive-py">
 <h3>Kucoinlive.py<a class="headerlink" href="#kucoinlive-py" title="Permalink to this headline"></a></h3>
 <p>Firstly, configuration yaml is loaded and dictionary of setting is returned in this script. Then, log files are created with the date stamp added on each filename to clarify them for users. Kucoin API keys are entered here for data collection. After that, the real time coin price data are collected and saved in these log files. The data collected is also used to create tables. In these tables there is information about the coin’s best ask price, best bid price, best ask size, date stamp, etc. Below image is an example for these tables. Also monitors spot trades. Each and every change in account balance is displayed to have full knowledge on account balance. The changes and trades are stored in a database.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/tickers.png"><img alt="_images/tickers.png" src="_images/tickers.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/tickers.png"><img alt="_images/tickers.png" src="_images/tickers.png" /></a><br>
 <strong>Figure 25</strong> - kucoin.tickers table</p>
 </section>
 <section id="analysis-py">
@@ -278,13 +237,13 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 </section>
 <section id="data-flow-for-this-project">
 <h3>Data Flow for This Project<a class="headerlink" href="#data-flow-for-this-project" title="Permalink to this headline"></a></h3>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/dataflow.jpg"><img alt="_images/dataflow.jpg" src="_images/dataflow.jpg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/dataflow.jpg"><img alt="_images/dataflow.jpg" src="_images/dataflow.jpg" /></a><br>
 <strong>Figure 26</strong> - Data Flow Diagram</p>
 </section>
 <section id="results-of-the-triangular-arbitrage-model">
 <h3>Results of the Triangular Arbitrage Model<a class="headerlink" href="#results-of-the-triangular-arbitrage-model" title="Permalink to this headline"></a></h3>
 <p>Our model was able to detect multiple trading opportunities in minutes with higher profit margin than 1%. Most opportunities have much higher profit than 1%. As you can see in the below image, the profit margins varies between 13% and 67%. The below image displays the pairs traded, trading size, trading price, forward arbitrage profit, and reverse arbitrage profit. Either forward arbitrage or reverse arbitrage shows ‘nan’ because whichever has higher profit the other is not considered as an opportunity.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/triangular-arbitrage-model-results.png"><img alt="_images/triangular-arbitrage-model-results.png" src="_images/triangular-arbitrage-model-results.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/triangular-arbitrage-model-results.png"><img alt="_images/triangular-arbitrage-model-results.png" src="_images/triangular-arbitrage-model-results.png" /></a><br>
 <strong>Figure 27</strong> - Triangular Arbitrage Model Results</p>
 </section>
 </section>
@@ -292,16 +251,16 @@ From these transactions (assuming no transaction costs or taxes), you would rece
 <h2>Bellman-Ford Algorithm<a class="headerlink" href="#bellman-ford-algorithm" title="Permalink to this headline"></a></h2>
 <p>The Bellman–Ford algorithm calculates the shortest routes in a weighted digraph from a single source vertex to all other vertices. It is a versatile algorithm which is capable of hangling graphs. Some time the edge weights can be negative numbers. If the sum of the edges are negative, it means that they are reachable from the source.
 In this project, we used Bellman-Ford to detect arbitrage opportunities between different pairs. Our goal was to find the shortest trades to take advantage from the price discrepencies. Below image shows all the crypto currencies in Kucoin exchange with their trading pairs.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/graph.png"><img alt="_images/graph.jpg" src="_images/graph.jpg" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/graph.png"><img alt="_images/graph.jpg" src="_images/graph.jpg" /></a><br>
 <strong>Figure 28</strong> - Bellman Ford Graph</p>
 <p>We tried to find other arbitrage opportunities than using only three pairs. Triangular arbitrage allowed us to trade three pairs by taking advantage of the price difference between them. In this section we traded multiple pairs and use the arbitrage opportunities between them. However, more trades mean more fees. Thus, the profit margin would go down when the number of trades increase. For that reason, Bellman-Ford is useful because it finds the shortest path. Below image shows a few of the results we got by using Bellman-Ford algorithm. The trade path, trade type, trade size, trade rates, and profit margin can be seen in the image. As it can be seen in the image, our model found 8 opportunities in 12 minutes. Some of the profit margins are higher than 50%. For some of them, the dollar profit is not that high due to price change in milliseconds on the pairs, and the fees applied to execute the trades.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/Bellman-Ford-Model-results.png"><img alt="_images/Bellman-Ford-Model-results.png" src="_images/Bellman-Ford-Model-results.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/Bellman-Ford-Model-results.png"><img alt="_images/Bellman-Ford-Model-results.png" src="_images/Bellman-Ford-Model-results.png" /></a><br>
 <strong>Figure 29</strong> - Bellman Ford Model Results</p>
 </section>
 <section id="comparing-the-results-of-the-models">
 <h2>Comparing the Results of the Models<a class="headerlink" href="#comparing-the-results-of-the-models" title="Permalink to this headline"></a></h2>
 <p>After we finished our analysis, the results are compared between our models’ performances and the existing repositories on GitHub. For both triangular arbitrage model, and Bellman-Ford model our bots performed better than the existing models on GitHub. The opportunities our bots found had higher profit margin. The only caveat is that these trades were not executed in a production setting. It was only attempted in a sandbox environment with fake currency. Below, one can see the performance comparison with the maximum profit percentage achieved with both models.</p>
-<p><a class="reference external" href="https://github.com/ehgp/data_606_capstone/blob/main/docs/source/_static/result-model-comparison.png"><img alt="_images/result-model-comparison.png" src="_images/result-model-comparison.png" /></a><br>
+<p><a class="reference external" href="https://github.com/ehgp/realtime_crypto_arbitrage_bot/blob/main/docs/source/_static/result-model-comparison.png"><img alt="_images/result-model-comparison.png" src="_images/result-model-comparison.png" /></a><br>
 <strong>Figure 30</strong> - Result Model Comparison of Performance</p>
 </section>
 <section id="conclusion-and-future-work">
@@ -332,10 +291,7 @@ In this project, we used Bellman-Ford to detect arbitrage opportunities between 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="UMBC Data 606 Capstone: Real Time Arbitrage Bot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="user_guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
