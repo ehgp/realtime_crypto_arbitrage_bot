@@ -11,7 +11,7 @@ import datetime as dt
 
 sys.path.insert(0, os.path.abspath("../.."))
 # # -- Project information -----------------------------------------------------
-project = "UMBC Data 606 Capstone: Real Time Arbitrage Bot"
+project = " Realtime Crypto Arbitrage Bot"
 authors = "Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu"
 copyright = (
     "%s Erick Garcia, Daniel Abbasi, Yuksel Baris Dokuzoglu. All rights reserved."
@@ -48,11 +48,11 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "display_version": True,
     "collapse_navigation": False,
-    "logo_only": True,
+    # "logo_only": True,
 }
 # Image for the top of the sidebar & favicon
-html_logo = "_static/umbc_logo.jpg"
-html_favicon = "_static/umbc_logo.jpg"
+# html_logo = "_static/logo.jpg"
+# html_favicon = "_static/logo.jpg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

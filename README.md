@@ -1,4 +1,4 @@
-# UMBC Data 606 Capstone: Real Time Arbitrage Bot
+#  Realtime Crypto Arbitrage Bot
 
 Websockets implementation of real time arbitrage opportunity bot supporting Kucoin currently..
 
@@ -27,7 +27,7 @@ Github Pages Sphinx Documentation
 
 ## Documentation
 
-Documentation found [here](https://ehgp.github.io/data_606_capstone/)
+Documentation found [here](https://ehgp.github.io/realtime_crypto_arbitrage_bot/)
 
 ## Requirements
 
@@ -89,21 +89,7 @@ Not responsible for lost funds.
 
 We started this project as a capstone project with no profit taking.<br>
 To continue this project development, support is heavily recommended and appreciated.<br>
-We accept donations in cryptocurrencies, anything helps. Thank you.
-
-BTC: 3G3zsvcxgomdERYTSjeX4iBJYMfFfCgFmn
-
-ETH: 0x227cc9c06db03563300fa7c2d0b0a34b370f5987
-
-DOGE: DNNsSrk767w9K1eaqc2tQSvJ4mzfBpw4RP
-
-BNB: bnb1rlka4xf6h8p8nlpf8szczmcyugdktptstgham0
-
-XMR: 86vsoW6jsTzcvGZxKVG1PxfsSqUzrMuqvKxLGCXZ3RcNY7VyvhcgiimciW5ZsHyrKUGCpqFPjDG7iMu9sSoveZDxMeGpqCb
-
-ZCASH: t1fkojdhoTTQmrPSExCLMuV6D3a2jxESGtL
-
-ADA: DdzFFzCqrhtBuwQRtRKNSVca58HDwicLx5aDWn8K5pyg36665BL5s6WBLAc9bCTxWk15MFiefoerCRiuxysW7Sy4RQJ6UM2vWXoCg98z
+We accept donations in multiple formats. Thank you.
 
 ## TODO
 
