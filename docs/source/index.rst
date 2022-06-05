@@ -1,6 +1,6 @@
-..  Realtime Crypto Arbitrage Bot documentation main file
+.. Realtime Crypto Arbitrage Bot documentation main file
 
- Realtime Crypto Arbitrage Bot
+Realtime Crypto Arbitrage Bot
 ================================================================
 .. toctree::
    :maxdepth: 2
