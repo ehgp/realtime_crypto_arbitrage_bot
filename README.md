@@ -1,6 +1,6 @@
 #  Realtime Crypto Arbitrage Bot
 
-Websockets implementation of real time arbitrage opportunity bot supporting Kucoin currently..
+Websockets implementation of real time arbitrage opportunity bot supporting [Kucoin](https://docs.kucoin.com/#general) currently..
 
 Relies on four scripts:
 
@@ -94,3 +94,5 @@ We accept donations in multiple formats. Thank you.
 ## TODO
 
 [Gemini](https://docs.gemini.com/rest-api/#sandbox) and [Coinbase](https://docs.cloud.coinbase.com/exchange/docs/sandbox) sandbox implementations.
+1. Implementation of linear trading strategy
+2. Get a trading module working with
