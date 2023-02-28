@@ -1,5 +1,5 @@
 default:
-    image: node:16.0
+    image: python:3.7
     before_script:
         - echo "machine gitlab.com login gitlab-ci-token password ${CI_JOB_TOKEN}" > ~/.netrc
         - apt-get update && apt-get upgrade -y --quiet
@@ -30,11 +30,11 @@ default:
     variables:
         GIT_STRATEGY: clone
         PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-        SAST_DEFAULT_ANALYZERS: bandit,secrets,dependency-check,find-sec-bugs,sast,codeql
+        SAST_DEFAULT_ANALYZERS: semgrep,secrets,dependency-check
+        SECRET_DETECTION_HISTORIC_SCAN: "true"
 
 stages:
     - lint
-    - sec
     - test
     - build
 
@@ -51,16 +51,15 @@ lint:
         - main
 
 sast:
-    stage: sec
-    before_script: []
+    stage: test
+    before_script:
+        - echo "machine gitlab.com login gitlab-ci-token password ${CI_JOB_TOKEN}" > ~/.netrc
     allow_failure: true
     include:
-        - template: Security/SAST.gitlab-ci.yml
-        - template: Security/License-Scanning.gitlab-ci.yml
-        - template: Security/Dependency-Scanning.gitlab-ci.yml
-        - template: Security/Find-Sec-Bugs.gitlab-ci.yml
-        - template: Security/Secret-Detection.gitlab-ci.yml
-        - template: Security/CodeQL.gitlab-ci.yml
+        - template: Jobs/SAST.gitlab-ci.yml
+        - template: Jobs/License-Scanning.gitlab-ci.yml
+        - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+        - template: Jobs/Secret-Detection.gitlab-ci.yml
     only:
         - main
 
