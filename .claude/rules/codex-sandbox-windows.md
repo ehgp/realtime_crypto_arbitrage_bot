@@ -1,0 +1,3 @@
+# Codex workspace-write sandbox on Windows cannot touch .git or the Docker pipe
+
+Under `codex exec -s workspace-write`, `.git/index.lock` is read-only (all `git mv`/`git rm`/staging fail with exit 128) and the Docker named pipe (`npipe:////./pipe/docker_engine`) is denied. Plan builds so Codex writes code and Claude performs git operations and Docker-based proofs itself — do not burn fix rounds resuming Codex into the same denials, and do not escalate to `--dangerously-bypass-approvals-and-sandbox` for steps Claude can run directly. Observed 2026-07-18 during the Phase 1 CloudAITrader build (PLAN-REVIEW-LOG.md, Act 3 Round 1).

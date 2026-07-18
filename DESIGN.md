@@ -1,7 +1,7 @@
 ---
 version: alpha
-name: Realtime Crypto Arbitrage Bot
-description: One-line description of the visual identity. Replace this.
+name: CloudAITrader
+description: A precise, evidence-led interface for prop-firm-aware crypto backtesting.
 colors:
   # Required-ish: include `primary` to silence the `missing-primary` warning.
   primary: "#1A1C1E"
@@ -99,22 +99,15 @@ components:
 
 ## Overview
 
-REPLACE: Two or three sentences capturing the design intent. Name the
-metaphor (e.g., "Architectural Minimalism meets Journalistic Gravitas"),
-the audience, and the emotional register the product is trying to hit.
+Analytical Minimalism meets Trading Discipline for technically fluent traders evaluating strategies before risking challenge capital. The interface should feel controlled, credible, and evidence-led rather than promotional.
 
 ## Colors
 
-REPLACE: Describe the palette philosophy. Why these neutrals? What does
-each accent communicate? When to deploy the warning / error / success
-trio. Reference tokens by name (`primary`, `tertiary`) so prose stays
-synced with the YAML above.
+Warm `neutral` surfaces reduce glare while `primary` establishes sober hierarchy and action weight; `tertiary` is reserved for CTA hover and selective emphasis. Use `warning`, `error`, and `success` only for materially distinct simulation states, validation failures, and confirmed outcomes.
 
 ## Typography
 
-REPLACE: Pairing rationale (e.g., a humanist sans for body, a geometric
-sans for labels). Hierarchy rules. Maximum line length. When italics are
-permitted.
+Public Sans carries display and body content for dense technical readability, while Space Grotesk labels create compact navigational contrast. Keep prose near 70 characters per line, preserve the declared hierarchy, and reserve italics for defined terms or source titles.
 
 ## Layout
 

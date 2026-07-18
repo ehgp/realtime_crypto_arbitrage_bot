@@ -1,0 +1,3 @@
+# Dev compose: parameterize host ports and pin healthchecks to 127.0.0.1
+
+This machine runs multiple portfolio stacks (gtm-engineering holds host 4000, myaicv holds 4100). Never hardcode a host port in a dev compose file — publish as `"${MAIN_PORT:-4200}:4000"` and document MAIN_PORT in .env.example (CloudAITrader uses 4200). Also: in Alpine images, busybox `wget` resolves `localhost` to `::1` first, so a healthcheck against `http://localhost:PORT` fails with connection refused when the server listens on `0.0.0.0` (IPv4 only) — always target `http://127.0.0.1:PORT`. Both hit during Phase 1 proof runs, 2026-07-18.

@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: cloudaitrader
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cloudaitrader"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    profiles: ["tools"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@localhost.invalid
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  migrate:
+    build: ./app/backend
+    command: node migrations/run.js
+    environment:
+      DIRECT_URL: postgres://postgres:postgres@postgres:5432/cloudaitrader
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    build: ./app/backend
+    command: node src/index.js
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DATABASE_URL: postgres://app_user:app_user@postgres:5432/cloudaitrader
+      SERVICE_DATABASE_URL: postgres://service_role:service_role@postgres:5432/cloudaitrader
+    ports:
+      - "${MAIN_PORT:-4200}:4000"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:4000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  backtester:
+    build: ./backtester
+    environment:
+      ENVIRONMENT: production
+      WORKER_DATABASE_URL: postgres://worker_role:worker_role@postgres:5432/cloudaitrader
+    healthcheck:
+      test: ["CMD", "uv", "run", "--no-sync", "python", "-m", "backtester.health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:

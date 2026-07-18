@@ -1,0 +1,33 @@
+{
+  "name": "cloudaitrader-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "migrate": "node migrations/run.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.0",
+    "helmet": "^8.3.0",
+    "jose": "^6.2.3",
+    "otpauth": "^9.5.1",
+    "pg": "^8.22.0",
+    "pino": "^10.3.1",
+    "qrcode": "^1.5.4",
+    "resend": "^6.17.2",
+    "stripe": "^22.3.2"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}

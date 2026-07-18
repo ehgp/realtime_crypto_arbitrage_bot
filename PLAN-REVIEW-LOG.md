@@ -278,3 +278,19 @@ VERDICT: APPROVED
 ## Resolution: APPROVED (Round 5 of 5, 2026-07-18)
 
 Act 2 converged. PLAN.md Revision 5 stands as the locked spec. Cross-model review totals: 56 findings across 4 REVISE rounds (Round 1: 25, Round 2: 15, Round 3: 10, Round 4: 6), 53 accepted, 2 rejected with logged reasons (R1-13 Auth0-MFA switch, R1-21 archive ordering — both rejections endorsed by Codex), 1 partial (R1-18 targeted shift-left instead of a reshuffle). Sprint guides in docs/sprints/ synced to Revision 5 after this entry. Next step per skill: human chooses — Codex builds (/codex-build with SPEC_FILE=PLAN.md after committing plan artifacts), Claude builds, or stop.
+
+## Act 3 — Build
+
+### Round 1 — Codex build (thread 019f75e5-24f3-7812-bc8b-3db9ae88e115, 2026-07-18)
+
+Scope: Phase 1 (Sprint Guide 01) only. Sandbox: workspace-write + network. Codex reported `status: "blocked"` honestly: all scaffolds built and locally validated (frontend build+ESLint, ruff, backend fail-fast, compose config, DIRECT_URL confinement), but the sandbox denied (a) the git index (.git is read-only under codex workspace-write -> git mv / git rm --cached / staging impossible) and (b) the Docker named pipe (compose proof unrunnable). 41 files declared in the report contract; git cross-check found no undeclared non-artifact changes. Deviations declared: legacy relocation not performed, .env still tracked, proof stopped at Docker, middleware.ts deprecation warning retained per frozen spec.
+
+### Claude's verdict (Round 1)
+
+Report contract: VALID. Diff review (full PR-style read of compose, backend config/index/migration runner, backtester Dockerfile/config/service/health/pyproject, frontend middleware/i18n/layout/theme/content/page, root file diffs): faithful to spec, no gamed criteria, no stubs-as-done; the Phase-1 worker loop is an honest declared placeholder. One undeclared minor deviation: backend base image node:22-alpine vs the contract's node:22-slim (defensible — busybox wget enables the healthcheck; noted, not actioned).
+
+Takeover (environmental, no fix rounds burned): (1) performed the sprint-01 git relocation myself — 118 renames staged into archive/legacy-bot/ (docs/source -> docs-sphinx), `git rm --cached .env` staged; (2) parameterized the compose host port as `${MAIN_PORT:-4200}` after the proof hit a host collision with the sibling gtm-engineering stack on 4000 (+ .env.example documents MAIN_PORT, API_BASE_URL now 4200); (3) fixed the backend healthcheck target localhost -> 127.0.0.1 (busybox wget resolves localhost to ::1; listener is IPv4-only).
+
+Proof (run by Claude, not delegated): `docker compose -f docker-compose-dev.yml up -d --build --wait && ... ps && curl -sf localhost:4200/health && (cd app/frontend && npm run build) && (cd backtester && uv run python -m backtester.health)` -> **PROOF_EXIT=0**. Evidence: postgres/backend/backtester all (healthy); migrate exited 0 twice with `migrations_complete count:0` (idempotent); curl returned `{"ok":true}`; Next.js 16.2.10 production build clean (TS strict, /en SSG; known middleware->proxy deprecation warning retained per invariant 5); backtester prints ok.
+
+**Phase 1 exit gate: PASS.** Awaiting human diff sign-off + commit (nothing committed).

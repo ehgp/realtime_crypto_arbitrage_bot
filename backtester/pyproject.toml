@@ -1,0 +1,26 @@
+[project]
+name = "cloudaitrader-backtester"
+version = "0.1.0"
+description = "CloudAITrader Backtester Worker"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "ccxt",
+  "networkx",
+  "numpy",
+  "pandas",
+  "psycopg[binary]",
+  "sentry-sdk",
+  "sqlalchemy>=2.0",
+  "structlog",
+  "tenacity",
+]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

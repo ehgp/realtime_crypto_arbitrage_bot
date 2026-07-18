@@ -1,3 +1,5 @@
+> CloudAITrader modernization is governed by [PLAN.md](PLAN.md). The content below documents the archived 2023 project.
+
 #  Realtime Crypto Arbitrage Bot
 
 Websockets implementation of real time arbitrage opportunity bot supporting [Kucoin](https://docs.kucoin.com/#general) currently.
