@@ -294,3 +294,128 @@ Takeover (environmental, no fix rounds burned): (1) performed the sprint-01 git 
 Proof (run by Claude, not delegated): `docker compose -f docker-compose-dev.yml up -d --build --wait && ... ps && curl -sf localhost:4200/health && (cd app/frontend && npm run build) && (cd backtester && uv run python -m backtester.health)` -> **PROOF_EXIT=0**. Evidence: postgres/backend/backtester all (healthy); migrate exited 0 twice with `migrations_complete count:0` (idempotent); curl returned `{"ok":true}`; Next.js 16.2.10 production build clean (TS strict, /en SSG; known middleware->proxy deprecation warning retained per invariant 5); backtester prints ok.
 
 **Phase 1 exit gate: PASS.** Awaiting human diff sign-off + commit (nothing committed).
+
+## Re-grill 2026-07-18 — updated Template Format B standard (Act 1 delta)
+
+User updated the Format B skill and asked for re-execution. Skill deltas identified: grill-with-docs-codex — MAX_ROUNDS default 5->10, light memory gate before review rounds, push notification at resolution, Act 3 joint-review stage made explicit; template-format-b — NEW invariant 13 (canonical portfolio-wide env-var names, .env.example as sole consolidation point, env only via each worker's loader, old->canonical rename table required for migrations) + Sprint 0.3 amended accordingly.
+
+Delta grill outcome (autonomous; code-audited with grep over app/backend, backtester, frontend):
+
+- G1: Loader discipline already holds (config.js / config.py; migrations/run.js is the migrate job's own entrypoint). No code changes required by invariant 13.
+- G2: All existing vars conform verbatim except documented new concerns (SERVICE_DATABASE_URL, WORKER_DATABASE_URL, STRIPE_PRICE_ID, MFA_ENC_KEYS/_ACTIVE, ENVIRONMENT).
+- G3: Three deliberate contract deviations RETAINED, all Codex-approved in Rounds 1-2 and now recorded as formal deviations with rationale: no ADMIN_EXTERNAL_IDS seeding (D12/R1-12), Checkout Sessions over Payment Link (D13/R2-15), service_role split with DIRECT_URL confined to the migrate job (D14/R2-7). Rejected alternative: reverting to contract letter — would reintroduce three adjudicated security regressions to satisfy naming policy; invariant 13 bans synonym INVENTION, and these are new concerns or justified drops, now tabled in the plan.
+- G4: Legacy old->canonical table emitted: KUCOIN_* vars RETIRED (ADR-0001), rotation H-SEC-1.
+- PLAN.md -> Revision 6: new "Environment contract & canonical-name reconciliation" section, new invariant 17, D12/D13/D14 annotated as recorded deviations, human-todo H-STD-1 (offer deviations upstream to the standard).
+
+Act 2 re-review of Revision 6 follows in a FRESH Codex session (prior thread's context is Revision-5 history; new standard warrants clean eyes). MAX_ROUNDS=10 per updated skill.
+
+## Re-review Round 1 — Codex fresh session (thread 019f7816-698d-7a40-96e6-0b00ebcfb306, 2026-07-18) on Revision 6
+
+1. [MAJOR] The reconciliation is incomplete: `.env.example` adds `RESEND_FROM_EMAIL`, `ENABLE_EMAIL_NOTIFICATIONS`, and five `R2_*` variables that are absent from the supposedly authoritative reconciliation, while `PORT` and `NODE_ENV` are consumed by the backend but omitted too (`.env.example:32-41`; `app/backend/src/config.js:3,12-13`; `PLAN.md:77-101,210`). Fix: inventory every consumed or declared variable, classify each as canonical/new/deviation/platform-only, and remove the unexplained R2 storage variables unless blob storage is explicitly in scope.
+
+2. [MAJOR] Invariant 17 has no verification gate; every named gate can pass after introducing a synonym or a direct `process.env`/`os.getenv` read outside the loaders (`PLAN.md:210,212-229`). Fix: add a CI gate that extracts environment reads and `.env.example` keys, rejects undeclared names and reads outside approved loader entrypoints, and checks exact set reconciliation.
+
+3. [MAJOR] “`.env.example` as the single consolidation point” conflicts with compose embedding separate database URLs and production-mode flags directly, so deployments can drift from the documented contract without changing `.env.example` (`docker-compose-dev.yml:31-45,59-61`; `PLAN.md:77,210`). Fix: make compose interpolate all application-contract variables from the consolidated environment, retaining literals only for explicitly documented container-internal constants.
+
+4. [MAJOR] The R2 variables appear to import an undeclared Cloudflare Blob-storage subsystem (“infra S04/S13”), but Revision 6 contains no storage architecture, sprint, dependency, threat model, retention policy, or verification gate (`.env.example:36-41`; `PLAN.md:125-190`). Fix: delete the R2 variables from this plan’s scaffold or add an explicit scoped storage decision and implementation/test work.
+
+5. [MINOR] The legacy reconciliation says the KuCoin variables came from a “tracked `.env`,” but `.env` is not present in `HEAD`; this weakens the claimed code-verified provenance (`PLAN.md:99`). Fix: cite the actual historical commit/path containing those names or describe `.env` as an untracked local legacy artifact.
+
+6. [MINOR] The plan labels `ENVIRONMENT` a new concern even though it duplicates the established runtime-mode concern represented by `NODE_ENV`, which undermines the no-synonym rule unless cross-language naming is expressly permitted (`PLAN.md:89,210`; `docker-compose-dev.yml:42,60`). Fix: define a portfolio rule allowing language-specific runtime-mode names, or use one canonical name across both workers.
+
+Confidence: 98/100
+
+VERDICT: REVISE
+
+### Claude's response (re-review Round 1, 2026-07-18)
+
+Context discovered during verification: the user committed Phase 1 as 7f32fcf and hand-edited .env.example (RESEND_FROM_EMAIL, ENABLE_EMAIL_NOTIFICATIONS, blanked DB URLs, five R2_* vars referencing "infra S04/S13") — Codex reviewed the real tree, so its findings against "my" reconciliation were findings against stale coverage. PLAN.md is now Revision 7.
+
+- **1 accepted**: reconciliation extended — RESEND_FROM_EMAIL + ENABLE_EMAIL_NOTIFICATIONS adopted as new-concern vars (consumed in Sprints 6.1/6.2); NODE_ENV/ENVIRONMENT/PORT classified platform-standard; full inventory now matches .env.example.
+- **2 accepted**: invariant-17 conformance CI gate added (Sprint 9.3 + verification gates): extract env reads outside approved loaders, compare .env.example keys to the declared set, fail on undeclared/synonym/loader-bypass/Reserved reads; gate self-test seeds a violation.
+- **3 partially rejected (logged)**: dev-compose DB literals are container-internal constants targeting the compose-local postgres — the Format B contract itself says dev "overrides Neon URLs; never for hosting", and interpolating DATABASE_URL from a developer .env could silently point dev containers at production Neon (a worse failure than drift). Documented as the "dev-compose constants rule" in the reconciliation; the host compose interpolates everything. Accepted the documentation duty, rejected blanket interpolation.
+- **4 resolved third-way**: R2_* vars are user-authored signal, not plan scope — classified **Reserved, no consumer permitted** (invariant 17 enforcement covers them), storage stays Out in the gap table, and H-R2-1 asks the human to scope or drop. Deleting user content or inventing a storage subsystem were both rejected.
+- **5 accepted**: provenance reworded — .env was tracked from 2023 until its removal landed in 7f32fcf (2026-07-18); rotation H-SEC-1 unchanged.
+- **6 accepted**: platform-standard cross-language rule defined (NODE_ENV/Node, ENVIRONMENT/Python; no third name).
+
+## Re-review Round 2 — Codex (same thread, 2026-07-18) on Revision 7
+
+1. [MAJOR] The CI contract names backend, migration, and Backtester loaders but no frontend loader, so Phase 2’s Auth0/Next.js environment reads will either fail the gate or bypass invariant 17 (`PLAN.md:80,114,156-158,205,225`). Fix: define an approved frontend server-env loader, require all non-public frontend reads through it, and explicitly permit build-time `NEXT_PUBLIC_*` reads.
+
+2. [MAJOR] `ENABLE_EMAIL_NOTIFICATIONS` is designated a global outbound-email kill switch without strict parsing or a verification case; naïve JavaScript truthiness makes `"false"` enabled (`PLAN.md:107,185,240-244`). Fix: require strict allowlisted boolean parsing with fail-closed production behavior and test that `false` prevents both contact and outbox sends.
+
+3. [MINOR] The claimed full inventory still lists future `BACKEND_TUNNEL_*` variables absent from `.env.example`, conflicting with its role as the single consolidation point and with exact-set CI reconciliation (`PLAN.md:78,80,114,225`; `.env.example:1-51`). Fix: enumerate the concrete tunnel variables now or state that they enter the inventory and `.env.example` atomically in Phase 8.
+
+VERDICT: REVISE
+
+### Claude's response (re-review Round 2, 2026-07-18)
+
+All 3 accepted; PLAN.md is now Revision 8.
+
+- **1** -> `app/frontend/lib/env.ts` (server-only loader, introduced Sprint 2.1) joins the approved-loader list; `NEXT_PUBLIC_*` build-time reads explicitly exempt; sprint-02 updated.
+- **2** -> Strict boolean parsing rule in the enforcement section: exactly `true`/`false`, anything else fails closed in production (emails off + startup warning); new verification gate proves `false` blocks both contact and outbox sends.
+- **3** -> Atomic-entry rule: `BACKEND_TUNNEL_*` enter `.env.example` and the inventory in Sprint 8.3 (their first consumer); named as scheduled, not declared, until then.
+
+## Re-review Round 3 — Codex (same thread, 2026-07-18) on Revision 8
+
+1. [MAJOR] `human-todo.md` still instructs adding `ADMIN_EXTERNAL_IDS`, directly reintroducing the privilege-escalation mechanism Revision 8 explicitly drops under D12 and invariant 17 (`human-todo.md:24`; `PLAN.md:96,131`). Fix: replace that instruction with the one-time admin bootstrap CLI workflow.
+
+2. [MAJOR] Neon provisioning omits `SERVICE_DATABASE_URL`, so the required `service_role` runtime credential is neither created nor captured despite D14 requiring it (`human-todo.md:25`; `PLAN.md:51,86,133`). Fix: add service-role provisioning and capture `SERVICE_DATABASE_URL`, while keeping `DIRECT_URL` migration-only.
+
+3. [MINOR] Tunnel provisioning documents only `BACKEND_TUNNEL_TOKEN`, while Revision 8 schedules `BACKEND_TUNNEL_HOSTNAME/NAME/TOKEN` as an atomic set (`human-todo.md:32`; `PLAN.md:114,199`). Fix: align Sprint 8.3 and the human checklist on which concrete variables are actually consumed.
+
+VERDICT: REVISE
+
+### Claude's response (re-review Round 3, 2026-07-18)
+
+All 3 accepted — stale human-todo.md drift from before D12/D14, now aligned (plan text unchanged; still Revision 8):
+
+- **1** -> H-AUTH no longer instructs ADMIN_EXTERNAL_IDS; points at the bootstrap CLI (H-ADMIN-1).
+- **2** -> H-NEON provisions all three runtime roles from 000_role.sql and captures SERVICE_DATABASE_URL; DIRECT_URL explicitly migrate-job-only.
+- **3** -> H-TUNNEL captures the atomic BACKEND_TUNNEL_NAME/HOSTNAME/TOKEN set matching Sprint 8.3.
+
+## Re-review Round 4 — Codex (same thread, 2026-07-18) on Revision 8 + aligned docs
+
+1. [MAJOR] `human-todo.md` email provisioning omits `RESEND_FROM_EMAIL` and `ENABLE_EMAIL_NOTIFICATIONS`; because absence fails closed, following the checklist leaves production email disabled and breaks the Phase 6 exit gate (`human-todo.md:27`; `PLAN.md:106-107,114,183-185,245`). Fix: require provisioning and validation of both variables under H-EMAIL.
+
+2. [MAJOR] `docs/sprints/README.md` still defines only backend and Backtester loaders, omitting the approved frontend and migration loaders plus the `NEXT_PUBLIC_*` exemption, so sprint execution can contradict invariant 17 (`docs/sprints/README.md:22`; `PLAN.md:114`). Fix: mirror Revision 8’s complete approved-loader and exemption contract in the sprint-wide instructions.
+
+3. [MAJOR] The deployment guide implements token-only or CLI-login tunnel configuration with hardcoded name/hostname, while Revision 8 and `human-todo.md` require `BACKEND_TUNNEL_NAME/HOSTNAME/TOKEN` as consumed variables (`docs/sprints/sprint-08-deploy.md:31`; `PLAN.md:114,199`; `human-todo.md:32`). Fix: choose one tunnel interface and align the plan, checklist, `.env.example` atomic entry, compose overlay, and scripts to that exact consumed set.
+
+VERDICT: REVISE
+
+### Claude's response (re-review Round 4, 2026-07-18)
+
+All 3 accepted — remaining doc-sync stragglers aligned to Revision 8 (plan text unchanged):
+
+- **1** -> H-EMAIL now provisions RESEND_FROM_EMAIL (verified-domain sender; flags the egventures.net value for migration) and an explicit ENABLE_EMAIL_NOTIFICATIONS=true with the fail-closed warning.
+- **2** -> sprints/README convention 8 mirrors the full approved-loader contract (backend config, migrate entrypoint, backtester config, frontend lib/env.ts) + NEXT_PUBLIC_* exemption + strict-boolean + Reserved-var rules.
+- **3** -> Tunnel interface decided: TOKEN mode only (headless Pi); sprint-08 names the atomic consumed set with each var's concrete consumer (connector token, verification-curl hostname, service/label name); CLI-login mode dropped.
+
+## Re-review Round 5 — Codex (same thread, 2026-07-18)
+
+1. [MAJOR] Sprint 6 still says `checkout.session.completed` flips paid entitlement, directly contradicting D13’s bind-only rule and the guide’s own later webhook instructions (`docs/sprints/sprint-06-edge-monetization.md:12,28-31`; `PLAN.md:132`). Fix: require subscription lifecycle reconciliation before activation and update the phase exit gate accordingly.
+
+2. [MAJOR] Sprint 6 hardcodes the contact sender and never requires either contact or outbox paths to check `ENABLE_EMAIL_NOTIFICATIONS`, so implementation can pass the guide while violating Revision 8’s canonical variables and fail-closed kill switch (`docs/sprints/sprint-06-edge-monetization.md:16,22-24,43,47`; `PLAN.md:106-107,114,184-185,245`). Fix: route both paths through their approved env loader, use `RESEND_FROM_EMAIL`, enforce the kill switch before every send, and mirror the dedicated tests.
+
+3. [MINOR] Sprint 6 frontmatter still describes Stripe Payment Links even though D13 mandates server-created Checkout Sessions (`docs/sprints/sprint-06-edge-monetization.md:3`; `PLAN.md:97,132,186`). Fix: update the description to Checkout Sessions so search/index metadata does not route implementers to the rejected flow.
+
+VERDICT: REVISE
+
+### Claude's response (re-review Round 5, 2026-07-18)
+
+All 3 accepted — sprint-06 residues from before D13/Revision 8, now aligned (plan unchanged, still Revision 8):
+
+- **1** -> Phase 6 exit gate rewritten: activation via subscription lifecycle reconciliation; checkout.session.completed binds ids only.
+- **2** -> Contact route reads ADMIN_NOTIFICATION_EMAIL/RESEND_FROM_EMAIL via lib/env.ts and checks the strict-parsed kill switch before sending (503 no-send when off); backend email service is the single kill-switch choke point via src/config.js; kill-switch acceptance tests added for both paths.
+- **3** -> Frontmatter description now says server-created Checkout Sessions.
+
+## Re-review Round 6 — Codex (same thread, 2026-07-18)
+
+No implementation-significant findings. All prior Round 5 issues are resolved consistently across PLAN.md, Sprint 6, provisioning, environment-loader rules, and acceptance gates.
+
+VERDICT: APPROVED
+
+## Resolution: re-review APPROVED (Round 6 of 10, 2026-07-18)
+
+Re-execution against the UPDATED Format B standard converged. PLAN.md Revision 8 stands. Cycle totals: 18 findings across 5 REVISE rounds (6/3/3/3/3), 17 accepted, 1 partial rejection with logged safety rationale (dev-compose DB literals stay container-internal constants; blanket interpolation could silently point dev at production Neon). Sprint guides, human-todo, .env.example, and Phase 1 code (node:22-slim + node-fetch healthcheck, PROOF_EXIT=0 re-verified) are synced to Revision 8. Combined with the original cycle: 74 findings total across both reviews, 70 accepted, 3 rejected/partial with reasons Codex endorsed or accepted, 1 third-way (R2 Reserved). Open human decisions: H-R2-1 (R2 storage scope), H-BUILD-1 (who builds Phase 2+), H-SEC-1 (key rotation), H-PRICE-1, H-RULES-1, A1.

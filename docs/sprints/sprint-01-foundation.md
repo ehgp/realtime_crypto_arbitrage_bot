@@ -27,6 +27,7 @@ app/backend/     # npm init; "type":"module"; Node 22
 backtester/      # uv init; Python 3.12
 ```
 
+- Env names are governed by PLAN.md's "Environment contract & canonical-name reconciliation" (invariant 17) — the `.env.example` below uses them verbatim.
 - Frontend deps: `antd@^5`, `@ant-design/nextjs-registry`, `@ant-design/icons`, `next-intl`.
 - App Worker deps: `express@^5`, `pg`, `jose`, `helmet`, `cors`, `express-rate-limit`, `stripe`, `resend`, `otpauth`, `qrcode`, `pino`; dev: `nodemon`, `supertest`, `jest` (or `node:test`).
 - Backtester deps (`pyproject.toml`, managed by `uv`): `ccxt`, `sqlalchemy>=2.0`, `psycopg[binary]`, `pandas`, `numpy`, `networkx`, `structlog`, `sentry-sdk`, `tenacity`; dev: `ruff`, `pytest`. No APScheduler — the scheduler is a plain sleep-loop (simplest thing that works).

@@ -1,6 +1,6 @@
 ---
 date: 2026-07-17
-description: Phase 6 guide. Turnstile contact form, Resend notifications, Stripe Payment Link + webhook flipping the Entitlement, quota counters, Vercel Analytics.
+description: Phase 6 guide. Turnstile contact form, kill-switch-gated Resend notifications, Stripe server-created Checkout Sessions with subscription-authoritative entitlements, quota counters, Vercel Analytics.
 tags:
   - sprints
   - cloudaitrader
@@ -9,17 +9,17 @@ tags:
 # Sprint Guide 06 — Edge Services & Monetization (Phase 6)
 
 **Preconditions**: Phase 5 gate green; human has Stripe/Resend/Turnstile accounts (human-todo H-PAY, H-EMAIL, H-EDGE).
-**Phase exit gate**: contact form delivers via Resend behind Turnstile; `stripe trigger checkout.session.completed` flips `entitlements.is_paid` and the worker accepts a previously-refused premium job; free-tier quota enforced.
+**Phase exit gate**: contact form delivers via Resend behind Turnstile; the Stripe flow activates via SUBSCRIPTION lifecycle reconciliation (`checkout.session.completed` only binds ids — D13); after `customer.subscription.created(active)` the worker accepts a previously-refused premium job; `ENABLE_EMAIL_NOTIFICATIONS=false` blocks both contact and outbox sends; free-tier quota enforced.
 
 ## Sprint 6.1 — Contact form
 
-- `app/frontend/app/api/contact/route.ts` (local route, NOT proxied): parse name/email/message + turnstile token; verify `https://challenges.cloudflare.com/turnstile/v0/siteverify` with `secret`, `response`, `remoteip` (from `x-forwarded-for` first hop); on success send via Resend to `ADMIN_NOTIFICATION_EMAIL` (from `noreply@cloudaitrader.com` once domain verified — H-EMAIL); dev fallback: console log when `RESEND_API_KEY` empty.
+- `app/frontend/app/api/contact/route.ts` (local route, NOT proxied): parse name/email/message + turnstile token; verify `https://challenges.cloudflare.com/turnstile/v0/siteverify` with `secret`, `response`, `remoteip` (from `x-forwarded-for` first hop); on success send via Resend to `ADMIN_NOTIFICATION_EMAIL` from `RESEND_FROM_EMAIL` — both read through `lib/env.ts` (invariant 17), and the strict-parsed `ENABLE_EMAIL_NOTIFICATIONS` kill switch is checked BEFORE the send (false/invalid → 503 with a friendly message, no send); dev fallback: console log when `RESEND_API_KEY` empty.
 - Page `app/[locale]/contact/` with `@marsidev/react-turnstile` widget (`NEXT_PUBLIC_TURNSTILE_SITE_KEY`).
 - Rate limit: 5/min/IP in-route (simple LRU) — full tiered limiting in Sprint 9.2.
 
 ## Sprint 6.2 — Notifications (outbox per PLAN.md D7)
 
-- `src/services/email.js`: Resend wrapper, console fallback in dev, template functions (plain HTML, brand tokens).
+- `src/services/email.js`: Resend wrapper reading `RESEND_API_KEY`/`RESEND_FROM_EMAIL`/`ENABLE_EMAIL_NOTIFICATIONS` via `src/config.js` only; the strict-parsed kill switch gates EVERY send in this service (single choke point for the backend); console fallback in dev; template functions (plain HTML, brand tokens).
 - Backtest-complete email: the Backtester wrote an `app.job_events` row inside its finalization txn; the App Worker notifier (30s interval, servicePool) CLAIMS events with a lease (`UPDATE ... SET claimed_at=now(), lease_expires_at=now()+'2 min' WHERE id IN (SELECT id FROM app.job_events WHERE sent_at IS NULL AND (claimed_at IS NULL OR lease_expires_at < now()) LIMIT 10 FOR UPDATE SKIP LOCKED) RETURNING *`), joins prefs, sends via Resend with **idempotency key = job_event.id** (provider-side dedupe makes crash-between-send-and-stamp duplicates inert), stamps `sent_at`; failures increment `attempts` + `last_error` and the lease expiry retries them.
 - Admin alert: first-login signup notification to `ADMIN_NOTIFICATION_EMAIL` (fire-and-forget).
 
@@ -40,7 +40,8 @@ tags:
 
 ## Acceptance (phase)
 
-- Contact: missing/invalid Turnstile token → 400; valid → Resend dashboard shows delivery (or dev console line).
+- Contact: missing/invalid Turnstile token → 400; valid → Resend dashboard shows delivery (or dev console line) with the `RESEND_FROM_EMAIL` sender.
+- Kill switch: `ENABLE_EMAIL_NOTIFICATIONS=false` → contact returns 503-no-send AND outbox notifier claims-then-skips (both tested); invalid value in production mode → fail-closed + startup warning.
 - `stripe listen --forward-to localhost:4000/stripe/webhook` + triggered flow: checkout completes → binds ids only; `customer.subscription.created(active)` → status active; premium submit accepted; worker honors on next claim. Replayed event id → no-op (stripe_events conflict). Out-of-order pair → converges to subscription-object truth. `charge.refunded` without cancel → revoked + billing_action enqueued. Subscription cancel → next premium submit 402/upgrade hint.
 - 11th free-tier Backtest in a month → 402 QUOTA_EXCEEDED; two concurrent submissions at quota-1 → exactly one accepted; at active-job cap → rejected until a job reaches terminal status.
 - Raw-body proof: tampered payload → 400 signature error; verified event ids logged.

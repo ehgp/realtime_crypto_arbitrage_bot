@@ -28,7 +28,7 @@ tags:
 
 ## Sprint 8.3 — Backend named tunnel (backend only — D5)
 
-- `infra/tunnel/`: `tunnel-up.sh` + `tunnel-up.ps1 [backend]` starting a profile-gated `cloudflared-backend` service (compose overlay `docker-compose.tunnel.yml`, profile `tunnel`): named tunnel `cloudaitrader-backend`, hostname `backend.cloudaitrader.com` → `http://backend:4000` over the compose network; token mode (`BACKEND_TUNNEL_TOKEN`) or CLI login mode; no inbound ports on the Pi, no `depends_on` (cloudflared retries origin).
+- `infra/tunnel/`: `tunnel-up.sh` + `tunnel-up.ps1 [backend]` starting a profile-gated `cloudflared-backend` service (compose overlay `docker-compose.tunnel.yml`, profile `tunnel`). **Interface: TOKEN mode only** (dashboard-created named tunnel; CLI-login mode dropped for headless Pi operation). The atomic consumed set (enters `.env.example` + the PLAN inventory in this sprint): `BACKEND_TUNNEL_TOKEN` (consumed by the cloudflared connector), `BACKEND_TUNNEL_HOSTNAME=backend.cloudaitrader.com` (consumed by the script's post-start verification `curl -sf https://$BACKEND_TUNNEL_HOSTNAME/health`), `BACKEND_TUNNEL_NAME=cloudaitrader-backend` (consumed as the compose service/log label and the dashboard tunnel name the script asserts in `cloudflared tunnel info` output). Route target `http://backend:4000` over the compose network; no inbound ports on the Pi, no `depends_on` (cloudflared retries origin).
 - Worker tunnel intentionally ABSENT: assert in script that `[worker]` argument exits with "reserved, not provisioned (PLAN.md D5)".
 - Backend CORS: allow origin `https://cloudaitrader.com` only; Helmet on; trust proxy 1 (Cloudflare) so `remoteip`/rate limits see real IPs.
 

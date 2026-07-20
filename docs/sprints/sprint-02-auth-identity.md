@@ -13,7 +13,8 @@ tags:
 
 ## Sprint 2.1 — Auth0 server session
 
-- `app/frontend/lib/auth0.ts`: `new Auth0Client({ domain, clientId, clientSecret, secret, appBaseUrl, authorizationParameters: { audience: process.env.AUTH0_AUDIENCE, scope: 'openid profile email' } })`.
+- `app/frontend/lib/env.ts` FIRST (PLAN.md invariant 17): the frontend's server-only env loader — exports typed getters for every non-public server var (`AUTH0_*`, `APP_BASE_URL`, `API_BASE_URL`); marked `import "server-only"`; all server code reads env exclusively through it. Build-time `NEXT_PUBLIC_*` reads stay inline (compile-time constants, exempt).
+- `app/frontend/lib/auth0.ts`: `new Auth0Client({ domain, clientId, clientSecret, secret, appBaseUrl, authorizationParameters: { audience: env.AUTH0_AUDIENCE, scope: 'openid profile email' } })` — vars via `lib/env.ts`.
 - `middleware.ts`: single middleware that (a) delegates `/auth/*` to `auth0.middleware`, (b) otherwise runs the next-intl middleware. Matcher excludes `_next`, static assets, `/api/*` (API routes handle auth themselves). Keep the file named `middleware.ts` (I5).
 - Login/logout links point at `/auth/login` and `/auth/logout` (v4 mounts routes, no `[...auth0]` route file).
 - The access token NEVER reaches client components (I2): no token in props, no `useUser().accessToken` usage.

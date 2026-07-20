@@ -1,8 +1,8 @@
 # Plan: CloudAITrader — Prop-Firm-Aware Crypto Backtesting SaaS (Template Format B)
 
-_Locked via grill-with-docs (autonomous mode: decisions resolved from docs/, AGENTS.md, AGENTS-TODO.md, README.md, and code; assumptions recorded) — by Claude for ehgp. Terms per CONTEXT.md. Revised after Codex review Rounds 1-3 (PLAN-REVIEW-LOG.md)._
+_Locked via grill-with-docs (autonomous mode: decisions resolved from docs/, AGENTS.md, AGENTS-TODO.md, README.md, and code; assumptions recorded) — by Claude for ehgp. Terms per CONTEXT.md. Revised after Codex review Rounds 1-4 (PLAN-REVIEW-LOG.md) and re-grilled 2026-07-18 against the updated Template Format B standard (new invariant 13: canonical env-var names)._
 
-Mode: migration · Generated: 2026-07-17 · Revision: 5
+Mode: migration · Generated: 2026-07-17 · Revision: 8
 
 ## Goal
 
@@ -35,6 +35,7 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 | Launch Strategies | None | Buy & Hold, SMA Crossover under the execution chronology contract | In |
 | Prop-rule awareness | None | DB-immutable versioned Firm Rulesets + Simulation Ledger evaluator (ADR-0002) | In (core differentiator) |
 | Payments | Donations paragraph in README | Stripe Checkout Sessions + event store + subscription-authoritative status | In |
+| Storage/blob | None | None in MVP (equity curves are rows, not files); `R2_*` vars reserved without a consumer pending H-R2-1 | Out |
 | Bot protection | None | Turnstile on contact form | In |
 | Email | None | Resend via leased outbox with idempotency keys + admin alerts | In |
 | Observability | log/ files | Sentry x4 runtimes + correlation IDs (request_id, job_id) | In |
@@ -72,6 +73,48 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 | app.notification_prefs | App (RLS) | full | none |
 | worker.ohlcv / worker.ingest_runs / worker.heartbeats | Backtester | SELECT (admin observability, service_role) | full |
 
+## Environment contract & canonical-name reconciliation (Format B invariant 13)
+
+The updated Format B standard requires canonical portfolio-wide env-var names, `.env.example` as the single consolidation point, env read only through each worker's loader, and an old→canonical table for every deviating legacy var. Audit result (2026-07-18, code-verified):
+
+**Conforming verbatim**: `AUTH0_DOMAIN/CLIENT_ID/CLIENT_SECRET/SECRET`, `APP_BASE_URL`, `AUTH0_AUDIENCE`, `AUTH0_M2M_CLIENT_ID/SECRET`, `DATABASE_URL`, `DIRECT_URL`, `TURNSTILE_SECRET`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `RESEND_API_KEY`, `ADMIN_NOTIFICATION_EMAIL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SENTRY_*`, `MAIN_PORT`, `API_BASE_URL`, `MFA_MAX_ATTEMPTS`, `MFA_LOCKOUT_MS`, `BACKEND_TUNNEL_*` (Phase 8). Loader discipline holds: backend reads env only in `src/config.js`, Backtester only in `backtester/config.py`; `migrations/run.js` reads `DIRECT_URL` directly and is itself the migrate job's entrypoint/loader.
+
+**New-concern vars (documented additions, not synonyms)**:
+
+| Var | Concern | Why the contract has no name for it |
+|---|---|---|
+| `SERVICE_DATABASE_URL` | BYPASSRLS DML **without DDL** for the App Worker runtime (D14) | The contract's two-URL model predates Codex R2-7; `DIRECT_URL` (owner/DDL) still exists, confined to the migrate job |
+| `WORKER_DATABASE_URL` | Backtester Worker's `worker_role` credentials | Contract names no capability-worker DB var; distinct role, distinct name |
+| `STRIPE_PRICE_ID` | Server-created Checkout Sessions (D13) | Replaces the contract's Payment Link (see deviations) |
+| `MFA_ENC_KEYS`, `MFA_ENC_KEY_ACTIVE` | Versioned MFA secret encryption (R2-12) | Contract's MFA row predates the key-rotation hardening |
+| `ENVIRONMENT` | Backtester mode flag (Python-side `NODE_ENV` analogue) | Contract names no Python mode var |
+
+**Contract vars deliberately dropped (Codex-approved hardenings; recorded deviations from the Format B contract)**:
+
+| Contract prescription | Our decision | Rationale |
+|---|---|---|
+| `ADMIN_EXTERNAL_IDS` seed-on-login | Removed; one-time bootstrap CLI (D12) | Codex R1-12: env seeding is a persistent privilege-escalation path |
+| Stripe Payment Link + `client_reference_id` | Server-created Checkout Sessions + `metadata.user_id` (D13) | Codex R2-15: parameterized links are forgeable; aligns with the contract's own anti-hijack posture |
+| Backend ownerPool on `DIRECT_URL` | `service_role` pool; `DIRECT_URL` migrate-job-only (D14) | Codex R2-7: runtime must not hold DDL credentials |
+
+**Platform-standard vars (allowed per-language, never a third name)**: runtime mode is `NODE_ENV` on the Node platform and `ENVIRONMENT` on the Python worker — cross-language platform-standard names for one concern are permitted; inventing an additional synonym is not. `PORT` is the Node platform listener var (container-internal, defaulted).
+
+**User-declared additions (2026-07-18 `.env.example` edit, classified here)**:
+
+| Var | Class | Status |
+|---|---|---|
+| `RESEND_FROM_EMAIL` | New concern (sender identity for Resend) | Adopted; consumed by the email service from Sprint 6.1 |
+| `ENABLE_EMAIL_NOTIFICATIONS` | New concern (global outbound-email kill switch) | Adopted; notifier checks it before any send (Sprint 6.2) |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_DOMAIN` | **Reserved — NO consumer in this plan** | Blob storage remains out of MVP scope (gap table); the vars stay declared but nothing may read them until a storage decision adds a sprint (human-todo H-R2-1). Adding a consumer without a plan revision violates invariant 17 |
+
+**Dev-compose constants rule**: `docker-compose-dev.yml` intentionally sets container-internal literals (local-postgres URLs targeting the compose `postgres` service, `NODE_ENV`, `PORT`, worker `ENVIRONMENT`) rather than interpolating them from `.env` — per the Format B contract, dev compose "overrides Neon URLs — never for hosting", and interpolating `DATABASE_URL` from a developer's `.env` could silently point dev containers at production Neon. The host compose (Phase 8) interpolates everything from the consolidated environment.
+
+**Legacy old→canonical table**: `KUCOIN_YOUR_API_KEY`, `KUCOIN_YOUR_SECRET`, `KUCOIN_YOUR_PASS` (in the `.env` tracked from 2023 until its removal landed in commit 7f32fcf on 2026-07-18, and in parameters.yaml) → **RETIRED, no successor** (ADR-0001: no Venue keys; rotation is human-todo H-SEC-1). No other legacy vars existed.
+
+**Enforcement (invariant 17 gate)**: Sprint 9.3 ships an env-contract conformance test in CI — it extracts every `process.env.*` / `os.getenv` read outside the approved loader entrypoints (`app/backend/src/config.js`, `app/backend/migrations/run.js`, `backtester/backtester/config.py`, and `app/frontend/lib/env.ts` — the frontend's server-only env loader introduced in Sprint 2.1 for all non-public server reads), collects `.env.example` keys, and fails on any undeclared name, any synonym for a contract concern, any loader-bypass read, or any read of a Reserved var. **Exemptions**: build-time-inlined `NEXT_PUBLIC_*` reads are permitted anywhere in frontend code; Next.js/Node platform internals are out of scope. **Boolean vars parse strictly**: `ENABLE_EMAIL_NOTIFICATIONS` (and future flags) accept exactly `true`/`false`; any other value or absence FAILS CLOSED in production (emails off + startup warning) — never JS truthiness. **Atomic-entry rule**: `BACKEND_TUNNEL_HOSTNAME/NAME/TOKEN` enter `.env.example` and this inventory atomically in Sprint 8.3, the sprint that first consumes them; until then they are named here as scheduled, not declared.
+
+These deviations are candidates for absorption into the Format B standard itself (human-todo H-STD-1).
+
 ## Key decisions & tradeoffs
 
 - **D1 Revive-repurposed, not archive** — resolves AGENTS-TODO.md.
@@ -85,9 +128,9 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 - **D9 Legacy frozen in archive/ via git mv; third-party `comparison/` moves intact with licenses.**
 - **D10 Monorepo on branch `ai`.**
 - **D11 Candle-faithful MVP strategies** — `buyhold`, `sma_cross` only; Heritage Engines ship dark as a tested library until quote-level Datasets exist (post-MVP ADR).
-- **D12 (amended R2 findings 8-9, 13) Concurrency + privilege contracts** — Claim increments the `attempt` fencing token. Completion is a single **atomic finalization transaction**: `INSERT INTO app.backtest_results/app.simulations/app.job_events ... SELECT ... WHERE EXISTS (SELECT 1 FROM app.backtests WHERE id=:id AND attempt=:att AND claimed_by=:wid AND status='running')`, then `UPDATE app.backtests SET status='done', ... WHERE id=:id AND attempt=:att AND claimed_by=:wid AND status='running'`; commit ONLY if that UPDATE reports rowcount=1, else rollback — a reaped zombie's partial writes vanish atomically, so `PK(backtest_id)` on results stays valid with no attempt column in unique keys. The reaper requeues by incrementing `attempt`. Admin bootstrap CLI has NO `--force`: in production it refuses whenever `app.admins` is non-empty; break-glass is direct SQL through the Neon console by the human (documented in human-todo, audited by Neon's own history).
-- **D13 (amended R3 findings 6-7) Stripe entitlement policy with two input domains** — `checkout.session.completed` only binds customer/subscription ids (metadata.user_id from the server-created session). The policy: (a) PRIMARY input = subscription lifecycle events, mapped from the full embedded subscription object (`status`, `current_period_end`); activation = status in (active, trialing); `past_due` keeps access within grace. (b) PAYMENT-DOMAIN OVERRIDES, which do NOT assume Stripe cancels the subscription: `charge.refunded` covering the latest invoice → revoke access + a persisted `app.billing_actions` work item (subscription cancel with retries; admin alert after 3 failures — the same reconciliation sweep D15 uses); `charge.dispute.created` → immediate local `suspended` override + admin alert. **Overrides never auto-clear** (a later invoice does not lift them); only explicit admin action or confirmed resolution clears an override (R4 finding 5). Ordering: per-subscription `last_event_created` guard; on EQUAL timestamps or any ambiguity, fetch the CURRENT Subscription from the Stripe API and reconcile from that live object before committing. `app.stripe_events` UNIQUE(event_id) makes replays no-ops. Verification covers incomplete, async-payment-failure, trial, cancel-at-period-end, refund-without-cancel, and dispute permutations.
-- **D14 (new, R2 finding 7) Three-tier DB credentials** — migrations run in a one-shot `migrate` compose job (same backend image, `node migrations/run.js`, `pg_advisory_lock`) holding the only `DIRECT_URL` (owner). The App Worker runtime gets `SERVICE_DATABASE_URL` (`service_role`: BYPASSRLS DML, no DDL) + `DATABASE_URL` (`app_user`). An App Worker compromise cannot alter schema.
+- **D12 (amended R2 findings 8-9, 13) Concurrency + privilege contracts** — Claim increments the `attempt` fencing token. Completion is a single **atomic finalization transaction**: `INSERT INTO app.backtest_results/app.simulations/app.job_events ... SELECT ... WHERE EXISTS (SELECT 1 FROM app.backtests WHERE id=:id AND attempt=:att AND claimed_by=:wid AND status='running')`, then `UPDATE app.backtests SET status='done', ... WHERE id=:id AND attempt=:att AND claimed_by=:wid AND status='running'`; commit ONLY if that UPDATE reports rowcount=1, else rollback — a reaped zombie's partial writes vanish atomically, so `PK(backtest_id)` on results stays valid with no attempt column in unique keys. The reaper requeues by incrementing `attempt`. Admin bootstrap CLI has NO `--force`: in production it refuses whenever `app.admins` is non-empty; break-glass is direct SQL through the Neon console by the human (documented in human-todo, audited by Neon's own history). _Recorded Format B contract deviation (drops `ADMIN_EXTERNAL_IDS` seeding) — see env reconciliation._
+- **D13 (amended R3 findings 6-7) Stripe entitlement policy with two input domains** — `checkout.session.completed` only binds customer/subscription ids (metadata.user_id from the server-created session). The policy: (a) PRIMARY input = subscription lifecycle events, mapped from the full embedded subscription object (`status`, `current_period_end`); activation = status in (active, trialing); `past_due` keeps access within grace. (b) PAYMENT-DOMAIN OVERRIDES, which do NOT assume Stripe cancels the subscription: `charge.refunded` covering the latest invoice → revoke access + a persisted `app.billing_actions` work item (subscription cancel with retries; admin alert after 3 failures — the same reconciliation sweep D15 uses); `charge.dispute.created` → immediate local `suspended` override + admin alert. **Overrides never auto-clear** (a later invoice does not lift them); only explicit admin action or confirmed resolution clears an override (R4 finding 5). Ordering: per-subscription `last_event_created` guard; on EQUAL timestamps or any ambiguity, fetch the CURRENT Subscription from the Stripe API and reconcile from that live object before committing. `app.stripe_events` UNIQUE(event_id) makes replays no-ops. Verification covers incomplete, async-payment-failure, trial, cancel-at-period-end, refund-without-cancel, and dispute permutations. _Recorded Format B contract deviation (Checkout Sessions replace Payment Link) — see env reconciliation._
+- **D14 (new, R2 finding 7) Three-tier DB credentials** — migrations run in a one-shot `migrate` compose job (same backend image, `node migrations/run.js`, `pg_advisory_lock`) holding the only `DIRECT_URL` (owner). The App Worker runtime gets `SERVICE_DATABASE_URL` (`service_role`: BYPASSRLS DML, no DDL) + `DATABASE_URL` (`app_user`). An App Worker compromise cannot alter schema. _Recorded Format B contract deviation (backend ownerPool moves off `DIRECT_URL`) — see env reconciliation._
 - **A1 (assumption) Shared Auth0 tenant** → deletion is LOCAL-ONLY, via the D15 state machine.
 - **D15 (amended R3 findings 3-5) Account deletion is a persisted workflow, not a transaction** — `users.deletion_state`: active → deleting → billing_severed → (row deleted). Steps, each idempotent and resumable: (1) set `deleting` + record a tombstone (`app.deleted_subs`: sub, `incarnation`, deleted_at, **stripe_customer_id, stripe_subscription_id** — the retired billing identity, R4 finding 4) + destroy the web session; submit path rejects while ≠ active; provisioning refuses sessions issued BEFORE `deleted_at` (iat check) and assigns a fresh `app.users.incarnation` uuid on re-provision, so a recreated account is a NEW billing identity: webhook reconciliation matches by customer/subscription id first — ids found in a tombstone archive as no-ops; the new incarnation gets its own Stripe customer at next checkout. (2) queued jobs → `error('account_deleted')`; running jobs fenced by attempt bump (finalization rolls back). (3) Billing severance: Stripe subscription cancel via API; the mapping is RETAINED until Stripe confirms (2xx or subscription already canceled); on failure, enqueue in a reconciliation sweep (15-min drain + admin alert after 3 failures) — never delete the row while a subscription may still bill. (4) Only after billing_severed: DELETE `app.users` — FK cascades results, simulations, job_events, prefs, quota, mfa. `app.stripe_events` has NO user FK and is NEVER cascaded (immutable billing audit keyed by event/customer/subscription ids, 2-year retention); late webhooks for a deleted user reconcile against the tombstone and archive as no-ops.
 - **D16 (amended R4 findings 1-2) Account Model v1 + resolution compatibility + one account size per Backtest** — every Backtest runs under a versioned account/execution model recorded in the manifest. `spot-long-v1`: quote-currency (USDT) accounting, long-only, no leverage, no margin, no funding fees, no liquidation, no position limits; equity marks open positions at candle close. **A Backtest pins exactly ONE account size** (config field, manifest-recorded, = initial balance); the ruleset picker groups by account size, and only Rulesets matching the Backtest's pinned size are selectable — different sizes mean separate Backtests (R4 finding 1). Rule evaluation is percent-based against that pinned balance. Only Firm Rulesets whose CHALLENGE RULES `spot-long-v1` faithfully evaluates are offered (the rules — profit target, drawdowns, min days, consistency, SL discipline — are account-value rules and evaluable regardless of the firm's live leverage mechanics; rules that reference leverage/liquidation states are incompatible and excluded per-primitive). Each primitive declares its MINIMUM DATA RESOLUTION; submission REJECTS combinations the timeframe cannot prove. **Representability audit gate (R4 finding 2): Sprint 3.4 acceptance requires all four seeded firms' rulesets to be fully representable by `spot-long-v1` primitives at declared resolutions; any shortfall forces a scope decision (drop the ruleset or extend the model) BEFORE Phase 4 starts — the catalog cannot launch empty or hollow.**
@@ -138,8 +181,8 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 
 ### Phase 6 — Edge Services & Monetization
 **Goal:** contact, email, payments correct under retries, replays, and reordering. **Exit gate:** contact delivers behind Turnstile; full Stripe permutation suite green (see gates); outbox crash test shows no duplicate emails (provider idempotency); quota + concurrency survive concurrent submissions.
-- [ ] Sprint 6.1 — Contact form (Turnstile verify + Resend, dev fallback).
-- [ ] Sprint 6.2 — Outbox notifier per D7 (leased claims, Resend idempotency key = job_event id, retry state) + prefs + admin signup alert.
+- [ ] Sprint 6.1 — Contact form (Turnstile verify + Resend from `RESEND_FROM_EMAIL`, dev fallback).
+- [ ] Sprint 6.2 — Outbox notifier per D7 (leased claims, Resend idempotency key = job_event id, retry state) + prefs + admin signup alert; `ENABLE_EMAIL_NOTIFICATIONS` is the global kill switch checked before any send.
 - [ ] Sprint 6.3 — Stripe per D13: server-created Checkout Sessions, webhook before express.json() → stripe_events insert (dedupe) → entitlement policy (subscription-object reconciliation with per-subscription ordering; live Subscription fetch on ambiguity; refund/dispute payment-domain overrides); billing portal; transactional quota reservation + advisory-lock concurrency check in submit (A2).
 - [ ] Sprint 6.4 — Vercel Analytics.
 
@@ -159,7 +202,7 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 **Goal:** ship-ready audit sweep. **Exit gate:** security review no High/Critical; CI green incl. determinism, fencing, lookahead, RLS-matrix, Stripe-permutation gates; CSP verified in prod.
 - [ ] Sprint 9.1 — Security review: RLS matrix in prod, role least-privilege (incl. service_role no-DDL check), CSP/Helmet, safe errors, secrets, gitleaks, dependency audit.
 - [ ] Sprint 9.2 — Rate-limit tiering finalized, scheduler drift audit, reaper/fencing prod test, Neon capacity actuals, MFA key-rotation drill.
-- [ ] Sprint 9.3 — Full suites + CI; README/AGENTS.md rewrite.
+- [ ] Sprint 9.3 — Full suites + CI incl. the **env-contract conformance gate** (invariant 17: undeclared names, synonyms, loader-bypass reads, Reserved-var reads all fail CI); README/AGENTS.md rewrite.
 
 ## Non-negotiable invariants
 
@@ -179,6 +222,7 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 14. Determinism: identical manifests → identical `results_hash`; the manifest freezes data (incl. gaps), rulesets, engine + runtime versions, and canonical serialization (D8).
 15. No user-facing arbitrage Strategy until quote-level Datasets exist (D11).
 16. No lookahead: strategies see only closed candles ≤ N and their orders execute at N+1 under the execution chronology contract (Sprint 4.3).
+17. Env-var names are canonical portfolio-wide (Format B invariant 13): `.env.example` is the single consolidation point; each worker reads env only through its env loader; the reconciliation section above is authoritative for every addition to or deviation from the contract, and no synonym for a contract-named concern may be introduced.
 
 ## Verification gates
 
@@ -197,6 +241,8 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 - Outbox: kill notifier between send and stamp → restart resends with same idempotency key → provider dedupes, exactly one visible email.
 - Deletion (D15): run against an account with one running + one queued job and an active subscription → running job's finalization rolls back, queued job errored; simulated Stripe-cancel failure leaves the mapping intact and enqueues reconciliation (no row deletion); after confirmed cancel, cascade completes; stripe_events rows survive; a pre-deletion session token replays → 401 (iat guard); fresh login → new empty account with a NEW incarnation; a late webhook for the retired customer id archives as a tombstone no-op while a checkout by the new incarnation provisions a distinct Stripe customer.
 - Observability: 4 Sentry runtime events; one job traceable end-to-end.
+- Env contract: the invariant-17 conformance test passes (and a seeded violation — a `process.env` read outside a loader — fails it).
+- Kill switch: with `ENABLE_EMAIL_NOTIFICATIONS=false`, neither the contact form nor the outbox notifier sends (both tested); an invalid value in production mode disables sends and logs the startup warning (fail-closed).
 - Prod: authed round-trip; real Backtest on the Pi; `nmap` spot check; runtime env lacks DIRECT_URL and no completed migrate container remains (`docker ps -a`).
 
 ## Risks / open questions
@@ -207,6 +253,7 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 - Ruleset accuracy liability: provenance + `estimate` flags; H-RULES-1 verification; marketing never promises outcomes.
 - Heritage Engine extraction may reveal live-data dependencies candle fixtures cannot exercise — bounded by invariant tests; engines ship dark regardless (D11).
 - Single Pi worker throughput unknown — concurrency caps + queue monitoring; scale by adding Pis.
+- `R2_*` vars are declared but unscoped: if blob storage enters scope (H-R2-1), a storage decision + sprint + threat model must be added before any consumer code.
 
 ## Out of scope
 
