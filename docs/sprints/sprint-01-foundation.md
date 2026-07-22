@@ -52,14 +52,15 @@ backtester/      # uv init; Python 3.12
 
 ```
 # Auth0 (frontend)
-AUTH0_DOMAIN= AUTH0_CLIENT_ID= AUTH0_CLIENT_SECRET= AUTH0_SECRET= APP_BASE_URL=http://localhost:3000 AUTH0_AUDIENCE=https://backend.cloudaitrader.com
+AUTH0_DOMAIN=cloudaitrader.us.auth0.com AUTH0_CLIENT_ID= AUTH0_CLIENT_SECRET= AUTH0_SECRET= APP_BASE_URL=http://localhost:3000 AUTH0_AUDIENCE=https://cloudaitrader.com AUTH0_DB_CONNECTION=Username-Password-Authentication
+# issuer + jwks are DERIVED from AUTH0_DOMAIN in the loaders — never separate vars (PLAN.md invariant 17)
 # Auth0 (backend verify + management)
 AUTH0_M2M_CLIENT_ID= AUTH0_M2M_CLIENT_SECRET=
 # DB (dev values point at compose postgres; roles per PLAN.md D14)
 DATABASE_URL=postgres://app_user:app_user@localhost:5432/cloudaitrader
-SERVICE_DATABASE_URL=postgres://service_role:service_role@localhost:5432/cloudaitrader
+SERVICE_DATABASE_URL=postgres://app_service:app_service@localhost:5432/cloudaitrader
 DIRECT_URL=postgres://postgres:postgres@localhost:5432/cloudaitrader   # migrate job ONLY
-WORKER_DATABASE_URL=postgres://worker_role:worker_role@localhost:5432/cloudaitrader
+WORKER_DATABASE_URL=postgres://worker_user:worker_user@localhost:5432/cloudaitrader
 # Edge / services (empty until Phase 6+)
 TURNSTILE_SECRET= NEXT_PUBLIC_TURNSTILE_SITE_KEY= RESEND_API_KEY= ADMIN_NOTIFICATION_EMAIL=
 STRIPE_SECRET_KEY= STRIPE_WEBHOOK_SECRET= STRIPE_PRICE_ID=

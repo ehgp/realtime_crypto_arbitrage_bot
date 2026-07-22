@@ -146,3 +146,12 @@ dmypy.json
 .npm-cache/
 .uv-cache/
 .uv-python/
+.uv-cache*
+.uv-python*
+.uv-task*
+.venv-*
+.docker-*
+.claude
+.omc
+.omx
+.agents

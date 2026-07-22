@@ -12,6 +12,7 @@ services:
       retries: 10
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./infra/db-init/dev-roles.sql:/docker-entrypoint-initdb.d/10-dev-roles.sql:ro
 
   pgadmin:
     image: dpage/pgadmin4
@@ -42,7 +43,7 @@ services:
       NODE_ENV: production
       PORT: "4000"
       DATABASE_URL: postgres://app_user:app_user@postgres:5432/cloudaitrader
-      SERVICE_DATABASE_URL: postgres://service_role:service_role@postgres:5432/cloudaitrader
+      SERVICE_DATABASE_URL: postgres://app_service:app_service@postgres:5432/cloudaitrader
     ports:
       - "${MAIN_PORT:-4200}:4000"
     healthcheck:
@@ -58,7 +59,7 @@ services:
     build: ./backtester
     environment:
       ENVIRONMENT: production
-      WORKER_DATABASE_URL: postgres://worker_role:worker_role@postgres:5432/cloudaitrader
+      WORKER_DATABASE_URL: postgres://worker_user:worker_user@postgres:5432/cloudaitrader
     healthcheck:
       test: ["CMD", "uv", "run", "--no-sync", "python", "-m", "backtester.health"]
       interval: 5s

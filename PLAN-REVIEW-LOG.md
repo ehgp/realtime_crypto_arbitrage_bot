@@ -419,3 +419,327 @@ VERDICT: APPROVED
 ## Resolution: re-review APPROVED (Round 6 of 10, 2026-07-18)
 
 Re-execution against the UPDATED Format B standard converged. PLAN.md Revision 8 stands. Cycle totals: 18 findings across 5 REVISE rounds (6/3/3/3/3), 17 accepted, 1 partial rejection with logged safety rationale (dev-compose DB literals stay container-internal constants; blanket interpolation could silently point dev at production Neon). Sprint guides, human-todo, .env.example, and Phase 1 code (node:22-slim + node-fetch healthcheck, PROOF_EXIT=0 re-verified) are synced to Revision 8. Combined with the original cycle: 74 findings total across both reviews, 70 accepted, 3 rejected/partial with reasons Codex endorsed or accepted, 1 third-way (R2 Reserved). Open human decisions: H-R2-1 (R2 storage scope), H-BUILD-1 (who builds Phase 2+), H-SEC-1 (key rotation), H-PRICE-1, H-RULES-1, A1.
+
+## Re-grill 2026-07-21 — third Format B delta (Act 1 v3)
+
+Standard deltas since Revision 8: (a) the four-role/four-DSN model is now CONTRACT with canonical names `app_service`/`worker_user` — our SERVICE_DATABASE_URL deviation was ABSORBED upstream (H-STD-1 partially resolved) but under different role names; (b) three manual `000_*` role files with the runner SKIPPING `000_*`; (c) boot-asserts (inv 14-15: SELECT current_user per pool; worker asserts worker_user + NOT rolbypassrls; DIRECT_URL banned from service envs with startup refusal); (d) entitlement column-lock (inv 16); (e) NEW DB-fallback layer (inv 17): postgres:17 on eg-server-3, FALLBACK_* DSN set + DB_ACTIVE manual cutover, Sprint 8.4. ADMIN_EXTERNAL_IDS and Payment Link rows are UNCHANGED upstream — those two deviations stand.
+
+User changes reconciled: .env/.env.example rewrite (audited names-only, no values read): AUTH0_ISSUER + AUTH0_JWKS_URI removed as redundant-derived (loaders derive from AUTH0_DOMAIN); NEXT_PUBLIC_AUTH0_DOMAIN/CLIENT_ID removed (not contract-named, no consumer — the "reserved by contract" comment was imported from the reference repo); AUTH0_SECRET + APP_BASE_URL RESTORED (contract-required, were missing from both files); AUTH0_DB_CONNECTION adopted as a new concern (Sprint 5.2 consumer); provisioned AUTH0_AUDIENCE value https://cloudaitrader.com adopted over the plan's earlier backend.cloudaitrader.com. Code audit: NO auth code exists yet (tree is the Phase-1 scaffold), so no code depended on the removed vars. A1 weakened: the domain looks like a DEDICATED tenant vs the "shared" comment — deletion stays local-only pending the human's one-word answer.
+
+Code brought to standard: run.js now skips `000_*` files; config.js refuses DIRECT_URL in production; compose usernames renamed to app_service/worker_user (nothing connects as them until Phase 3; proof re-run green). PLAN.md -> Revision 9 (role table, absorbed-deviation notes, Auth0 audit paragraph, invariants 18-20, Sprint 8.4, gates, risks); sprints 01/02/03/08/09 synced; human-todo: H-NEON-2 (rename provisioned roles), H-FALLBACK-1 (eg-server-3), A1 sharpened.
+
+Act 2 v3 follows in a fresh Codex session, MAX_ROUNDS=10.
+
+## Act 2 v3 Round 1 — Codex fresh session (thread 019f875e-77b4-7303-8854-b51147483c1a, 2026-07-21) on Revision 9
+
+1. [BLOCKER] Warm `pg_dump | pg_restore` can overwrite writes made after fallback cutover because the cron job has no promotion lock, disable mechanism, or active-primary assertion (`PLAN.md:205`; `docs/sprints/sprint-08-deploy.md:40-42`). Fix: require a single-writer promotion state, automatically fence warm-sync before cutover, and restore into a staging database before atomic promotion.
+
+2. [BLOCKER] Failback is specified only as “reconciles fallback→Neon,” with no conflict model, write freeze, sequence handling, or procedure for Neon writes accepted during a partial outage (`PLAN.md:205,234,256`; `docs/sprints/sprint-08-deploy.md:41-42`). Fix: define an executable failback runbook using write quiescence plus authoritative full replacement or logical replication with explicit conflict semantics and validation hashes.
+
+3. [MAJOR] Revision 9 says the nine-variable primary/fallback set is wired into “BOTH workers,” which risks placing `DIRECT_URL`, `FALLBACK_DIRECT_URL`, and cross-role credentials in long-lived containers, contradicting least privilege and invariant 18 (`PLAN.md:205,232`). Fix: give backend only app-user/service DSNs, Backtester only worker DSNs, and migration jobs only owner DSNs; `DB_ACTIVE` selects within each service’s permitted subset.
+
+4. [MAJOR] The manual role files prescribe hardcoded passwords equal to role names, and the duplicate-role handler silently skips correcting attributes or passwords on existing roles (`docs/sprints/sprint-03-schema-worker-contract.md:18-30`). Fix: inject generated passwords through protected `psql` variables and idempotently `ALTER ROLE` every required attribute while never committing credentials.
+
+5. [MAJOR] Cold local compose never executes the skipped `000_*` role files, yet backend and Backtester DSNs reference those roles; Phase 1 remains green only because current health checks never connect to PostgreSQL (`docker-compose-dev.yml:28-69`; `app/backend/src/index.js:31-33`; `backtester/backtester/config.py:15-21`). Fix: add a separate idempotent local role-bootstrap init step and make both health/readiness gates prove authenticated database access under the expected roles.
+
+6. [MAJOR] Auth0 audience configuration is internally contradictory: Revision 9 and `.env.example` use `https://cloudaitrader.com`, while the synced Sprint 2 precondition and completed human provisioning item still require `https://backend.cloudaitrader.com` (`PLAN.md:103`; `.env.example:5`; `docs/sprints/sprint-02-auth-identity.md:11`; `human-todo.md:24`). Fix: select the actually provisioned API identifier and update every plan, sprint, checklist, test fixture, and Auth0 tenant setting to that exact value.
+
+7. [MAJOR] The optional dedicated-tenant deletion branch requires deleting the Auth0 identity, but the M2M contract grants only `read:users update:users`, Sprint 5 remains local-only, and no deletion/retry verification exists (`PLAN.md:139,184`; `.env.example:11-14`; `docs/sprints/sprint-05-app-surface.md:29-31`). Fix: either remove Auth0 deletion from Revision 9 or define a gated branch with `delete:users`, idempotent retry behavior, session revocation, and acceptance tests.
+
+8. [MAJOR] Boot assertions verify exact usernames but not the complete privilege contract for backend roles; an existing misprovisioned `app_service` can retain `CREATEROLE`, `CREATEDB`, ownership, or lack/possess the wrong BYPASSRLS state until much later checks (`PLAN.md:55,232,255`; `docs/sprints/sprint-03-schema-worker-contract.md:33,126`). Fix: boot-assert `rolbypassrls`, `rolcreatedb`, `rolcreaterole`, and expected ownership/DDL denial for every runtime role, with negative tests for swapped and overprivileged DSNs.
+
+9. [MAJOR] Sprint 8.1’s production bootstrap still names only two role files, omitting `000_service_role.sql`, so following the deployment guide cannot provision `app_service` (`docs/sprints/sprint-08-deploy.md:16-19`). Fix: require all three canonical `000_*` files in both primary and fallback bootstrap instructions and verify all four identities before migration.
+
+10. [MINOR] Sprint 3 still advertises “Revision 5” and “Three-role bootstrap” despite containing Revision 9’s four-role contract, undermining the claim that sprint guides are synchronized (`docs/sprints/sprint-03-schema-worker-contract.md:3,11`). Fix: update its metadata and synchronization marker to Revision 9/four-role terminology.
+
+Confidence: 98/100
+
+VERDICT: REVISE
+
+### Claude's response (Act 2 v3 Round 1, 2026-07-21)
+
+All 10 accepted; PLAN.md is now Revision 10.
+
+- **1 (blocker)** -> Warm sync restores into `cloudaitrader_staging` + atomic swap, and refuses (with alert) whenever the cutover script's promotion flag is set; cutover fences sync BEFORE flipping.
+- **2 (blocker)** -> Executable failback runbook: write quiescence (stop workers) -> full dump/restore into a Neon staging branch -> validation (row counts + content hashes on backtests/results/entitlements) with operator adjudication of any diff -> promote -> clear flag -> re-enable sync. Full-replacement model, no merge semantics.
+- **3** -> Least-privilege DSN subsets: backend app_user/app_service (+ fallback mirrors), backtester worker_user (+ mirror), migrate-only owner URLs; DB_ACTIVE selects within each service's subset.
+- **4** -> 000_* files take psql-variable passwords and idempotently ALTER ROLE attributes on re-run; no credentials in the repo; dev literals confined to the dev init script.
+- **5** -> NEW `infra/db-init/dev-roles.sql` mounted into the dev postgres initdb.d (roles exist from cold start; gate: psql as each role after down -v); Phase 3 upgrades health/readiness to prove authenticated access per role.
+- **6** -> Audience unified on the provisioned `https://cloudaitrader.com` across sprint-02, human-todo H-AUTH (annotated correction), sprint-01, .env.example, PLAN.
+- **7** -> Dedicated-tenant Auth0-deletion branch REMOVED: deletion is LOCAL-ONLY in MVP regardless of tenant type; A1 becomes informational; M2M scopes stay read:users update:users.
+- **8** -> Boot-asserts extended to the full privilege contract (pg_roles: bypassrls/createdb/createrole per role) + negative tests for swapped/overprivileged DSNs; invariant 18 amended.
+- **9** -> Sprint 8.1 bootstrap names all three 000_* files + four-identity verification before first migration.
+- **10** -> sprint-03 metadata/heading updated to Revision 10 / four-role.
+
+## Act 2 v3 Round 2 — Codex (same thread, 2026-07-21) on Revision 10
+
+Revision 10 still requires revision.
+
+1. [BLOCKER] The promotion flag has a check-then-act race: warm sync can pass the flag check, then continue restoring and swapping after cutover sets the flag, overwriting live fallback writes ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:205); [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40)).  
+Fix: use one shared exclusion lock held for the entire sync/swap; cutover must acquire that lock, set durable promotion state, and test an intentionally overlapping sync/cutover.
+
+2. [BLOCKER] Failback restores into a Neon staging branch but “promotion” only flips `DB_ACTIVE=primary`; nothing makes the validated branch reachable through the existing primary DSNs, so services can restart against stale Neon data ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42)).  
+Fix: specify the exact Neon branch reset/promotion or atomic primary-DSN replacement, verify a database-instance ID through every resulting DSN, and define rollback if restart validation fails.
+
+3. [MAJOR] Failback validation does not actually surface old-primary writes: fallback is copied into staging, but no explicit old-Neon-versus-fallback comparison exists, and content hashes cover only three tables ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:205)).  
+Fix: require old-primary versus fallback divergence analysis plus fallback versus staging restore-fidelity checks over every authoritative table, migration version, sequence, and immutable manifest.
+
+4. [MAJOR] Cutover recreates both services without first stopping both, so a partial recreate can leave the App Worker writing fallback while the Backtester continues using Neon; role assertions cannot detect this split brain ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:41)).  
+Fix: stop both services first, update one durable selector, start neither unless all selected DSNs report the same database-instance/epoch marker, and roll back as a unit on failure.
+
+5. [MAJOR] The claimed “full privilege contract” still omits role membership, object/schema ownership, `rolsuper`, and `rolreplication`; an `app_service` owning an existing object can alter or drop it even if `CREATE TABLE` fails ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:232); [Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:38)).  
+Fix: revoke unexpected memberships, reassign owned objects, assert all privilege attributes and zero runtime-owned objects, and test `ALTER`/`DROP` against an owner-created fixture.
+
+6. [MAJOR] Production role-password examples pass secrets through `psql -v ...='<generated>'`, exposing them to shell history and potentially process inspection despite calling the variable “protected” ([Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:21)).  
+Fix: use `\prompt -s`, a permission-restricted transient variable file, or another non-argv secret channel, with cleanup and no command logging.
+
+7. [MAJOR] The Auth0 deletion branch remains enabled in `human-todo.md`, directly contradicting Revision 10’s removal of that branch and allowing implementation without `delete:users`, retries, or tests ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:139); [human-todo.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/human-todo.md:20)).  
+Fix: make A1 informational only and state that MVP deletion remains local-only regardless of the answer.
+
+8. [MAJOR] Warm restore does not specify ownership/ACL flags or pre-swap role probes; Neon’s owner role can differ from the fallback owner, and database-level `CONNECT` privileges may remain attached to the old database object. PostgreSQL documents that `pg_dump` does not dump roles and only includes database ACLs with the create option ([PostgreSQL 17 pg_dump](https://www.postgresql.org/docs/17/app-pgdump.html), retrieved 2026-07-21).  
+Fix: define exact dump/restore flags, owner mapping, explicit staging-database grants, `--exit-on-error`/pipeline failure handling, and successful connections through all fallback DSNs before swap.
+
+9. [MAJOR] The fallback duplicates production PII, billing records, and encrypted MFA material onto eg-server-3 without an at-rest encryption, credential-file permission, dump-retention, or host-access audit contract ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:37)).  
+Fix: require encrypted storage, restricted backup credentials, no persistent plaintext dumps, retention/secure deletion, host patching, and audited access in Sprint 8.4 and Sprint 9.1.
+
+10. [MINOR] Synced guidance still says `000_role.sql` creates all runtime roles under obsolete names, and the sprint index still calls `SERVICE_DATABASE_URL` a contract deviation even though Revision 10 says it was absorbed ([human-todo.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/human-todo.md:25); [Sprint index](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:22)).  
+Fix: replace the historical provisioning instruction with all three canonical role files and remove the absorbed deviation from current execution guidance.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude's response (Act 2 v3 Round 2, 2026-07-21)
+
+All 10 accepted; PLAN.md is now Revision 11.
+
+- **1 (blocker)** -> One shared flock held for the ENTIRE sync (dump->restore->grants->probes->swap); cutover acquires the same lock before writing durable promotion state; drill adds a deliberate overlap test.
+- **2 (blocker)** -> Failback promotion made real: Neon primary-branch RESET from the validated staging branch (existing DSN endpoints unchanged) + a one-row `app.db_epoch` marker stamped per cutover/failback and verified through every DSN before workers start; rollback = don't reset.
+- **3** -> Divergence analysis old-Neon vs fallback across ALL authoritative tables + schema_migrations + sequences + manifest fields, adjudicated before restore; separate fallback-vs-staging fidelity check.
+- **4** -> Cutover: stop BOTH -> durable selector -> epoch match through each selected DSN -> start both or neither (unit rollback).
+- **5** -> Privilege contract extended: NOT rolsuper/rolreplication, no unexpected memberships, zero owned objects, ALTER/DROP fixture denial; provisioning revokes/REASSIGNs strays.
+- **6** -> Role passwords never in argv: \prompt -s or 0600 transient \i file with secure deletion.
+- **7** -> human-todo A1 rewritten informational-only; MVP deletion local-only regardless.
+- **8** -> Exact dump/restore flags specified (-Fc --no-owner --no-acl | --exit-on-error, streamed), post-restore grants script, three-DSN connect probes before swap (pg_dump role/ACL semantics per PostgreSQL 17 docs).
+- **9** -> Fallback data-protection contract: LUKS volume, 0600 creds, streamed/age-encrypted dumps with retention 2 + secure deletion, host patching + SSH audit in Sprint 9.1.
+- **10** -> human-todo H-NEON annotated (three files, canonical names), sprints/README deviation list updated (SERVICE_DATABASE_URL absorbed).
+
+## Act 2 v3 Round 3 — Codex (same thread, 2026-07-21) on Revision 11
+
+Revision 11 still requires revision.
+
+1. [BLOCKER] The exclusion lock prevents overlap only while cutover holds it; after cutover releases it, the next cron sync can acquire the lock and overwrite the now-live fallback because the sync path never explicitly refuses when durable promotion state says `fallback` ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:205); [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40)).  
+Fix: after acquiring the lock, warm sync must check durable promotion state and exit with an alert unless the active database is primary; test the first scheduled run after promotion.
+
+2. [MAJOR] The failback names a Neon “branch reset,” but Neon reset normally updates a child from its parent; replacing primary from staging uses the branch restore operation with staging as `source_branch_id`, operation polling, and preservation of the old primary ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42); [Neon Restore Branch API](https://api-docs.neon.tech/reference/restoreprojectbranch), retrieved 2026-07-21).  
+Fix: name the exact restore operation, preserve the previous primary under a recovery name, poll it to terminal success, and prohibit blind retry of an ambiguously completed POST.
+
+3. [MAJOR] The no-argv password rule remains contradicted by two role-file comments that still prescribe `psql -v ...='<generated>'`, recreating the original credential-exposure path ([Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:27)).  
+Fix: remove every `-v` example and show only `\prompt -s` or the 0600 transient-file invocation for all three role files.
+
+4. [MAJOR] “Zero owned objects” is checked only through `pg_class` and `pg_namespace`, omitting owned functions, types, databases, and other catalogs; the sole fixture test covers a table, so an owned `SECURITY DEFINER` function can escape the gate ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:232); [Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:40)).  
+Fix: use a complete ownership/dependency audit such as `pg_shdepend` plus database-local catalogs, and add function/schema ownership denial fixtures to phase acceptance.
+
+5. [MAJOR] The epoch gate requires selected DSNs merely to agree; if every fallback DSN is accidentally wired to Neon, they return the same role-correct primary epoch and the false cutover passes ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:205)).  
+Fix: generate an expected transition UUID, stamp it only on the intended target, and require every selected DSN to equal that exact value while the non-selected database retains a different epoch.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude's response (Act 2 v3 Round 3, 2026-07-21)
+
+All 5 accepted; PLAN.md is now Revision 12.
+
+- **1 (blocker)** -> Warm sync checks durable promotion state IMMEDIATELY after acquiring the lock and exits+alerts unless active==primary; drill tests the first scheduled run after promotion.
+- **2** -> Failback names the Neon Restore Branch API exactly (POST .../restore with source_branch_id=staging), preserves the auto-backup branch as recovery-<ts> until sign-off, polls the operation to terminal success, never blind-retries an ambiguous POST.
+- **3** -> The two remaining `-v` comment lines in the role files removed; all three files now show only \prompt -s / 0600 transient \i invocation.
+- **4** -> Ownership audit extended to pg_shdepend + pg_proc/pg_type/pg_namespace/pg_class; fixture denials now cover a table, a function, and a schema.
+- **5** -> Epoch gate uses an EXPECTED transition uuid stamped only on the intended target, all selected DSNs must equal it, and the non-selected database must show a different epoch (miswire-proof).
+
+## Act 2 v3 Round 4 — Codex (same thread, 2026-07-21) on Revision 12
+
+Revision 12 still requires revision.
+
+1. [MAJOR] The Neon Restore Branch API introduces undeclared operator credentials and identifiers: no `NEON_API_KEY`, project/primary-branch identifiers, staging connection mechanism, human provisioning item, or rule keeping those control-plane secrets out of runtime containers exists ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:205); [environment contract](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:78); [Neon API](https://api-docs.neon.tech/reference/restoreprojectbranch)).  
+Fix: define an operator-only Neon control-plane credential/config contract, scoped storage and provisioning, approved script loader, CI treatment, and explicit exclusion from every runtime service environment.
+
+2. [MAJOR] Warm sync strips all ACLs and reapplies a separate “post-restore grants script,” while canonical grants remain in `004_domain.sql`; connection probes prove login only, so grant drift or an overprivileged `worker_user` can pass before swap ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40); [Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:91)).  
+Fix: make grants single-source and idempotently reusable by migrations/restores, then run the complete verb/RLS/ownership matrix against staging before every swap or Neon promotion.
+
+3. [MAJOR] The expanded ownership audit and table/function/schema denial fixtures are described in Sprint 3 prose but remain absent from both Phase 3 acceptance and the global boot-assert verification gate, allowing the phase to pass under the older table-only checks ([Sprint 3 acceptance](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:130); [PLAN.md verification](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:255)).  
+Fix: add the complete `pg_shdepend` ownership assertion and all three denial fixtures explicitly to both named acceptance gates.
+
+4. [MINOR] Revision 12 still says “Neon branch reset” in its header, global fallback gate, and Sprint 8 acceptance transcript, contradicting the corrected Restore Branch API runbook ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:5); [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:257); [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:48)).  
+Fix: replace the remaining reset terminology with “Restore Branch API promotion.”
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude's response (Act 2 v3 Round 4, 2026-07-21)
+
+All 4 accepted; PLAN.md is now Revision 13.
+
+- **1** -> New operator-only env class (NEON_API_KEY, NEON_PROJECT_ID, NEON_PRIMARY_BRANCH_ID): 0600 operator file on eg-server-3, sole consumer is the failback script, banned from runtime/Vercel/CI (boot-assert + CI absence + docker-inspect drill check); H-FALLBACK-1 provisions them.
+- **2** -> Grants single-sourced into idempotent 005_grants.sql (re-applied by sync and failback restores — no separate grants script); shared verify_roles.sql matrix (verbs/RLS/ownership) runs against staging BEFORE every swap and against the Neon staging branch BEFORE Restore-Branch promotion; login-only probes no longer count.
+- **3** -> The pg_shdepend-complete ownership audit + table/SECURITY DEFINER function/schema denial fixtures are now NAMED in both Sprint 3 acceptance and the PLAN boot-assert verification gate.
+- **4** -> Remaining "branch reset" terminology swept to "Neon Restore Branch API promotion" (header, fallback gate, sprint-08 acceptance).
+
+## Act 2 v3 Round 5 — Codex (same thread, 2026-07-21) on Revision 13
+
+Round 4 findings 3 and 4 are closed. Finding 1 is only partially resolved; finding 2 remains inconsistent in Sprint 8. External service claims checked 2026-07-21 21:48 EDT.
+
+1. [BLOCKER] The prescribed Restore Branch request omits `preserve_under_name`, which Neon requires when the target has children, as primary will once the staging branch exists; the operation creates a new branch, yet static `NEON_PRIMARY_BRANCH_ID` is never refreshed and only one returned operation is polled ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207); [Neon Restore Branch API](https://api-docs.neon.tech/reference/restoreprojectbranch); [Neon OpenAPI](https://neon.com/api_spec/release/v2.json)).  
+Fix: Include `preserve_under_name` in the POST, poll every returned operation, atomically persist the returned active `branch.id`, and prove two consecutive restores.
+
+2. [MAJOR] Both restore targets lack an empty-target lifecycle: `cloudaitrader_staging` contains the previous database after the first rename swap, and a Neon staging branch is initially populated, but the named `pg_restore` flags include neither `--clean` nor database recreation, so subsequent restores fail on existing objects ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207); [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40); [PostgreSQL 17 pg_restore](https://www.postgresql.org/docs/17/app-pgrestore.html)).  
+Fix: Define fresh `template0` staging-database creation or controlled `--clean --if-exists` semantics and test two consecutive warm-syncs plus restoration over a populated Neon branch.
+
+3. [MAJOR] Round 4 finding 2 remains unresolved in the executable guide: Sprint 8 still specifies a separate “post-restore grants script” and connection probes, and its failback steps omit `005_grants.sql` plus `verify_roles.sql`, contradicting both PLAN.md and Sprint 3 ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40); [Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:94)).  
+Fix: Replace both Sprint 8 restore paths with the exact shared `005_grants.sql` → `verify_roles.sql` sequence before swap or promotion.
+
+4. [MAJOR] The declared six-hour RPO is neither observable nor enforced: no durable last-successful validated-sync timestamp/source marker or stale-fallback refusal exists, so repeated cron failures can leave a days-old fallback that still passes the newly stamped epoch gate ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207); [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:48)).  
+Fix: Persist validated snapshot time/source identity, alert when age exceeds RPO plus grace, and make cutover reject stale fallback absent an explicit adjudicated override.
+
+5. [MAJOR] The capacity gate budgets up to 400 MB for `worker.ohlcv` alone while Neon Free currently allows 0.5 GB per project; failback temporarily adds a logically rewritten staging branch and retained recovery branch, so the stated 240–320 MB production footprint can exhaust free-tier storage during the recovery operation ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:17); [Sprint 4](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-04-backtester-worker.md:33); [Neon pricing](https://neon.com/pricing)).  
+Fix: Gate on total project and concurrent-branch storage with primary-plus-staging-plus-recovery headroom, requiring explicit paid-tier approval if the free cap cannot accommodate failback.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude's response (Act 2 v3 Round 5, 2026-07-21)
+
+All 5 accepted; PLAN.md is now Revision 14.
+
+- **1 (blocker)** -> Restore POST includes preserve_under_name:"recovery-<ts>"; EVERY returned operation polled; the NEW branch.id atomically persisted as the refreshed NEON_PRIMARY_BRANCH_ID in the operator env; drill proves two consecutive restores.
+- **2** -> Fresh-target lifecycle everywhere: warm sync recreates cloudaitrader_staging from template0 each run; failback creates a FRESH Neon staging branch per attempt and deletes it after promotion; two consecutive warm-syncs in the drill.
+- **3** -> Sprint 8's stale "post-restore grants script" line replaced with the exact 005_grants.sql -> verify_roles.sql sequence on BOTH restore paths (legitimate re-open of R12-2 — the PLAN was fixed in Round 4 but the executable guide lagged).
+- **4** -> Durable last_validated_sync marker (timestamp + source identity) stamped per successful sync; age > RPO+grace alerts; the cutover script REFUSES a stale fallback absent an explicit logged --override-stale.
+- **5** -> Capacity model re-budgeted for branch reality: matrix tightened to 1m(30d)/1h(3y)/1d(5y) (~713k rows, ~110-145 MB) so primary + rewritten staging + recovery branch fit the 0.5 GB free cap; the gate measures TOTAL project storage with failback headroom; breach requires explicit paid-tier approval.
+
+## Act 2 v3 Round 6 — Codex (same thread, 2026-07-21) on Revision 14
+
+Revision 14 still requires revision. All five Round 5 remedies appear in prose, but the Neon empty-target fix remains incorrect and several remedies are not enforced by acceptance gates.
+
+1. [BLOCKER] Round 5 finding 2 remains open: a “fresh” Neon branch contains its parent’s schema and data, and the API creates no compute endpoint unless requested, so the unchanged `pg_restore --exit-on-error` collides with existing objects or has no connection target ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42), [Neon branching](https://neon.com/docs/get-started-with-neon/workflow-primer), [Create Branch API](https://api-docs.neon.tech/reference/createprojectbranch)).  
+   Fix: Create and poll a temporary read-write endpoint, then explicitly empty/recreate the application database from `template0` or use tested `--clean --if-exists` semantics before restoring.
+
+2. [BLOCKER] Neon restore completion and local `NEON_PRIMARY_BRANCH_ID` persistence are not crash-consistent; a lost response or process death after remote commit leaves the old ID pointing at recovery, while “rollback = do not restore” is impossible after commit ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42), [Neon Restore API retry warning](https://api-docs.neon.tech/reference/restoreprojectbranch)).  
+   Fix: Add a durable pre-POST failback journal, reconcile the active branch through a stable endpoint ID on restart, define post-commit fallback recovery, and inject crashes at POST/poll/persist boundaries.
+
+3. [MAJOR] The shared whole-run exclusion lock covers warm sync and cutover, but not failback; concurrent failbacks can race on staging deletion, restore target IDs, and operator-file writes ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42)).  
+   Fix: Hold the shared lock for the entire failback and compare-and-set both promotion state and the resolved current primary branch ID before every destructive step.
+
+4. [MAJOR] Failback has a weaker epoch gate than cutover: it does not explicitly generate a fresh UUID or prove the non-selected fallback differs, allowing staging or primary DSN miswiring to escape the intended differentiation check ([Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:41), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42)).  
+   Fix: Generate a new failback UUID, stamp only verified staging, require every primary DSN to equal it, and require every fallback DSN to differ before flipping.
+
+5. [MAJOR] Acceptance 8.4 remains singular and can pass without two warm syncs, two restores using the refreshed branch ID, the local `005_grants.sql` sequence, or stale-marker refusal and override auditing ([Sprint 8 acceptance](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:48), [global gate](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:259), [sprint rules](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:17)).  
+   Fix: Name every required repeated cycle, refreshed-ID assertion, grants verification, stale refusal, override audit, and crash-boundary transcript explicitly in both gates.
+
+6. [MAJOR] The operator-only env class contradicts the env-conformance contract: it requires its own loader and file, while CI permits only four loaders and requires every declared variable in `.env.example`, with no operator exception or template ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:107), [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:121), [Sprint README](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:22)).  
+   Fix: Define an approved operator loader plus `operator.env.example`, and make CI allow `NEON_*` only through that path while rejecting runtime, Compose, Vercel, and CI exposure.
+
+7. [MAJOR] The capacity repair still undercounts required states: retaining recovery until sign-off while proving two restores can produce active + staging + recovery-1 + recovery-2, but the budget models only three; Sprint 4 acceptance omits capacity and Sprint 9 still uses the obsolete OHLCV-only 400 MB check ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:17), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:42), [Sprint 4 acceptance](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-04-backtester-worker.md:38), [Sprint 9](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-09-hardening.md:32)).  
+   Fix: Require signed deletion of recovery-1 before restore two or budget four states, then gate every restore on measured total-project storage and remove the 400 MB check.
+
+8. [MAJOR] `last_validated_sync` is stamped after restore and cutover checks only age; the plan neither distinguishes source snapshot time from validation completion nor requires comparison of the recorded source identity, overstating freshness and permitting a wrong-source sync to authorize cutover ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40)).  
+   Fix: Persist `snapshot_started_at`, `validated_at`, source project/branch/LSN/epoch, and fallback-generation identity, then validate every field during cutover.
+
+9. [MAJOR] Role-bootstrap “convergence” omits `NOSUPERUSER` and `NOREPLICATION` from every `ALTER ROLE`, although boot assertions require both; an existing overprivileged role therefore remains broken and blocks startup ([Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:25), [Sprint 3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-03-schema-worker-contract.md:40), [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:234)).  
+   Fix: Make every asserted attribute, membership revocation, and ownership reassignment an explicit idempotent bootstrap operation.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude response (Act 2 v3 Round 6, 2026-07-22)
+
+All 9 accepted; PLAN.md is now Revision 15 -- WITH a logged altitude decision: every finding is answered as a named INVARIANT in the plan, and Sprint 8.4 gains a first-class deliverable -- infra/fallback/RUNBOOK.md + sync/cutover/failback/operator-env scripts -- that owns the exact procedures and is itself reviewed at build time. The plan states what must be true; the runbook states how. This bounds a recursion heading toward command-level DR specification inside a plan whose Phases 2-7 are not yet built.
+
+1 (blocker): staging branches inherit parent data and lack compute -- failback creates+polls a temporary read-write endpoint and recreates the app database from template0 before restoring. 2 (blocker): durable pre-POST journal; restart reconciliation against the live branch listing; post-commit recovery; crash-boundary tests at POST/poll/persist. 3: the shared lock covers failback end-to-end with CAS on promotion state + resolved branch id. 4: failback epoch gate mirrors cutover. 5: acceptance 8.4 enumerates every repeated cycle explicitly. 6: fifth approved loader infra/fallback/operator-env.sh + infra/operator.env.example; CI permits NEON_* only inside infra/fallback/. 7: recovery-1 signed deletion before restore two (three-state budget); Sprint 4 gains the total-project x3 capacity check; Sprint 9 400MB check replaced. 8: marker fields snapshot_started_at/validated_at/source project/branch/LSN/epoch/generation, all validated at cutover. 9: ALTER ROLE converges NOSUPERUSER NOREPLICATION; membership revocation + REASSIGN OWNED explicit.
+
+## Act 2 v3 Round 7 — Codex (same thread, 2026-07-22) on Revision 15
+
+Revision 15 still requires revision. I accepted the plan/runbook altitude boundary and found no reopened core-product issues. Three spec-level defects remain.
+
+1. [BLOCKER] Cutover requires Neon to return a different epoch, so a complete Neon outage prevents activating the fallback, defeating the DR subsystem’s primary purpose ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:43)).  
+   Fix: Make the Neon probe tri-state: matching fails, different passes, and unreachable passes only after all selected DSNs prove the fresh UUID and validated fallback-generation identity; add a complete-outage acceptance case.
+
+2. [MAJOR] R14-6 remains contradictory: the operator contract establishes a fifth loader and `infra/operator.env.example`, while invariant 17 and its enforcement algorithm still declare `.env.example` the sole consolidation point and enumerate only four loaders ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:80), [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:107), [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:121), [PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:233)).  
+   Fix: Define separate runtime and operator consolidation domains, list all five loaders, and require CI to reconcile both templates and scan operator shell reads.
+
+3. [MAJOR] R14-2 requires post-commit recovery, but both retained failback sequences still prescribe “rollback = don’t restore” after the Restore API step, an impossible state once Neon has committed ([PLAN.md](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [Sprint 8](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:44)).  
+   Fix: Distinguish pre-POST abort from post-commit validation failure, with the latter remaining fallback-active while journal-led reconciliation determines the actual Neon state.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude response (Act 2 v3 Round 7, 2026-07-22)
+
+Codex accepted the plan/runbook altitude boundary; no core-product reopens. All 3 findings accepted; PLAN.md is now Revision 16.
+
+- **1 (blocker)** -> Tri-state Neon probe: matching epoch = FAIL (miswire); different = PASS; UNREACHABLE = PASS only with the fresh uuid AND validated fallback-generation identity proven on every selected DSN — a dead Neon (the primary DR trigger) can never block activation; complete-outage cutover case added to acceptance.
+- **2** -> Invariant-17 enforcement rewritten as TWO consolidation domains: runtime (.env.example, five loaders enumerated incl. infra/fallback/operator-env.sh) and operator (infra/operator.env.example; NEON_* + FALLBACK_DIRECT_URL permitted only under infra/fallback/); CI reconciles both templates and scans operator shell reads.
+- **3** -> Failback failure semantics split at the commit point: pre-POST failures abort freely; post-commit validation failures keep the fallback ACTIVE while journal-led reconciliation determines the real Neon state — re-attempt or deliberately adopt the recovery branch, never a pretend-rollback. Both PLAN and sprint-08 sequences updated.
+
+## Act 2 v3 Round 8 — Codex (same thread, 2026-07-22) on Revision 16
+
+Round 7 findings 1 and 3 are closed. One issue remains.
+
+1. [MAJOR] The env-domain repair is still contradictory: the detailed contract defines separate runtime/operator domains ([PLAN.md:107](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:107), [PLAN.md:121](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:121)), but invariant 17 and sprint-wide rules still require every variable in `.env.example` ([PLAN.md:233](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:233), [sprint README:19](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:19)); moreover, Sprint 9.3 omits the mandated two-domain conformance CI gate ([sprint-09-hardening.md:34](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-09-hardening.md:34)).  
+   Fix: Define four runtime loaders → `.env.example` and one operator loader → `infra/operator.env.example` consistently in every normative rule, then add the two-domain positive/negative conformance job to Sprint 9.3 acceptance.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude response (Act 2 v3 Round 8, 2026-07-22)
+
+Rounds 7-1 and 7-3 confirmed closed. The single remaining finding accepted; PLAN.md is now Revision 17.
+
+- **1** -> The two-domain split is now consistent in every normative rule: PLAN invariant 17 states runtime -> .env.example via the four runtime loaders and operator -> infra/operator.env.example via infra/fallback/operator-env.sh (only under infra/fallback/); sprints/README rule 8 mirrors it verbatim; Sprint 9.3 names the two-domain conformance CI job with explicit positive cases (both templates reconcile; all reads through the five loaders) and negative cases (seeded loader-bypass, seeded operator-var read outside infra/fallback/, seeded undeclared name each fail).
+
+## Act 2 v3 Round 9 — Codex (same thread, 2026-07-22) on Revision 17
+
+Revision 17 repairs invariant 17 and Sprint 9.3, but the env contract remains inconsistent.
+
+1. [MAJOR] Round 8 is still partially open: [PLAN.md:80](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:80) and [sprint README:19](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:19) still make `.env.example` universal, while [PLAN.md:121](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:121) still places all five loaders in the runtime allowlist, contradicting the four-runtime/one-operator split at [PLAN.md:233](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:233).  
+   Fix: Qualify every template rule by domain and define exactly four runtime loaders plus one operator loader, including raw acquisition versus post-source shell-variable use.
+
+2. [MAJOR] `FALLBACK_DIRECT_URL` is operator-only under [sprint README:22](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:22), but Sprint 8.4 requires the migrate path to receive it and add it to `.env.example` ([PLAN.md:207](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:207), [sprint-08:40](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-08-deploy.md:40)); the exact-set CI contract therefore requires duplication or an undeclared translation.  
+   Fix: Assign `FALLBACK_DIRECT_URL` to one domain and consistently define either transient mapping to `DIRECT_URL` for migration or migrate-only runtime handling.
+
+Round 7’s outage and failback repairs remain closed.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+### Claude response (Act 2 v3 Round 9, 2026-07-22)
+
+Both findings accepted; PLAN.md is now Revision 18.
+
+- **1** -> Every remaining pre-split phrase qualified by domain: the reconciliation intro now names one consolidation point PER domain; the enforcement paragraph states EXACTLY FOUR runtime loaders + ONE operator loader, with the raw-acquisition (operator-env.sh only) vs post-source shell-variable-use distinction made explicit.
+- **2** -> FALLBACK_DIRECT_URL assigned to the OPERATOR domain: it enters infra/operator.env.example (never .env.example); the fallback bootstrap/migrate path receives it TRANSIENTLY under the name DIRECT_URL from the operator scripts (documented mapping R16-2 - the migrate job only ever knows DIRECT_URL); Sprint 8.4 atomic entry split accordingly (four runtime vars -> .env.example).
+
+## Act 2 v3 Round 10 — Codex FINAL (same thread, 2026-07-22) on Revision 18
+
+Round 9 finding 2 is closed. Finding 1 remains partially open.
+
+1. [MAJOR] The synced sprint contract still contradicts the repaired plan: [sprint README:19](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/README.md:19) says `.env.example` documents every variable, while rule 8 assigns operator variables elsewhere; [Sprint 9.3](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-09-hardening.md:39) also collapses acquisition and use into “five approved loaders,” omitting [PLAN.md:121](/C:/Users/erick/projects/personal/realtime_crypto_arbitrage_bot/PLAN.md:121)’s raw-acquisition versus post-source distinction.  
+   Fix: Make rule 5 domain-qualified and make the CI gate explicitly test four runtime loaders, operator acquisition only through `operator-env.sh`, and post-source use only under `infra/fallback/`.
+
+Confidence: 99/100
+
+VERDICT: REVISE
+
+## Resolution: Act 2 v3 terminates at the ROUND CAP (10 of 10, 2026-07-22) — formal DEADLOCK, substance converged
+
+Per the skill, REVISE at MAX_ROUNDS ends the loop without further revision. Honest state:
+
+- OPEN at cap: ONE [MAJOR] — two straggler sentences in secondary guides (sprints/README rule 5 pre-domain phrasing; sprint-09 CI line collapsing acquisition-vs-use). Round 9 finding 2 was confirmed CLOSED.
+- Claude's counter-position: the finding is correct and trivially fixable documentation drift, not a design defect. The substantive design closed at Round 7 (Codex: altitude boundary accepted, "no reopened core-product issues"); Rounds 8-10 were single-digit consistency items in guide files. The two sentences were corrected immediately AFTER the loop as post-loop maintenance, logged here — NOT presented as an in-loop approval. The formal verdict of record for Round 10 is REVISE.
+- Recommendation to the human: treat PLAN.md Revision 18 as the working spec. Cycle totals (Act 2 v3): 10 rounds, 42 findings (10/10/5/4/5/9/3/1/2/1... counting: R1 10, R2 10, R3 5, R4 4, R5 5, R6 9, R7 3, R8 1, R9 2, R10 1 = 50), all accepted (several as invariants delegated to the Sprint 8.4 RUNBOOK deliverable per the logged altitude decision); zero rejections. Grand totals across all three review cycles: 5+6+10 = 21 rounds, 56+18+50 = 124 findings.

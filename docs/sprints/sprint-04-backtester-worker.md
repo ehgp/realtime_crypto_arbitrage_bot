@@ -30,13 +30,14 @@ backtester/
 
 ## Sprint 4.1 — Ingestion
 
-- Matrix: 10 symbols × 1 primary Venue per symbol × {1m(90d), 1h(3y), 1d(5y)} in `config.py`. **Capacity gate**: after first full backfill, record `pg_total_relation_size('worker.ohlcv')` in the PR; widening the matrix requires measured headroom against the 400 MB budget.
+- Matrix: 10 symbols × 1 primary Venue per symbol × {1m(30d), 1h(3y), 1d(5y)} in `config.py` (R13-5). **Capacity gate**: after first full backfill, record `pg_total_relation_size('worker.ohlcv')` AND the Neon project's total storage in the PR; the budget is total-project-with-failback-headroom — primary + a fully-rewritten staging branch + recovery branch must fit the 0.5 GB free cap (target ≤160 MB logical primary); widening the matrix or breaching the cap requires explicit paid-tier approval (human-todo), never silent growth.
 - CCXT public `fetch_ohlcv`, pagination, `enableRateLimit`, tenacity backoff+jitter. **Never ingest the still-open candle** (`ts + timeframe_ms <= now_utc`).
 - `ingest/gaps.py`: continuity ledger per (venue,symbol,timeframe) — expected-vs-present ranges persisted with each `ingest_runs` row; revision detection: `ON CONFLICT DO UPDATE` returns changed-row count, logged as `revisions` metric; UTC ms normalization; delisting → matrix entry flagged inactive.
 - **Gap policy (location-aware, PLAN Sprint 4.1)**: helper `gaps_in_window(window) -> [ranges]` used at submit (global bar: >0.5% missing → reject `insufficient_data`) and at evaluation (Sprint 4.4 downgrades).
 
 ### Acceptance
 - Backfill idempotency; kill-and-rerun safety; open candle absent; seeded mutated row detected (content-validation test compares a re-fetched window hash); gap ranges recorded and queryable.
+- Capacity (R14-7): after full backfill, the measured TOTAL Neon project storage × 3 (primary + rewritten staging + recovery during failback) fits the free cap with headroom, documented in the PR; breach = stop and obtain paid-tier approval.
 
 ## Sprint 4.2 — Heritage Engine extraction (dark library)
 

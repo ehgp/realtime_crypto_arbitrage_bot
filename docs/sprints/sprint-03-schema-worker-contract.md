@@ -1,6 +1,6 @@
 ---
-date: 2026-07-18
-description: Phase 3 guide (PLAN.md Revision 5). Three-role bootstrap, RLS, full domain schema with fencing/outbox/billing tables, immutability trigger, finalization transaction, and audited ruleset seeds.
+date: 2026-07-21
+description: Phase 3 guide (PLAN.md Revision 10). Four-role contract bootstrap with privilege boot-asserts, RLS, full domain schema with fencing/outbox/billing tables, immutability trigger, finalization transaction, and audited ruleset seeds.
 tags:
   - sprints
   - cloudaitrader
@@ -8,28 +8,43 @@ tags:
 
 # Sprint Guide 03 — Data, Schema & Worker-Integration Contract (Phase 3)
 
-Synced to PLAN.md Revision 5 (decisions D12-D16). Supersedes the pre-review version.
+Synced to PLAN.md Revision 10 (decisions D12-D16, four-role contract, invariants 18-20). Supersedes prior versions.
 
 **Preconditions**: Phase 2 gate green.
 **Phase exit gate**: migrate job idempotent twice on fresh Neon under `pg_advisory_lock`; worker verb-matrix passes; cross-user RLS matrix (reads AND mutations) passes; ruleset payload UPDATE via direct owner SQL rejected by trigger; seeds load AND pass the D16 representability audit.
 
 ## Sprint 3.1 — Roles + migrate job
 
-Three-tier credentials (PLAN.md D14):
+Four-role contract, canonical names (PLAN.md D14 / Format B inv 14). THREE manual `000_*` files (owner, once per environment); **the runner SKIPS `000_*` files** (implemented in run.js), so all GRANTs live in the next auto-applied migration. **Passwords are NEVER hardcoded (R9-4)**: each file takes a protected psql variable and idempotently converges attributes on re-run:
 
-`migrations/000_role.sql` (manual, owner, once per environment; passwords set by human — H-NEON):
+Secrets never travel through argv (R10-6): invoke each file with `psql -f 000_role.sql` and supply the password via `\prompt -s` inside the file (interactive), or `\i` a 0600 transient variable file that is securely deleted afterward; shell history/logging must not capture values.
 
 ```sql
-DO $$ BEGIN CREATE ROLE app_user LOGIN PASSWORD 'app_user'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE ROLE service_role LOGIN PASSWORD 'service_role' BYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE ROLE worker_role LOGIN PASSWORD 'worker_role'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-GRANT CONNECT ON DATABASE cloudaitrader TO app_user, service_role, worker_role;
--- service_role: DML only, NO DDL, no schema ownership. Owner runs migrations (migrate job only).
+-- migrations/000_role.sql — password via \prompt -s or a 0600 transient \i file (never -v on the command line)
+DO $$ BEGIN CREATE ROLE app_user LOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+ALTER ROLE app_user LOGIN PASSWORD :'app_user_password' NOSUPERUSER NOREPLICATION NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+GRANT CONNECT ON DATABASE cloudaitrader TO app_user;
+-- migrations/000_worker_role.sql — password via \prompt -s or 0600 transient \i file (never argv)
+DO $$ BEGIN CREATE ROLE worker_user LOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+ALTER ROLE worker_user LOGIN PASSWORD :'worker_user_password' NOSUPERUSER NOREPLICATION NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+GRANT CONNECT ON DATABASE cloudaitrader TO worker_user;
+-- migrations/000_service_role.sql — password via \prompt -s or 0600 transient \i file (never argv)
+DO $$ BEGIN CREATE ROLE app_service LOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+ALTER ROLE app_service LOGIN PASSWORD :'app_service_password' NOSUPERUSER NOREPLICATION BYPASSRLS NOCREATEDB NOCREATEROLE;
+-- Every asserted attribute is converged here idempotently (R14-9); the bootstrap also
+-- REVOKEs unexpected memberships and REASSIGN OWNED strays so boot-asserts cannot
+-- deadlock against a pre-existing overprivileged role.
+GRANT CONNECT ON DATABASE cloudaitrader TO app_service;
+-- app_service: enumerated DML only, NO DDL, owns nothing. Owner runs migrations (migrate job only).
 ```
 
-Migrate job (`migrations/run.js`): acquires `SELECT pg_advisory_lock(7401)`, applies numbered files recorded in `schema_migrations`, releases, exits. Runs ONLY as the compose `migrate` service (DIRECT_URL); backend/backtester never migrate and never see DIRECT_URL.
+Dev compose provisions the same three roles with dev literals via `infra/db-init/dev-roles.sql` (mounted into `/docker-entrypoint-initdb.d/`; re-init requires `docker compose down -v`) — R9-5.
 
-`003_rls_helpers.sql`: `app.current_user_id()`, `app.is_admin()` as before; RLS enabled deny-by-default on every app_user-visible table; `app.user_mfa`, `app.admins` have NO app_user grants (service_role only).
+Boot-asserts (Format B inv 14-15, extended R9-8 + R10-5): backend refuses to start in production with `DIRECT_URL` present (implemented in `src/config.js`); each pool asserts `SELECT current_user` AND the full privilege contract at init, throwing on mismatch — `app_user`/`worker_user`: NOT rolbypassrls; `app_service`: rolbypassrls; ALL runtime roles additionally: NOT rolsuper, NOT rolreplication, NOT rolcreatedb, NOT rolcreaterole, no unexpected `pg_auth_members` memberships, zero owned objects via a COMPLETE audit — `pg_shdepend` plus local catalogs (`pg_class`, `pg_namespace`, `pg_proc`, `pg_type`) so owned SECURITY DEFINER functions, types, and schemas cannot slip the gate (R11-4). Provisioning revokes stray memberships and `REASSIGN OWNED` strays. Tests: swapped/overprivileged DSNs refuse naming the failed attribute; owner-created fixtures — a table, a function, AND a schema — each survive runtime-role `ALTER`/`DROP` attempts (denied).
+
+Migrate job (`migrations/run.js`): acquires `SELECT pg_advisory_lock(7401)`, applies numbered files EXCLUDING `000_*`, records them in `schema_migrations`, releases, exits. Runs ONLY as the compose `migrate` service (DIRECT_URL).
+
+`003_rls_helpers.sql`: `app.current_user_id()`, `app.is_admin()` as before; RLS enabled deny-by-default on every app_user-visible table; `app.user_mfa`, `app.admins` have NO app_user grants (app_service only).
 
 ## Sprint 3.2 — Domain schema (`004_domain.sql`)
 
@@ -79,7 +94,7 @@ Uniqueness contract (PLAN.md Sprint 3.2): ohlcv PK(venue,symbol,timeframe,ts) ·
 
 ### Grants
 
-As Revision 2, adjusted: service_role gets DML on all app.* tables (BYPASSRLS covers RLS); worker_role: SELECT on entitlements/firm_rulesets/tier_limits, SELECT/UPDATE on backtests, INSERT on backtest_results/simulations/job_events (+ sequence usage), full on worker.*; worker policies on RLS-on shared tables as before; NO worker grant on users/mfa/admins/quota/stripe_events/billing_actions/deleted_subs.
+Grants are SINGLE-SOURCE in their own idempotent, re-runnable migration `005_grants.sql` (R12-2 — the exact file the warm-sync and failback scripts re-apply after every restore; nothing else grants anything): app_service gets ENUMERATED DML on the app.* tables its runtime paths touch (BYPASSRLS covers RLS; no blanket schema grant, no DDL); worker_user: SELECT on entitlements/firm_rulesets/tier_limits, SELECT/UPDATE on backtests, INSERT on backtest_results/simulations/job_events (+ sequence usage), full on worker.* (its own schema); worker policies on RLS-on shared tables as before; NO worker grant on users/mfa/admins/quota/stripe_events/billing_actions/deleted_subs — explicit per-table grants only, never a blanket app-schema grant (Format B inv 11). A companion read-only assertion script `migrations/verify_roles.sql` encodes the full verb/RLS/ownership matrix and is the SHARED verifier used by boot-asserts (compact subset), the test suite, and the pre-swap/pre-promotion checks in Sprint 8.4.
 
 ## Sprint 3.3 — Worker DB access + finalization transaction
 
@@ -118,7 +133,7 @@ COMMIT;
 ## Acceptance (phase)
 
 - Migrate job twice on fresh DB → second run no-op; concurrent double-invocation serialized by advisory lock (test with two parallel runs).
-- Verb matrix (worker + service_role): worker claim/finalize succeed; worker SELECT users fails; **service_role DDL attempt (`CREATE TABLE`) fails**; app_user bare-pool zero rows.
+- Verb matrix (worker_user + app_service, via `verify_roles.sql`): worker claim/finalize succeed; worker SELECT users fails; **app_service DDL attempt (`CREATE TABLE`) fails**; app_user bare-pool zero rows; **complete ownership audit passes — `pg_shdepend` + `pg_class`/`pg_namespace`/`pg_proc`/`pg_type` report ZERO objects owned by any runtime role (R11-4/R12-3)**; **all three denial fixtures pass — owner-created table, SECURITY DEFINER function, and schema each deny runtime-role `ALTER`/`DROP`**; boot-asserts: worker started as app_user or owner refuses; backend with DIRECT_URL in production env refuses.
 - RLS matrix: scripted cross-user SELECT/INSERT/UPDATE/DELETE per app-owned table, all denied.
 - Immutability: `UPDATE app.firm_rulesets SET rules='{}' WHERE published` as OWNER → trigger exception; `UPDATE ... SET published=false` succeeds; `DELETE` → exception.
 - Finalization: stale-attempt txn rolls back completely (no orphan results/sims/events rows).

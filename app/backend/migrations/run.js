@@ -27,6 +27,7 @@ try {
 
   const files = (await readdir(migrationDirectory))
     .filter((file) => /^\d+.*\.sql$/.test(file))
+    .filter((file) => !file.startsWith("000_"))
     .sort();
 
   for (const file of files) {

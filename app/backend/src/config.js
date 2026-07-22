@@ -6,6 +6,11 @@ if (process.env.NODE_ENV === "production") {
       throw new Error(`Missing required environment variable: ${name}`);
     }
   }
+  if (process.env.DIRECT_URL) {
+    throw new Error(
+      "DIRECT_URL must not be present in a long-lived service environment (owner credentials are migrate/CLI-only)",
+    );
+  }
 }
 
 export const config = Object.freeze({

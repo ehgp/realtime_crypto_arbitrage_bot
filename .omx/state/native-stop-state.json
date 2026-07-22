@@ -29,6 +29,16 @@
         "last_turn_id": "019f7825-1303-79d2-a0db-368ef305fbd1",
         "last_thread_id": null
       }
+    },
+    "019f875e-77b4-7303-8854-b51147483c1a": {
+      "ordinary_no_progress_guard": {
+        "fingerprint": "ordinary|round 9 finding 2 is closed. finding 1 remains partially open. 1. [major] the synced sprint contract still contradicts the repaired plan: [sprint readme:19](/c:/users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/readme.md:19) says `.env.example` documents every variable, while rule 8 assigns operator variables elsewhere; [sprint 9.3](/c:/users/erick/projects/personal/realtime_crypto_arbitrage_bot/docs/sprints/sprint-09-hardening.md:39) also collapses acquisition and use into “five approved loaders,” omitting [plan.md:121](/c:/users/erick/projects/personal/realtime_crypto_arbitrage_bot/plan.md:121)’s raw-acquisition versus post-source distinction. fix: make rule 5 domain-qualified and make the ci gate explicitly test four runtime loaders, operator acquisition only through `operator-env.sh`, and post-source use only under `infra/fallback/`. confidence: 99/100 verdict: revise",
+        "first_seen_at": "2026-07-22T15:00:08.075Z",
+        "last_seen_at": "2026-07-22T15:00:08.075Z",
+        "repeat_count": 1,
+        "last_turn_id": "019f8a51-054b-7493-beca-e1e19557f21a",
+        "last_thread_id": null
+      }
     }
   }
 }

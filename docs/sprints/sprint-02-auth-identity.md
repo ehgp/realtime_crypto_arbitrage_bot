@@ -8,7 +8,7 @@ tags:
 
 # Sprint Guide 02 — Auth & Identity (Phase 2)
 
-**Preconditions**: Sprint 1 exit gate green; human has provisioned Auth0 (human-todo H-AUTH): regular web app + M2M app authorized for Management API, API with identifier `https://backend.cloudaitrader.com` (the audience). Until then, build against `.env.example` names and mark blocked-on-human in the commit.
+**Preconditions**: Sprint 1 exit gate green; human has provisioned Auth0 (human-todo H-AUTH, done): tenant `cloudaitrader.us.auth0.com`, regular web app + M2M app authorized for Management API, API with identifier `https://cloudaitrader.com` (the provisioned `AUTH0_AUDIENCE` — authoritative everywhere, R9-6). Issuer and JWKS URI are DERIVED from `AUTH0_DOMAIN` in `lib/env.ts` / backend config — never separate env vars.
 **Phase exit gate**: signed-in user hits a protected backend route through the BFF; a bare-pool query returns zero rows (RLS proof once Sprint 3.1 lands roles; until then the gate is JWKS verify + users upsert working end-to-end).
 
 ## Sprint 2.1 — Auth0 server session
@@ -31,7 +31,7 @@ tags:
 
 ## Sprint 2.3 — Backend verify + identity
 
-- `src/services/db.js`: `pool` (DATABASE_URL, `app_user`), `servicePool` (SERVICE_DATABASE_URL, `service_role` — BYPASSRLS DML, no DDL; used for webhooks, outbox, admin reads, provisioning; PLAN.md D14 — the backend never holds DIRECT_URL), and `withUser(sub, fn)`:
+- `src/services/db.js`: `pool` (DATABASE_URL, `app_user`), `servicePool` (SERVICE_DATABASE_URL, `app_service` — BYPASSRLS DML, no DDL; webhooks, outbox, admin reads, provisioning; PLAN.md D14 — the backend never holds DIRECT_URL and refuses to start with it in production); each pool boot-asserts its `SELECT current_user` (app_user / app_service) and throws on mismatch (Format B inv 14); and `withUser(sub, fn)`:
   `BEGIN; SELECT set_config('app.user_id', $sub, true);` run `fn(client)`, `COMMIT` (rollback on throw, release always).
 - `src/middleware/require-auth.js`: `createRemoteJWKSet(new URL('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json'))`; `jwtVerify(token, jwks, { issuer: 'https://'+AUTH0_DOMAIN+'/', audience: AUTH0_AUDIENCE })` (I3); attach `req.auth = { sub, email, name, nickname }` from payload claims.
 - Migration `001_identity.sql` (numbered, idempotent, run-on-start via `migrations/run.js` with a `schema_migrations` table): `CREATE SCHEMA IF NOT EXISTS app;` `app.users(id TEXT PRIMARY KEY, email TEXT, display_name TEXT, created_at timestamptz DEFAULT now(), last_login_at timestamptz)`.
