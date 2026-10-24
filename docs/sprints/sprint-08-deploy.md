@@ -14,7 +14,7 @@ tags:
 ## Sprint 8.1 — compose-host on the Pi fleet
 
 - `docker-compose-host.yml`: services `backend` + `backtester` (+ `migrate` one-shot, profile `migrate`). No postgres/pgadmin, no published ports for backtester; backend exposes `4000` on the compose network only. Deploy script runs `docker compose -f docker-compose-host.yml run --rm migrate` FIRST (D14: `--rm` disposes the container and its DIRECT_URL env — Neon pooler breaks DDL so migrate uses the direct owner URL), then `up -d` the runtime services, whose env carries ONLY `DATABASE_URL` + `SERVICE_DATABASE_URL` (backend) and `WORKER_DATABASE_URL` (backtester) — never DIRECT_URL.
-- Images: multi-arch build (`linux/arm64` for Pi) — `docker buildx` targets in a `build.sh`; Node 22-slim and `python:3.12-slim` bases both publish arm64.
+- Images: multi-arch build (`linux/arm64` for Pi) — `docker buildx` targets in a `build.sh`; `node:24.22.1-slim` and `python:3.12-slim` bases both publish arm64.
 - Manual bootstrap (documented header): run ALL THREE role files — `000_role.sql`, `000_worker_role.sql`, `000_service_role.sql` — once against Neon as owner with generated passwords via psql variables (H-NEON/H-NEON-2, R9-9); verify all four identities (`SELECT current_user` per DSN) before the first migration.
 - Pi selection + capacity check per eg-pi-ops conventions (worker is CPU-bound during Backtests; pick the Pi with SSD boot + least load; do NOT reboot without asking).
 - Watchdog: `restart: unless-stopped` on both services.

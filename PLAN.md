@@ -28,7 +28,7 @@ CloudAITrader is a dual-worker Format B app. The capability tier (Backtester Wor
 | Frontend | None (CLI + Sphinx docs) | Next.js 16 + TS + AntD 5, next-intl, cloudaitrader.com on Vercel | In |
 | Auth | None (exchange API keys in parameters.yaml) | Auth0 v4 server session + BFF Bearer proxy + jose JWKS verify | In |
 | Database | SQLite per exchange + CSVs | Neon Postgres 17, RLS keyed to `sub`, numbered idempotent migrations via one-shot migrate job | In |
-| App worker | None | Node 22 / Express 5 ESM: auth, users, jobs API, admin, Stripe, outbox notifier (app_service, no DDL) | In |
+| App worker | None | Node 24.22.1 / Express 5 ESM: auth, users, jobs API, admin, Stripe, outbox notifier (app_service, no DDL) | In |
 | Capability worker | Monolithic threaded bot | Python 3.12 + SQLAlchemy 2.0 job loop with lease fencing + atomic finalization | In |
 | Exchange layer | kucoin-python real; cbpro (retired) + gemini stubs | CCXT public OHLCV, one primary Venue per symbol; no keys (ADR-0001) | In |
 | Engines | triarb.py, bellmanford.py inside live loop | Pure `engine/` library, characterization + invariant tests; NOT user-facing (D11) | In (library) |

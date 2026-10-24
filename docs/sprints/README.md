@@ -39,7 +39,7 @@ Execution companion to [../../PLAN.md](../../PLAN.md). Domain language per [../.
 ## Global conventions
 
 - **Frontend**: TypeScript strict; App Router server components by default; AntD 5 via `@ant-design/nextjs-registry`; copy through `lib/content.ts` `pickContent` (JSON import), not `t()`.
-- **App Worker**: Node 22, Express 5, ESM (`"type": "module"`); `src/modules/<area>/` routers + `src/services/` shared; errors as `{ error: { code, message } }`, never stack traces (I8 posture).
+- **App Worker**: Node 24.22.1, Express 5, ESM (`"type": "module"`); `src/modules/<area>/` routers + `src/services/` shared; errors as `{ error: { code, message } }`, never stack traces (I8 posture).
 - **Backtester Worker**: Python 3.12, `pyproject.toml` + `uv.lock`, ruff (lint+format), SQLAlchemy 2.0 Core (sync, psycopg 3), structured logging via `structlog`-style JSON to stdout.
 - **Timestamps**: UTC everywhere; `timestamptz` in Postgres; candle `ts` is the candle OPEN time.
 - **Money/quantities**: `numeric` in Postgres; `Decimal` in Python; never float for balances (floats allowed inside engine math where documented, but persisted balances/prices are Decimal).

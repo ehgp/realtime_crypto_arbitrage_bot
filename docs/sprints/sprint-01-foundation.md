@@ -23,7 +23,7 @@ Create `archive/legacy-bot/` and `git mv` into it: `main.py`, `analysis.py`, `be
 
 ```
 app/frontend/    # npx create-next-app@latest (TS, App Router, ESLint, Turbopack, src/ NO, alias @/*)
-app/backend/     # npm init; "type":"module"; Node 22
+app/backend/     # npm init; "type":"module"; Node 24.22.1
 backtester/      # uv init; Python 3.12
 ```
 
